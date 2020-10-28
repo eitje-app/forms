@@ -1,6 +1,6 @@
 import passwordValidator from 'password-validator';
 import utils from '@eitje/utils'
-import {t} from 'index'
+import {t} from './base'
 
 export const isEmail = (val) => {
   const  emailCheck = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
@@ -26,6 +26,8 @@ const nameRules = {
   }
 }
 
+
+
 const fieldMessages = {
   password: 'incorrectPas',
   password_confirmation: 'passwordMatch',
@@ -38,5 +40,4 @@ const nameMessages = {
 
 export const messages = {field: fieldMessages, name: nameMessages}
 export const rules = {field: fieldRules, name: nameRules}
-
 

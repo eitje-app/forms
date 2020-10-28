@@ -32,7 +32,9 @@ var FormCreator = function FormCreator() {
       _ref$rules = _ref.rules,
       rules = _ref$rules === void 0 ? {} : _ref$rules,
       _ref$messages = _ref.messages,
-      messages = _ref$messages === void 0 ? {} : _ref$messages;
+      messages = _ref$messages === void 0 ? {} : _ref$messages,
+      _ref$defaultProps = _ref.defaultProps,
+      defaultProps = _ref$defaultProps === void 0 ? {} : _ref$defaultProps;
 
   return function (props) {
     var allRules = _objectSpread(_objectSpread({}, _validation.rules), rules);
@@ -41,8 +43,9 @@ var FormCreator = function FormCreator() {
 
     return /*#__PURE__*/_react["default"].createElement(_form["default"], _extends({
       rules: allRules,
-      messages: allMessages
-    }, props));
+      messages: allMessages,
+      test: "baas"
+    }, defaultProps, props));
   };
 };
 

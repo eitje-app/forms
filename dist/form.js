@@ -11,6 +11,8 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _utils = _interopRequireDefault(require("@eitje/utils"));
 
+var _base = require("./base");
+
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -187,10 +189,13 @@ var Form = /*#__PURE__*/function (_Component) {
       var children = el.props.children;
       children = _utils["default"].alwaysArray(children);
       var els = children.filter(function (c) {
-        return c && c.props.field;
+        return c && c.props && c.props.field;
+      });
+      var stringEls = children.filter(function (c) {
+        return _lodash["default"].isString(c);
       });
       var wrappers = children.filter(function (c) {
-        return c && c.props.fieldWrapper;
+        return c && c.props && c.props.fieldWrapper;
       });
       wrappers.forEach(function (wrapper) {
         els = els.concat(_this.getFormChildren(wrapper));
@@ -278,6 +283,15 @@ var Form = /*#__PURE__*/function (_Component) {
 
     _defineProperty(_assertThisInitialized(_this), "renderChild", function (c, idx) {
       if (!c) return null;
+      var DefaultInput = _this.props.DefaultInput;
+
+      if (_lodash["default"].isString(c) && DefaultInput) {
+        return _this.enhanceChild( /*#__PURE__*/_react["default"].createElement(DefaultInput, {
+          field: c
+        }), idx);
+      }
+
+      if (!c.props) return;
       var _this$state3 = _this.state,
           errors = _this$state3.errors,
           fields = _this$state3.fields;
@@ -303,7 +317,7 @@ var Form = /*#__PURE__*/function (_Component) {
     _defineProperty(_assertThisInitialized(_this), "mapChildren", function () {
       var children = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-      var childs = _utils["default"].alwaysArray(children).filter(Boolean);
+      var childs = _utils["default"].alwaysDefinedArray(children);
 
       return childs.map(function (c) {
         if (!c || !c.props) return c;
@@ -415,7 +429,7 @@ var Form = /*#__PURE__*/function (_Component) {
       if (Object.values(blocked).some(function (s) {
         return s;
       })) {
-        alert("oneSec", "stillUploading");
+        alert((0, _base.t)("oneSec"), (0, _base.t)("stillUploading"));
         return true;
       }
     }
@@ -447,10 +461,10 @@ var Form = /*#__PURE__*/function (_Component) {
       var value = fields[field];
       var error = null;
       var valid;
-      if (required) error = !_utils["default"].exists(fields[field]) && t("required");
+      if (required) error = !_utils["default"].exists(fields[field]) && (0, _base.t)("required");
 
       if (validate && !error) {
-        error = !validate(fields[field], fields) && (validateMessage || t("error"));
+        error = !validate(fields[field], fields) && (validateMessage || (0, _base.t)("error"));
       }
 
       if (!error && rules.field[field]) {
@@ -513,11 +527,7 @@ var Form = /*#__PURE__*/function (_Component) {
       var _this$state5 = this.state,
           errors = _this$state5.errors,
           fields = _this$state5.fields;
-      return /*#__PURE__*/_react["default"].createElement(_react.Fragment, {
-        style: {
-          backgroundColor: '#fff'
-        }
-      }, _react["default"].Children.map(children, function (c, idx) {
+      return /*#__PURE__*/_react["default"].createElement(_react.Fragment, null, _react["default"].Children.map(children, function (c, idx) {
         return _this3.renderChild(c, idx);
       }), this.renderLoading());
     }

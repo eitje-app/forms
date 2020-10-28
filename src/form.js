@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react';
 import utils from '@eitje/utils'
-
+import {t} from './base'
 class Form extends Component {
   
   constructor(props) {
@@ -67,7 +67,7 @@ class Form extends Component {
     const {alert} = this.props
     const {blocked = {}} = this.state
     if (Object.values(blocked).some(s => s)){
-      alert("oneSec", "stillUploading")
+      alert(t("oneSec"), t("stillUploading"))
       return true;
     }
   }
@@ -163,8 +163,9 @@ class Form extends Component {
     if(!el.props) return []
     let {children} = el.props
     children = utils.alwaysArray(children)
-    let els = children.filter(c => c && c.props.field)
-    const wrappers = children.filter(c => c && c.props.fieldWrapper)
+    let els = children.filter(c => c && c.props && c.props.field)
+    let stringEls = children.filter(c => _.isString(c))
+    const wrappers = children.filter(c => c && c.props && c.props.fieldWrapper)
     wrappers.forEach(wrapper => {
       els = els.concat(this.getFormChildren(wrapper))
     })
@@ -193,7 +194,7 @@ class Form extends Component {
 
   renderLoading() {
     const LoadingEl = this.props.loadingEl
-    if (this.state.loading &&  LoadingEl) {
+    if (this.state.loading && LoadingEl) {
       return (
         <LoadingEl/>       
       )
@@ -230,6 +231,13 @@ class Form extends Component {
 
   renderChild = (c, idx) => {
     if(!c) return null;
+    const {DefaultInput} = this.props
+
+    if(_.isString(c) && DefaultInput) {
+      return this.enhanceChild(<DefaultInput field={c}/>, idx)
+    }
+    if(!c.props) return;
+
     const {errors, fields} = this.state
     const {field, fieldWrapper} = c.props
 
@@ -247,7 +255,7 @@ class Form extends Component {
   
 
 mapChildren = (children = []) => {
-  const childs = utils.alwaysArray(children).filter(Boolean)
+  const childs = utils.alwaysDefinedArray(children)
   return childs.map(c => {
     if(!c || !c.props) return c;
     if(c.props.field) return this.enhanceChild(c);
@@ -261,8 +269,7 @@ mapChildren = (children = []) => {
     const {errors, fields} = this.state
     return (
       
-      <Fragment style={{backgroundColor: '#fff'}}>
-
+      <Fragment>
         {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
         {this.renderLoading()}

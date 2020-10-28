@@ -9,7 +9,7 @@ var _passwordValidator = _interopRequireDefault(require("password-validator"));
 
 var _utils = _interopRequireDefault(require("@eitje/utils"));
 
-var _index = require("index");
+var _base = require("./base");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
