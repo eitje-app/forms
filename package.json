@@ -25,5 +25,8 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0"
+  },
+  "dependencies": {
+    "password-validator": "2.2.0"
   }
 }
