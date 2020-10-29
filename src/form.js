@@ -191,7 +191,7 @@ class Form extends Component {
   }
 
   renderLoading() {
-    const LoadingEl = this.props.loadingEl
+    const {LoadingEl} = this.props
     if (this.state.loading && LoadingEl) {
       return (
         <LoadingEl/>       
