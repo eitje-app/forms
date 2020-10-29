@@ -3,13 +3,12 @@ import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from
 import Form from './form'
 import {rules as _rules, messages as _messages} from './validation'
 
-const FormCreator = ( {rules = {}, messages = {}, defaultProps={}} = {} ) => props => {
+const FormCreator = ( {rules = {}, messages = {}, defaultProps = {} } = {} ) => props => {
 
   const allRules = {..._rules, ...rules}
   const allMessages = {..._messages, ...messages}
-  return <Form rules={allRules} messages={allMessages} test="baas" {...defaultProps} {...props} />
+  return <Form rules={allRules} messages={allMessages} {...defaultProps} {...props} />
 }
-
 
 export default FormCreator
 

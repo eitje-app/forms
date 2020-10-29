@@ -43,8 +43,7 @@ var FormCreator = function FormCreator() {
 
     return /*#__PURE__*/_react["default"].createElement(_form["default"], _extends({
       rules: allRules,
-      messages: allMessages,
-      test: "baas"
+      messages: allMessages
     }, defaultProps, props));
   };
 };
