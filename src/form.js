@@ -89,7 +89,6 @@ class Form extends Component {
     if(!prevState.touched && this.state.touched) {
       afterTouch()
     }
-
   }
 
   updateField = async (field, val, itemId, fieldProps) => {
@@ -110,7 +109,6 @@ class Form extends Component {
       if(!touched) {
         this.setState({touched: true})
       }
-
   }
 
   validateField(field, direct = false, fieldProps) {
@@ -120,9 +118,9 @@ class Form extends Component {
     const value = fields[field]
     let error = null
     let valid;
-    if(required) error = !utils.exists(fields[field]) && t("required")
+    if(required) error = !utils.exists(fields[field]) && t("form.required")
     if(validate && !error) {
-      error = !validate(fields[field], fields) && (validateMessage || t("error")) 
+      error = !validate(fields[field], fields) && (validateMessage || t("form.invalid")) 
     }
 
     if(!error && rules.field[field]) {

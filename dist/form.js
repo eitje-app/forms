@@ -461,10 +461,10 @@ var Form = /*#__PURE__*/function (_Component) {
       var value = fields[field];
       var error = null;
       var valid;
-      if (required) error = !_utils["default"].exists(fields[field]) && (0, _base.t)("required");
+      if (required) error = !_utils["default"].exists(fields[field]) && (0, _base.t)("form.required");
 
       if (validate && !error) {
-        error = !validate(fields[field], fields) && (validateMessage || (0, _base.t)("error"));
+        error = !validate(fields[field], fields) && (validateMessage || (0, _base.t)("form.invalid"));
       }
 
       if (!error && rules.field[field]) {
