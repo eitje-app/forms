@@ -1,5 +1,5 @@
-export const labels = {
-  remote_avatar: 'Kies je avatar',
+export const fields = {
+  default_avatar: 'Kies je avatar',
 }
 
 export const general = {
@@ -7,6 +7,6 @@ export const general = {
   invalid: 'ongeldig'
 }
 
-const form = {...general, label: labels}
+const form = {...general, field: fields}
 
 export default form;

@@ -1,5 +1,9 @@
-export const labels = {
-  remote_avatar: 'Choose remote avatar',
+export const fields = {
+  default_avatar: 'Choose remote avatar',
+}
+
+export const names = {
+  team: 'Team'
 }
 
 export const general = {
@@ -7,6 +11,6 @@ export const general = {
   invalid: 'invalid'
 }
 
-const form = {...general, label: labels}
+const form = {...general, field: fields, name: names}
 
 export default form
