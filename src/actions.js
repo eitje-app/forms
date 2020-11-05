@@ -12,7 +12,7 @@ export const makeField = Comp => props => {
 
 
   return (
-      <Container style={{opacity: disabled ? 0.2 : 1, ...containerStyle}} {..containerProps}>
+      <Container style={{opacity: disabled ? 0.2 : 1, ...containerStyle}} {...containerProps} >
         {label && label}
           <Comp innerClass={classNames} {...props} {...prupz}/>
         {error && error}

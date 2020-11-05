@@ -237,7 +237,11 @@ class Form extends Component {
     if(!c.props) return;
 
     const {errors, fields} = this.state
-    const {field, fieldWrapper} = c.props
+    const {field, fieldWrapper, submitButton} = c.props
+
+    if(submitButton) {
+      return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit() })
+    }
 
     if (fieldWrapper && c.props.children) {
       const children = this.mapChildren(c.props.children)
