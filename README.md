@@ -41,7 +41,23 @@ If you omit the field prop, the child will not be 'formified'. To 'formify' nest
 
 ## Field props
 
-The form passes a lot of props down to its form children, making them 'formified'. 
+We have two sets of props here. The first are props you can give to any form field when rendering, which will affect how the form handles its fields:
+
+| Key        | Explanation           | Default value  |
+| ------------- |:-------------:| -----:|
+| field     | name of the field in formData, will also be used for validations  |   |
+| name | More granular control: validation will first look for the name prop before looking for the field prop. This way you can have different validations for the same field in different places     |     |
+| required    |  is this field required for submitting?  |  false |
+| validate | Custom validation function with (formData, field) as arguments     |     |
+| validateMessage | Custom validation message |     |
+| disabled | disabled can be a bool or a function that takes formData as first argument |     |
+| label | Label to be rendered alongside the field, defaults to showing a p tag with name OR field  |     |
+| label | Label to be rendered alongside the field, defaults to showing a p tag with name OR field  |     |
+
+
+__NOTE: Further info about props for specific fields can be found on the form-fields-web page__ 
+
+The second are props passed by the form to the fields, making them 'formified', which you can use when building your own. 
 
 | Key        | Explanation           | Default value  |
 | ------------- |:-------------:| -----:|
