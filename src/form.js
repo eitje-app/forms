@@ -9,14 +9,12 @@ class Form extends Component {
     super(props)
     this.createRefs()
     this.state = {
+
       loading: false,
 
-      blocked: {
-
-      },
-      errors: {
-
-      },
+      blocked: {},
+      touchedFields: [],
+      errors: {},
 
       fields
     }
@@ -89,10 +87,24 @@ class Form extends Component {
     if(!prevState.touched && this.state.touched) {
       afterTouch()
     }
+
+    if( !_.isEqual(prevProps.initialValues, this.props.initialValues) ) {
+      this.updateUnTouchedFields(this.props.initialValues)
+    }
+  }
+
+  updateUnTouchedFields = newVals => {
+    const {touchedFields} = this.state
+    console.log(newVals, "newVals")
+    const toBeUpdated = _.pickBy(newVals, (val, key) => !touchedFields.includes(key))
+    console.log(toBeUpdated)
+    const newFields = {...this.state.fields, ...toBeUpdated}
+    console.log(newFields)
+    this.setState({fields: newFields})
   }
 
   updateField = async (field, val, itemId, fieldProps) => {
-    const {fields, errors, touched} = this.state
+    const {fields, errors, touched, touchedFields} = this.state
     const {afterChange} = this.props
     if(_.isArray(val) && val.length === 0) val = undefined;
     if(this.state.fields[field] === val) return;
@@ -105,7 +117,13 @@ class Form extends Component {
       }))
         this.validateField(field, true, fieldProps)
       }
+      
       afterChange && afterChange(field, val)
+      
+      if(!touchedFields.includes(field)) {
+        this.setState({touchedFields: [...touchedFields, field] })
+      }
+      
       if(!touched) {
         this.setState({touched: true})
       }
