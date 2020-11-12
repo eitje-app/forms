@@ -95,11 +95,8 @@ class Form extends Component {
 
   updateUnTouchedFields = newVals => {
     const {touchedFields} = this.state
-    console.log(newVals, "newVals")
     const toBeUpdated = _.pickBy(newVals, (val, key) => !touchedFields.includes(key))
-    console.log(toBeUpdated)
     const newFields = {...this.state.fields, ...toBeUpdated}
-    console.log(newFields)
     this.setState({fields: newFields})
   }
 
@@ -169,8 +166,7 @@ class Form extends Component {
       if(!invalid && error) invalid = true;
     })
     this.setState({errors: errs})
-    return !invalid;
-    
+    return !invalid; 
   }
 
   allFormChildren = () => this.getFormChildren()
@@ -188,7 +184,6 @@ class Form extends Component {
 
     return els;
   }
-  
 
 
   blockSubmit = (field, blocked) => {
@@ -201,6 +196,11 @@ class Form extends Component {
     if(blocked) {
       setTimeout(() => that.blockSubmit(field, false), 15000)
     }
+  }
+
+  resetValues = (empty) => {
+    const newState = empty ? {} : this.props.initialValues
+    this.setState({fields: newState})
   }
 
   setValues = obj => {
