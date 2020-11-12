@@ -39,6 +39,36 @@ If you omit the field prop, the child will not be 'formified'. To 'formify' nest
 | nestedField | Useful if you want to edit multiple nested items in one form. This builds your nested params  |     |
 
 
+## Imperative actions
+
+There are also some actions you can call directly on the form instance. You unlock this by adding a ref to your instance.
+
+Example:
+
+```
+const ref = useRef(null)
+
+<Form ref={ref} onSubmit={data => login(data) }>
+
+</Form>
+
+<Button onClick={() => ref.current.resetValues() }> 
+   Reset your form
+</Button>
+```
+
+Actions:
+
+| Action        | Explanation           | Params  |
+| ------------- |:-------------:| -----:|
+| setValues(vals)     | Set values imperatively   | {key: value}   |
+| resetValues(empty) | Reset form state to default    | If empty is false (default), form will reset to initialValues, otherwise empty object.   |
+| getValue(field)    |  Get value of field |  |
+| submit | Submit the form     |     |
+| validate | Validate the form (show errors) |     |
+
+
+
 ## Field props
 
 We have two sets of props here. The first are props you can give to any form field when rendering, which will affect how the form handles its fields:
@@ -51,7 +81,6 @@ We have two sets of props here. The first are props you can give to any form fie
 | validate | Custom validation function with (formData, field) as arguments     |     |
 | validateMessage | Custom validation message |     |
 | disabled | disabled can be a bool or a function that takes formData as first argument |     |
-| label | Label to be rendered alongside the field, defaults to showing a p tag with name OR field  |     |
 | label | Label to be rendered alongside the field, defaults to showing a p tag with name OR field  |     |
 
 
