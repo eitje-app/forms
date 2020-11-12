@@ -52,7 +52,7 @@ const ref = useRef(null)
 
 </Form>
 
-<Button onClick={() => ref.resetValues() }> 
+<Button onClick={() => ref.current.resetValues() }> 
    Reset your form
 </Button>
 ```
