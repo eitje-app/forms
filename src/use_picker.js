@@ -5,9 +5,9 @@ export const simpleMap = (item) => {
   return {label: item, key: item, value: item }
 }
 
-const usePicker = ({items, noSort, value, defaultTitle = '-', formData, modifyItems = items => items, labelField="name", valueField="id"}) => {
+const usePicker = ({items, noSort, value, defaultTitle = '-', formData, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {
   let pickerItems = items;
-  if(!noSort) pickerItems = _.sortBy(pickerItems, i => i[labelField]);
+  if(!noSort && sortField) pickerItems = _.sortBy(pickerItems, i => i[sortField]);
 
   pickerItems = pickerItems.map(t => !t[labelField] && !_.isObject(t) ? simpleMap(t) : 
                                       ({label: t[labelField] || "", key: String(t[valueField]), value: t[valueField], ...t }) ) 

@@ -54,7 +54,7 @@ class Form extends Component {
       if(!res) return;
       if(res.ok) {
         afterSubmMessage && utils.toast(afterSubmMessage)
-        afterSubmit(res)
+        afterSubmit(res, params)
         
       } 
     }
