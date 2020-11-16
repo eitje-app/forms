@@ -8,6 +8,8 @@ function useFormField(props) {
          defaultValue, labelVisible = true, formDisabled, formData, label, field} = props
 
   const isDisabled = _.isFunction(disabled) ? disabled(formData) : disabled
+  const isRequired = _.isFunction(required) ? required(formData) : required
+
   const actuallyDisabled = formDisabled || isDisabled
   const lbl = findLabel(props)
 
@@ -19,7 +21,8 @@ function useFormField(props) {
   
   error = error && <p style={{color: 'red'}}> {error} </p>
 
-  return {error, disabled: actuallyDisabled, label: finalLabel, value: value || defaultValue}
+
+  return {required: isRequired, error, disabled: actuallyDisabled, label: finalLabel, value: value || defaultValue}
 
 }
 

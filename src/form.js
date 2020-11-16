@@ -126,6 +126,10 @@ class Form extends Component {
       }
   }
 
+  handleRequired(required, val) {
+   return  _.isFunction(required) ? required(this.state.fields) : required
+  }
+
   validateField(field, direct = false, fieldProps) {
     const {rules, messages} = this.props
     const {fields, errors} = this.state
@@ -133,7 +137,11 @@ class Form extends Component {
     const value = fields[field]
     let error = null
     let valid;
-    if(required) error = !utils.exists(fields[field]) && t("form.required")
+
+    const isReq = this.handleRequired(required)
+
+    if(isReq) error = !utils.exists(fields[field]) && t("form.required");
+
     if(validate && !error) {
       error = !validate(fields[field], fields) && (validateMessage || t("form.invalid")) 
     }
