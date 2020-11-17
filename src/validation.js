@@ -4,7 +4,7 @@ import {t} from './base'
 
 export const isEmail = (val) => {
   const  emailCheck = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
-  return val.length == 0 || emailCheck.test(val.trim())
+  return !val || val.length == 0 || emailCheck.test(val.trim())
 }
 
 const isPass = val => {
