@@ -13,4 +13,5 @@ const translations = {en, nl}
 export {setup, configure, translations, useFormField, usePicker}
 
 Object.assign(module.exports, require('./actions'));
+Object.assign(module.exports, require('./components'));
 

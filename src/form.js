@@ -2,6 +2,7 @@ import _ from 'lodash';
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react';
 import utils from '@eitje/utils'
 import {t} from './base'
+
 class Form extends Component {
   
   constructor(props) {
@@ -102,18 +103,29 @@ class Form extends Component {
 
   updateField = async (field, val, itemId, fieldProps) => {
     const {fields, errors, touched, touchedFields} = this.state
+    const {namespace} = fieldProps
     const {afterChange} = this.props
     if(_.isArray(val) && val.length === 0) val = undefined;
-    if(this.state.fields[field] === val) return;
+    let newFields = {...this.state.fields}
+    let currentHolder = newFields
+
+
+    if(namespace) {
+      if(!newFields[namespace]) newFields[namespace] = {};
+      currentHolder = newFields[namespace]
+    }
+
+    if(currentHolder[field] === val) return;
+
     if(itemId) {
       this.setNestedField(field, val, itemId)
     }  
+
     else {
-      await this.setState(state => ({
-        fields: {...state.fields, [field]: val}
-      }))
-        this.validateField(field, true, fieldProps)
-      }
+      currentHolder[field] = val
+      await this.setState({fields: newFields})
+      this.validateField(field, true, fieldProps)
+    }
       
       afterChange && afterChange(field, val)
       
@@ -134,16 +146,16 @@ class Form extends Component {
     const {rules, messages} = this.props
     const {fields, errors} = this.state
     const {validate, required, validateMessage, name} = fieldProps
-    const value = fields[field]
+    const value = this.getValue(field, fieldProps)
     let error = null
     let valid;
 
     const isReq = this.handleRequired(required)
 
-    if(isReq) error = !utils.exists(fields[field]) && t("form.required");
+    if(isReq) error = !utils.exists(value) && t("form.required");
 
     if(validate && !error) {
-      error = !validate(fields[field], fields) && (validateMessage || t("form.invalid")) 
+      error = !validate(value, fields) && (validateMessage || t("form.invalid")) 
     }
 
     if(!error && rules.field[field]) {
@@ -155,8 +167,6 @@ class Form extends Component {
       valid = rules.name[name](value, fields)
       error = !valid && messages.name[name]
     }
-
-
 
     const newErrors = {...errors, [field]: error }
     direct && this.setState({errors: newErrors})
@@ -189,7 +199,6 @@ class Form extends Component {
     wrappers.forEach(wrapper => {
       els = els.concat(this.getFormChildren(wrapper))
     })
-
     return els;
   }
 
@@ -236,45 +245,58 @@ class Form extends Component {
     }
   }
 
-  getValue = (field, itemId) => {
+  getValue = (field, props) => {
+    const {namespace, itemId} = props
     const {fields} = this.state
+    if(namespace) {
+      const namespaceFields = fields[namespace]
+      return namespaceFields ? namespaceFields[field] : null
+    }
     return itemId ? fields[itemId][field] : fields[field]   
   }
 
-   enhanceChild = (c, idx) => {
+   enhanceChild = (c, {idx, extraProps} = {} ) => {
     const {updatedFields = [], disabled, onSubmit} = this.props
-    const {field, itemId} = c.props
+    const {field, itemId, namespace} = c.props
     const {errors, fields} = this.state
 
+    const allProps = {...c.props, ...extraProps}
+
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
-                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, itemId), 
+                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), 
                                         blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: () => this.submit(),
-                                        onChange: val => this.updateField(field, val, itemId, c.props), error: errors[field], getNext: () => this.getNext(idx) })
+                                        onChange: val => this.updateField(field, val, itemId, allProps), error: errors[field], getNext: () => this.getNext(idx),
+                                        ...extraProps })
     return newEl;
   }
+
+
 
   renderChild = (c, idx) => {
     if(!c) return null;
     const {DefaultInput} = this.props
 
     if(_.isString(c) && DefaultInput) {
-      return this.enhanceChild(<DefaultInput field={c}/>, idx)
+      return this.enhanceChild(<DefaultInput field={c}/>, {idx})
     }
     if(!c.props) return;
 
     const {errors, fields} = this.state
-    const {field, fieldWrapper, submitButton} = c.props
+    const {field, fieldWrapper, namespace, submitButton} = c.props
 
     if(submitButton) {
       return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit() })
     }
 
     if (fieldWrapper && c.props.children) {
-      const children = this.mapChildren(c.props.children)
+      const defProps = {}
+      if(namespace) defProps['namespace'] = namespace;
+      debugger
+      const children = this.mapChildren(c.props.children, {namespace})
       return React.cloneElement(c, {children})
     }
     if(field) {
-      return this.enhanceChild(c, idx)
+      return this.enhanceChild(c, {idx})
     } 
     else {
       return React.cloneElement(c)
@@ -282,11 +304,11 @@ class Form extends Component {
   }
   
 
-mapChildren = (children = []) => {
+mapChildren = (children = [], extraProps = {}) => {
   const childs = utils.alwaysDefinedArray(children)
   return childs.map(c => {
     if(!c || !c.props) return c;
-    if(c.props.field) return this.enhanceChild(c);
+    if(c.props.field) return this.enhanceChild(c, {extraProps});
     if(!c.props.children) return c;
     return React.cloneElement(c, {children: this.mapChildren(c.props.children)})
   })
