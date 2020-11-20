@@ -26,7 +26,11 @@ To work efficiently, it's wise to create your own form fields components and re-
 for an example look in the form-fields-web GH library.
 
 It knows which of its children are fields because they have the 'field' prop, just as in the example above. 
-If you omit the field prop, the child will not be 'formified'. To 'formify' nested fields, you have to pass the prop fieldWrapper to the container.
+If you omit the field prop, the child will not be 'formified'. 
+
+## Nested fields (fieldWrapper)
+
+To 'formify' nested fields, you have to pass the prop fieldWrapper to the container (arbitrary HTML element). You can also pass namespace to the fieldWrapper to provide all of its field children with that namespace
 
 ## Props
 
@@ -82,6 +86,7 @@ We have two sets of props here. The first are props you can give to any form fie
 | validateMessage | Custom validation message |     |
 | disabled | disabled can be a bool or a function that takes formData as first argument |     |
 | label | Label to be rendered alongside the field, defaults to showing a p tag with name OR field  |     |
+| namespace | namespace to put its serialized data into (useful for creating nested data structures) |  |
 
 
 __NOTE: Further info about props for specific fields can be found on the form-fields-web page__ 
