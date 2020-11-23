@@ -291,7 +291,6 @@ class Form extends Component {
     if (fieldWrapper && c.props.children) {
       const defProps = {}
       if(namespace) defProps['namespace'] = namespace;
-      debugger
       const children = this.mapChildren(c.props.children, {namespace})
       return React.cloneElement(c, {children})
     }
