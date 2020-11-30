@@ -1,8 +1,9 @@
 import React from 'react'
 import _ from 'lodash'
+import {t} from './base'
 
 export const simpleMap = (item) => {
-  return {label: item, key: item, value: item }
+  return {label: t(item), key: item, value: item }
 }
 
 const usePicker = ({items, noSort, value, defaultTitle = '-', formData, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {
