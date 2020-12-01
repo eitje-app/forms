@@ -18,13 +18,13 @@ function useFormField(props) {
   if(finalLabel && _.isString(finalLabel) ) {
     finalLabel = <p style={labelStyle}> {finalLabel}: </p>
   }
-  
   error = error && <p style={{color: 'red'}}> {error} </p>
 
 
   return {required: isRequired, error, disabled: actuallyDisabled, label: finalLabel, value: value || defaultValue}
 
 }
+
 
 const findLabel = ({label, name, field}) => {
   if(label) return label;

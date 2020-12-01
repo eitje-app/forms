@@ -21,6 +21,11 @@ class Form extends Component {
     }
   }
 
+
+  submitAllowed = () => {
+     return this.empty() || (this.validate() && !this.blocked())
+  }
+
   createRefs = () => {
     this.myChildren().forEach((c, idx) => {
       this[`child-${idx}`] = createRef()
@@ -43,11 +48,15 @@ class Form extends Component {
     return this.state.submitted
   }
 
+  empty() {
+    const filled = Object.values(this.state.fields).some(val => utils.exists(val))
+    return !filled
+  }
+
   async submit({extraData = {}} = {} ) {
     const {nestedField, onSubmit, afterSubmMessage, afterSubmit = () => {}} = this.props
     const {fields} = this.state
     if(this.blocked()) return;
-    
     const params = nestedField ? this.convertFields() : {...fields, ...extraData}
     if(this.validate()) {
       const res = await onSubmit(params)
@@ -139,7 +148,9 @@ class Form extends Component {
   }
 
   handleRequired(required, val) {
-   return  _.isFunction(required) ? required(this.state.fields) : required
+   const {validationStarted} = this.state
+   return validationStarted && (_.isFunction(required) ? required(this.state.fields) : required)
+   // required fields not being filled is only an issue when a user really submits a form, not when they're typing
   }
 
   validateField(field, direct = false, fieldProps) {
@@ -149,7 +160,6 @@ class Form extends Component {
     const value = this.getValue(field, fieldProps)
     let error = null
     let valid;
-
     const isReq = this.handleRequired(required)
 
     if(isReq) error = !utils.exists(value) && t("form.required");
@@ -173,10 +183,11 @@ class Form extends Component {
     return error // also possible to return errs instead of writing to state
   }
 
-  validate() {
+  async validate() {
     const {errors} = this.state
     let errs = {}
     let invalid;
+    await this.setState({validationStarted: true})
     this.allFormChildren().forEach(c => {
       const {field} = c.props
       const error = this.validateField(field, false, c.props);
@@ -264,7 +275,7 @@ class Form extends Component {
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
                                         updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), 
-                                        blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: () => this.submit(),
+                                        blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: () => this.submit(), 
                                         onChange: val => this.updateField(field, val, itemId, allProps), error: errors[field], getNext: () => this.getNext(idx),
                                         ...extraProps })
     return newEl;
@@ -314,16 +325,16 @@ mapChildren = (children = [], extraProps = {}) => {
 }
 
   render() {
-    const {children, debug} = this.props
+    const {children, debug, onFocus = () => {}} = this.props
     const {errors, fields} = this.state
     return (
       
-      <Fragment>
+      <div tabIndex={-1} onFocus={onFocus} >
         {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
         {this.renderLoading()}
 
-      </Fragment>
+      </div>
       )
     }
   
