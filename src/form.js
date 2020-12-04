@@ -19,6 +19,8 @@ class Form extends Component {
 
       fields
     }
+    this.resetValues = this.resetValues.bind(this)
+    this.submit = this.submit.bind(this)
   }
 
 
@@ -53,11 +55,12 @@ class Form extends Component {
     return !filled
   }
 
-  async submit({extraData = {}} = {} ) {
+  async submit({extraData = {}, callback = () => {} } = {} ) {
     const {nestedField, onSubmit, afterSubmMessage, afterSubmit = () => {}} = this.props
     const {fields} = this.state
     if(this.blocked()) return;
     const params = nestedField ? this.convertFields() : {...fields, ...extraData}
+    
     if(this.validate()) {
       const res = await onSubmit(params)
       await this.setState({submitted: true})
@@ -65,6 +68,7 @@ class Form extends Component {
       if(res.ok) {
         afterSubmMessage && utils.toast(afterSubmMessage)
         afterSubmit(res, params)
+        callback(res, params)
         
       } 
     }
@@ -148,19 +152,19 @@ class Form extends Component {
   }
 
   handleRequired(required, val) {
-   const {validationStarted} = this.state
-   return validationStarted && (_.isFunction(required) ? required(this.state.fields) : required)
+   return _.isFunction(required) ? required(this.state.fields) : required
+  
    // required fields not being filled is only an issue when a user really submits a form, not when they're typing
   }
 
-  validateField(field, direct = false, fieldProps) {
+  validateField(field, direct = false, fieldProps, {checkRequired} = {} ) {
     const {rules, messages} = this.props
     const {fields, errors} = this.state
     const {validate, required, validateMessage, name} = fieldProps
     const value = this.getValue(field, fieldProps)
     let error = null
     let valid;
-    const isReq = this.handleRequired(required)
+    const isReq = checkRequired && this.handleRequired(required)
 
     if(isReq) error = !utils.exists(value) && t("form.required");
 
@@ -183,14 +187,14 @@ class Form extends Component {
     return error // also possible to return errs instead of writing to state
   }
 
-  async validate() {
+  validate() {
     const {errors} = this.state
     let errs = {}
     let invalid;
-    await this.setState({validationStarted: true})
+
     this.allFormChildren().forEach(c => {
       const {field} = c.props
-      const error = this.validateField(field, false, c.props);
+      const error = this.validateField(field, false, c.props, {checkRequired: true});
       errs[field] = error
       if(!invalid && error) invalid = true;
     })
@@ -275,7 +279,7 @@ class Form extends Component {
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
                                         updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), 
-                                        blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: () => this.submit(), 
+                                        blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: this.submit, resetForm: this.resetValues,
                                         onChange: val => this.updateField(field, val, itemId, allProps), error: errors[field], getNext: () => this.getNext(idx),
                                         ...extraProps })
     return newEl;
