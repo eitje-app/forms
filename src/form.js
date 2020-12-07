@@ -300,7 +300,7 @@ class Form extends Component {
     const {field, fieldWrapper, namespace, submitButton} = c.props
 
     if(submitButton) {
-      return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit() })
+      return this.makeSubmitButton(c)
     }
 
     if (fieldWrapper && c.props.children) {
@@ -323,10 +323,15 @@ mapChildren = (children = [], extraProps = {}) => {
   return childs.map(c => {
     if(!c || !c.props) return c;
     if(c.props.field) return this.enhanceChild(c, {extraProps});
+    if(c.props.submitButton) return this.makeSubmitButton(c)
     if(!c.props.children) return c;
     return React.cloneElement(c, {children: this.mapChildren(c.props.children)})
   })
 }
+
+  makeSubmitButton(c) {
+    return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit() })
+  }
 
   render() {
     const {children, debug, onFocus = () => {}} = this.props
