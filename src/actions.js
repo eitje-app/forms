@@ -1,7 +1,7 @@
 import React from 'react'
 import useFormField from './use_form_field'
 
-export const makeField = Comp => props => {
+export const makeField = (Comp, {withLabel = true} = {}) => props => {
   const {containerStyle = {}, Container = 'div', containerProps = {} } = props
   const prupz = useFormField(props)
   const {label, error, disabled} = prupz
@@ -13,10 +13,12 @@ export const makeField = Comp => props => {
 
   return (
       <Container style={{opacity: disabled ? 0.2 : 1, ...containerStyle}} {...containerProps} >
-        {label && label}
+        {withLabel && label && label}
           <Comp innerClass={classNames} {...props} {...prupz}/>
         {error && error}
       </Container>
 
     )
 }
+
+
