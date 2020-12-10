@@ -18,6 +18,10 @@ function useFormField(props) {
   if(finalLabel && _.isString(finalLabel) ) {
     finalLabel = <p style={labelStyle}> {finalLabel}: </p>
   }
+
+  if(_.isFunction(finalLabel)) finalLabel = finalLabel(props)
+
+
   error = error && <p style={{color: 'red'}}> {error} </p>
 
   
