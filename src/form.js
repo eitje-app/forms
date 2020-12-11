@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react';
 import utils from '@eitje/utils'
-import {t} from './base'
+import {t, Button} from './base'
 
 class Form extends Component {
   
@@ -334,7 +334,7 @@ mapChildren = (children = [], extraProps = {}) => {
   }
 
   render() {
-    const {children, debug, onFocus = () => {}} = this.props
+    const {children, submitButton, debug, onFocus = () => {}} = this.props
     const {errors, fields} = this.state
     return (
       
@@ -342,7 +342,7 @@ mapChildren = (children = [], extraProps = {}) => {
         {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
         {this.renderLoading()}
-
+        {submitButton && <Button onClick={this.submit}> {t("submit")} </Button> }
       </div>
       )
     }
