@@ -319,7 +319,7 @@ class Form extends Component {
   
 
 mapChildren = (children = [], extraProps = {}) => {
-  const childs = utils.alwaysDefinedArray(children)
+  const childs = utils.alwaysDefinedArray(children).flat()
   return childs.map(c => {
     if(!c || !c.props) return c;
     if(c.props.field) return this.enhanceChild(c, {extraProps});
