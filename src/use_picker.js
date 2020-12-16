@@ -6,7 +6,7 @@ export const simpleMap = (item) => {
   return {label: t(item), key: item, value: item }
 }
 
-const usePicker = ({items, noSort, value, defaultTitle = '-', formData, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {
+const usePicker = ({items, noSort, value, multiple, defaultTitle = '-', formData, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {
   let pickerItems = items;
   if(!noSort && sortField) pickerItems = _.sortBy(pickerItems, i => i[sortField]);
 
@@ -18,7 +18,10 @@ const usePicker = ({items, noSort, value, defaultTitle = '-', formData, modifyIt
   const selectedItem = pickerItems.find(i => i.value === value) || {}
   const title = selectedItem.label || defaultTitle
   const selectedBaseItem = items.find(i => i[valueField] === value)
-  return {pickerItems, title, selectedBaseItem, selectedItem, title}
+  
+  const selectedItems = multiple && _.isArray(value) ? pickerItems.filter(i => value.includes(i.value)) : [selectedItem]
+
+  return {pickerItems, selectedItems, title, selectedBaseItem, selectedItem, title}
 }
 
 export default usePicker

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react';
 import utils from '@eitje/utils'
-import {t, Button} from './base'
+import {t, Button, Prompt} from './base'
 
 class Form extends Component {
   
@@ -267,6 +267,9 @@ class Form extends Component {
       const namespaceFields = fields[namespace]
       return namespaceFields ? namespaceFields[field] : null
     }
+    if(!fields) {
+      return null;
+    }
     return itemId ? fields[itemId][field] : fields[field]   
   }
 
@@ -334,8 +337,8 @@ mapChildren = (children = [], extraProps = {}) => {
   }
 
   render() {
-    const {children, submitButton, debug, onFocus = () => {}} = this.props
-    const {errors, fields} = this.state
+    const {children, showPrompt, submitButton, promptMsg="are you sure", debug, onFocus = () => {}} = this.props
+    const {errors, fields, touchedFields} = this.state
     return (
       
       <div tabIndex={-1} onFocus={onFocus} >
