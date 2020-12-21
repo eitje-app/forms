@@ -34,7 +34,7 @@ To 'formify' nested fields, you have to pass the prop fieldWrapper to the contai
 
 ## Props
 
-| Key        | Explanation           | Default value  | available from |
+| Key        | Explanation           | Default value  | 
 | ------------- |:-------------:| -----:|
 | initialValues     | Initial values of the form, provided as an object | {}  |
 | onSubmit    | What to do when form is submitted, provides formData as first arg     | data => {}    |
@@ -42,8 +42,8 @@ To 'formify' nested fields, you have to pass the prop fieldWrapper to the contai
 | disabled | disable whole form, prop will be passed to all children    | false    |
 | nestedField | Useful if you want to edit multiple nested items in one form. This builds your nested params  |     |
 | afterChange | callback you can use after any field changes. Invoked with arguments (fieldName, value)  |    |
-| submitOnChange | submits the form on every (valid) change. Only submits the field that's being edited | false | 1.2.0 |
-| resetAfterSubmit | reset form to initialValues after submit | false | 1.2.1 |
+| submitOnChange | submits the form on every (valid) change. Only submits the field that's being edited | false |
+| resetAfterSubmit | reset form to initialValues after submit | false |
 
 
 
