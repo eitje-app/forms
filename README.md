@@ -41,6 +41,8 @@ To 'formify' nested fields, you have to pass the prop fieldWrapper to the contai
 | afterSubmit | Functions to run after submit was successfull    | () => {}    |
 | disabled | disable whole form, prop will be passed to all children    | false    |
 | nestedField | Useful if you want to edit multiple nested items in one form. This builds your nested params  |     |
+| afterChange | callback you can use after any field changes. Invoked with arguments (fieldName, value)  |    |
+
 
 
 ## Imperative actions
