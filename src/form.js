@@ -23,7 +23,6 @@ class Form extends Component {
     this.submit = this.submit.bind(this)
   }
 
-
   submitAllowed = () => {
      return this.empty() || (this.validate() && !this.blocked())
   }
@@ -55,13 +54,19 @@ class Form extends Component {
     return !filled
   }
 
-  async submit({extraData = {}, callback = () => {} } = {} ) {
-    const {nestedField, onSubmit, afterSubmMessage, afterSubmit = () => {}} = this.props
+  async submit({extraData = {}, field, callback = () => {} } = {} ) {
+    const {nestedField, onSubmit, identityField="id", afterSubmMessage, afterSubmit = () => {}} = this.props
     const {fields} = this.state
     if(this.blocked()) return;
-    const params = nestedField ? this.convertFields() : {...fields, ...extraData}
-    
-    if(this.validate()) {
+
+    let params;
+    params = field ? _.pick(fields, [field, identityField]) : {...fields}
+    params = {...params, ...extraData}
+    if(nestedField) params = this.convertFields();
+    console.group("FORM")
+    console.log("Start validation")
+    if(this.validate({fields: [field] })) {
+      console.log("Params to be submitted", params)
       const res = await onSubmit(params)
       await this.setState({submitted: true})
       if(!res) return;
@@ -72,6 +77,9 @@ class Form extends Component {
         
       } 
     }
+    
+    console.groupEnd()
+
   }
 
 
@@ -102,7 +110,7 @@ class Form extends Component {
       afterTouch()
     }
 
-    if( !_.isEqual(prevProps.initialValues, this.props.initialValues) ) {
+    if(!_.isEqual(prevProps.initialValues, this.props.initialValues) ) {
       this.updateUnTouchedFields(this.props.initialValues)
     }
   }
@@ -117,7 +125,7 @@ class Form extends Component {
   updateField = async (field, val, itemId, fieldProps) => {
     const {fields, errors, touched, touchedFields} = this.state
     const {namespace} = fieldProps
-    const {afterChange} = this.props
+    const {afterChange, submitOnChange} = this.props
     if(_.isArray(val) && val.length === 0) val = undefined;
     let newFields = {...this.state.fields}
     let currentHolder = newFields
@@ -140,15 +148,19 @@ class Form extends Component {
       this.validateField(field, true, fieldProps)
     }
       
-      afterChange && afterChange(field, val)
+    afterChange && afterChange(field, val)
       
-      if(!touchedFields.includes(field)) {
-        this.setState({touchedFields: [...touchedFields, field] })
-      }
+    if(!touchedFields.includes(field)) {
+      this.setState({touchedFields: [...touchedFields, field] })
+    }
       
-      if(!touched) {
-        this.setState({touched: true})
-      }
+    if(!touched) {
+      this.setState({touched: true})
+    }
+
+    if(submitOnChange) {
+      this.submit({field})
+    }
   }
 
   handleRequired(required, val) {
@@ -187,16 +199,23 @@ class Form extends Component {
     return error // also possible to return errs instead of writing to state
   }
 
-  validate() {
+  validate({fields = []}) {
     const {errors} = this.state
     let errs = {}
     let invalid;
-
+    const hasSpecificFields = fields.length > 0
     this.allFormChildren().forEach(c => {
       const {field} = c.props
+      if(hasSpecificFields && !fields.includes(field)) return;
+
       const error = this.validateField(field, false, c.props, {checkRequired: true});
       errs[field] = error
-      if(!invalid && error) invalid = true;
+      
+      if(!invalid && error) {
+        invalid = true;
+        console.log("Failed validation", error)
+      }
+
     })
     this.setState({errors: errs})
     return !invalid; 

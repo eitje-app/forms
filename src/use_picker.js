@@ -19,7 +19,7 @@ const usePicker = ({items, noSort, value, multiple, defaultTitle = '-', formData
   const title = selectedItem.label || defaultTitle
   const selectedBaseItem = items.find(i => i[valueField] === value)
   
-  const selectedItems = multiple && _.isArray(value) ? pickerItems.filter(i => value.includes(i.value)) : [selectedItem]
+  const selectedItems = _.isArray(value) ? pickerItems.filter(i => value.includes(i.value)) : [selectedItem].filter(i => !_.isEmpty(i))
 
   return {pickerItems, selectedItems, title, selectedBaseItem, selectedItem, title}
 }

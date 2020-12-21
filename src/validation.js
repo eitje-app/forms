@@ -2,6 +2,9 @@ import passwordValidator from 'password-validator';
 import utils from '@eitje/utils'
 import {t} from './base'
 
+const phoneRegex = /^[+#*\(\)\[\]]*([0-9][ ext+-pw#*\(\)\[\]]*){6,45}$/
+
+
 export const isEmail = (val) => {
   const  emailCheck = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
   return !val || val.length == 0 || emailCheck.test(val.trim())
@@ -17,7 +20,9 @@ const isPass = val => {
 const fieldRules = {
   password_confirmation: (value, data) => data.password === value,
   password: value => isPass(value),
-  email: value => isEmail(value)
+  email: value => isEmail(value),
+  telefoonnummer: value => value.match(phoneRegex),
+  phone: value => value.match(phoneRegex)
 }
 
 const nameRules = {
@@ -31,7 +36,9 @@ const nameRules = {
 const fieldMessages = {
   password: 'incorrectPas',
   password_confirmation: 'passwordMatch',
-  email: 'emailInvalid'
+  email: 'emailInvalid',
+  phone: 'phoneInvalid',
+  telefoonnummer: 'phoneInvalid',
 }
 
 const nameMessages = {
