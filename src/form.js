@@ -55,7 +55,9 @@ class Form extends Component {
   }
 
   async submit({extraData = {}, field, callback = () => {} } = {} ) {
-    const {nestedField, onSubmit, identityField="id", afterSubmMessage, afterSubmit = () => {}} = this.props
+    const {nestedField, onSubmit, resetAfterSubmit, 
+          identityField="id", afterSubmMessage,
+          afterSubmit = () => {}} = this.props
     const {fields} = this.state
     if(this.blocked()) return;
 
@@ -74,6 +76,7 @@ class Form extends Component {
         afterSubmMessage && utils.toast(afterSubmMessage)
         afterSubmit(res, params)
         callback(res, params)
+        if(resetAfterSubmit) this.resetValues();
         
       } 
     }
@@ -110,7 +113,7 @@ class Form extends Component {
       afterTouch()
     }
 
-    if(!_.isEqual(prevProps.initialValues, this.props.initialValues) ) {
+  if(!_.isEqual(prevProps.initialValues, this.props.initialValues) ) {
       this.updateUnTouchedFields(this.props.initialValues)
     }
   }
