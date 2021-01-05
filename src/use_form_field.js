@@ -34,9 +34,13 @@ const findLabel = ({label, name, field}) => {
   if(label) return label;
   const val = name || field
   const _name = name ? 'name' : 'field'
+  if(!val) return;
 
-  if(val) return isScoped ? t(`form.${_name}.${val}`) : val;
+  const finalValue = isScoped ? t(`form.${_name}.${val}`) : val;
+  return finalValue == `form.${_name}.${val}` ? val : finalValue 
 }
 
 export default useFormField
 
+
+console.log("hiiii")

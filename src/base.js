@@ -7,7 +7,7 @@ let Prompt = null;
 const setup = ({translatorFunc, alertFunc, scoped, button} = {}) => {
   if(translatorFunc) t = translatorFunc;
   if(alertFunc) alert = alertFunc;
-  if(scoped) isScoped = isScoped;
+  if(scoped) isScoped = scoped;
   if(button) Button = button;
   if(prompt) Prompt = prompt;
 

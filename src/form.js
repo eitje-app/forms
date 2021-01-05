@@ -3,6 +3,11 @@ import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from
 import utils from '@eitje/utils'
 import {t, Button, Prompt} from './base'
 
+const missingOrTrue = (obj, field) => {
+  const hasField =  Object.keys(obj).includes(field)
+  return !hasField || obj[field]
+}
+
 class Form extends Component {
   
   constructor(props) {
@@ -67,7 +72,7 @@ class Form extends Component {
     if(nestedField) params = this.convertFields();
     console.group("FORM")
     console.log("Start validation")
-    if(this.validate({fields: [field] })) {
+    if(this.validate({fields: [field].filter(Boolean) })) {
       console.log("Params to be submitted", params)
       const res = await onSubmit(params)
       await this.setState({submitted: true})
@@ -77,7 +82,7 @@ class Form extends Component {
         afterSubmit(res, params)
         callback(res, params)
         if(resetAfterSubmit) this.resetValues();
-        
+        this.setState({touchedFields: []})
       } 
     }
     
@@ -128,7 +133,7 @@ class Form extends Component {
   updateField = async (field, val, itemId, fieldProps) => {
     const {fields, errors, touched, touchedFields} = this.state
     const {namespace} = fieldProps
-    const {afterChange, submitOnChange} = this.props
+    const {afterChange} = this.props
     if(_.isArray(val) && val.length === 0) val = undefined;
     let newFields = {...this.state.fields}
     let currentHolder = newFields
@@ -161,10 +166,17 @@ class Form extends Component {
       this.setState({touched: true})
     }
 
-    if(submitOnChange) {
+    if(this.shouldSubmitOnChange(fieldProps)) {
       this.submit({field})
     }
+
   }
+
+  shouldSubmitOnChange(fieldProps) {
+    const {submitOnChange} = this.props
+    return submitOnChange && missingOrTrue(fieldProps, 'submitOnChange') && !fieldProps.submitOnBlur
+  }
+
 
   handleRequired(required, val) {
    return _.isFunction(required) ? required(this.state.fields) : required
@@ -202,7 +214,7 @@ class Form extends Component {
     return error // also possible to return errs instead of writing to state
   }
 
-  validate({fields = []}) {
+  validate({fields = []} = {}) {
     const {errors} = this.state
     let errs = {}
     let invalid;
@@ -297,16 +309,25 @@ class Form extends Component {
 
    enhanceChild = (c, {idx, extraProps} = {} ) => {
     const {updatedFields = [], disabled, onSubmit} = this.props
-    const {field, itemId, namespace} = c.props
-    const {errors, fields} = this.state
-
+    const {field, itemId, namespace, submitOnBlur} = c.props
+    const {errors, fields, touchedFields} = this.state
+    const condOpts = {}
     const allProps = {...c.props, ...extraProps}
+
+    if(submitOnBlur) {
+      const act = () => touchedFields.includes(field) && this.submit({field})
+      condOpts['onBlur'] = act
+      condOpts['onKeyUp'] = e => e.keyCode === 13 && act()
+
+    }
+
+
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
                                         updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), 
                                         blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: this.submit, resetForm: this.resetValues,
                                         onChange: val => this.updateField(field, val, itemId, allProps), error: errors[field], getNext: () => this.getNext(idx),
-                                        ...extraProps })
+                                        ...condOpts, ...extraProps })
     return newEl;
   }
 
