@@ -164,7 +164,6 @@ class Form extends Component {
     if(!touched) {
       this.setState({touched: true})
     }
-
     if(fieldProps.submitStrategy === 'change') {
       this.submit({field})
     }
@@ -302,8 +301,7 @@ class Form extends Component {
     const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
-    const allProps = {...c.props, ...extraProps}
-    const _fieldProps = Object.assign({}, fieldProps, c.props)
+    const _fieldProps = Object.assign({}, extraProps, fieldProps, c.props)
     const {field, itemId, namespace, submitStrategy} = _fieldProps
 
     if(submitStrategy === 'blur') {
@@ -314,9 +312,9 @@ class Form extends Component {
 
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
-                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), isTouched: touchedFields.includes(field), 
+                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, _fieldProps), isTouched: touchedFields.includes(field), 
                                         blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: this.submit, resetForm: this.resetValues,
-                                        onChange: val => this.updateField(field, val, itemId, allProps), error: errors[field], getNext: () => this.getNext(idx),
+                                        onChange: val => this.updateField(field, val, itemId, _fieldProps), error: errors[field], getNext: () => this.getNext(idx),
                                         ...condOpts, ...extraProps, ..._fieldProps })
     return newEl;
   }
