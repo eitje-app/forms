@@ -17,7 +17,7 @@ function useFormField(props) {
   let finalLabel = !labelVisible ? null : isDisabled ? (disabledLabel || lbl) : lbl
 
   if(finalLabel && _.isString(finalLabel) ) {
-    finalLabel = <p style={labelStyle}> {finalLabel}: </p>
+    finalLabel = <p style={labelStyle}> {t(finalLabel)}: </p>
   }
 
   if(_.isFunction(finalLabel)) finalLabel = finalLabel(props)
