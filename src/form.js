@@ -214,8 +214,6 @@ class Form extends Component {
     this.allFormChildren().forEach(c => {
       const {field} = c.props
       if(hasSpecificFields && !fields.includes(field)) return;
-      debugger
-      console.log("hgid df ffiiiff")
       const error = this.validateField(field, false, c.props, {checkRequired: true});
       errs[field] = error
       
