@@ -138,7 +138,6 @@ class Form extends Component {
     let newFields = {...this.state.fields}
     let currentHolder = newFields
 
-
     if(namespace) {
       if(!newFields[namespace]) newFields[namespace] = {};
       currentHolder = newFields[namespace]
@@ -166,17 +165,10 @@ class Form extends Component {
       this.setState({touched: true})
     }
 
-    if(this.shouldSubmitOnChange(fieldProps)) {
+    if(fieldProps.submitStrategy === 'change') {
       this.submit({field})
     }
-
   }
-
-  shouldSubmitOnChange(fieldProps) {
-    const {submitOnChange} = this.props
-    return submitOnChange && missingOrTrue(fieldProps, 'submitOnChange') && !fieldProps.submitOnBlur
-  }
-
 
   handleRequired(required, val) {
    return _.isFunction(required) ? required(this.state.fields) : required
@@ -222,7 +214,8 @@ class Form extends Component {
     this.allFormChildren().forEach(c => {
       const {field} = c.props
       if(hasSpecificFields && !fields.includes(field)) return;
-
+      debugger
+      console.log("hgid df ffiiiff")
       const error = this.validateField(field, false, c.props, {checkRequired: true});
       errs[field] = error
       
@@ -308,26 +301,25 @@ class Form extends Component {
   }
 
    enhanceChild = (c, {idx, extraProps} = {} ) => {
-    const {updatedFields = [], disabled, onSubmit} = this.props
-    const {field, itemId, namespace, submitOnBlur} = c.props
+    const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
     const allProps = {...c.props, ...extraProps}
+    const _fieldProps = Object.assign({}, fieldProps, c.props)
+    const {field, itemId, namespace, submitStrategy} = _fieldProps
 
-    if(submitOnBlur) {
+    if(submitStrategy === 'blur') {
       const act = () => touchedFields.includes(field) && this.submit({field})
       condOpts['onBlur'] = act
       condOpts['onKeyUp'] = e => e.keyCode === 13 && act()
-
     }
 
 
-
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
-                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), 
+                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, allProps), isTouched: touchedFields.includes(field), 
                                         blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: this.submit, resetForm: this.resetValues,
                                         onChange: val => this.updateField(field, val, itemId, allProps), error: errors[field], getNext: () => this.getNext(idx),
-                                        ...condOpts, ...extraProps })
+                                        ...condOpts, ...extraProps, ..._fieldProps })
     return newEl;
   }
 
@@ -340,6 +332,7 @@ class Form extends Component {
     if(_.isString(c) && DefaultInput) {
       return this.enhanceChild(<DefaultInput field={c}/>, {idx})
     }
+
     if(!c.props) return;
 
     const {errors, fields} = this.state

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {t, isScoped} from './base'
 import _ from 'lodash'
+import utils from '@eitje/utils'
 
 function useFormField(props) {
 
-  let {required, disabled, error, disabledLabel, name, value, labelStyle = {} ,
+  let {required, disabled, error, disabledLabel, name, value, labelStyle = {}, errorStyle = {color: 'red'},
          defaultValue, labelVisible = true, formDisabled, formData, label, field} = props
 
   const isDisabled = _.isFunction(disabled) ? disabled(formData) : disabled
@@ -22,22 +23,20 @@ function useFormField(props) {
   if(_.isFunction(finalLabel)) finalLabel = finalLabel(props)
 
 
-  error = error && <p style={{color: 'red'}}> {error} </p>
+  error = error && <p style={errorStyle}> {error} </p>
 
   
   return {required: isRequired, error, disabled: actuallyDisabled, label: finalLabel, value: value || defaultValue}
-
 }
-
 
 const findLabel = ({label, name, field}) => {
   if(label) return label;
   const val = name || field
   const _name = name ? 'name' : 'field'
   if(!val) return;
-
-  const finalValue = isScoped ? t(`form.${_name}.${val}`) : val;
-  return finalValue == `form.${_name}.${val}` ? val : finalValue 
+  let finalValue = isScoped ? t(`form.${_name}.${val}`) : val;
+  finalValue = finalValue == `form.${_name}.${val}` ? val : finalValue 
+  return utils.capitalize(finalValue)
 }
 
 export default useFormField
