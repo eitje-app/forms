@@ -220,7 +220,6 @@ class Form extends Component {
     let errs = {}
     let invalid;
     const hasSpecificFields = fields.length > 0
-    debugger
     this.allFormChildren().forEach(c => {
       const {field} = c.props
       if(hasSpecificFields && !fields.includes(field)) return;
