@@ -28,7 +28,8 @@ const fieldRules = {
 const nameRules = {
   team_image_url: (value, data) => {
     return !data['chatgroep_actief'] || utils.exists(value) || data["remote_avatar_url"]
-  }
+  },
+  phone: value => value.match(phoneRegex)
 }
 
 
@@ -42,7 +43,8 @@ const fieldMessages = {
 }
 
 const nameMessages = {
-  team_image_url: "selectImage"
+  team_image_url: "selectImage",
+  phone: 'phoneInvalid',
 }
 
 export const messages = {field: fieldMessages, name: nameMessages}

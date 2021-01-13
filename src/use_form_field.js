@@ -17,7 +17,7 @@ function useFormField(props) {
   let finalLabel = !labelVisible ? null : isDisabled ? (disabledLabel || lbl) : lbl
 
   if(finalLabel && _.isString(finalLabel) ) {
-    finalLabel = <p style={labelStyle}> {t(finalLabel)}: </p>
+    finalLabel = <p style={labelStyle}> {utils.capitalize( t(finalLabel) ) }: </p>
   }
 
   if(_.isFunction(finalLabel)) finalLabel = finalLabel(props)
@@ -31,12 +31,12 @@ function useFormField(props) {
 
 const findLabel = ({label, name, field}) => {
   if(label) return label;
-  const val = name || field
-  const _name = name ? 'name' : 'field'
+  const val = field
+  const _name = 'field'
   if(!val) return;
   let finalValue = isScoped ? t(`form.${_name}.${val}`) : val;
   finalValue = finalValue == `form.${_name}.${val}` ? val : finalValue 
-  return utils.capitalize(finalValue)
+  return finalValue
 }
 
 export default useFormField
