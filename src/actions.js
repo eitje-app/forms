@@ -1,14 +1,15 @@
 import React, {Fragment} from 'react'
 import useFormField from './use_form_field'
 import {Button, t} from './base'
-
+import utils from '@eitje/utils'
 
 export const makeField = (Comp, {withLabel = true, withError = true} = {}) => props => {
   let {containerStyle = {}, field, Container = 'div', isTouched, disabledStyle = {opacity: 0.2}, 
-        containerProps = {}, submitStrategy, submitForm, isLayered = submitStrategy === 'inlineButton',
-        LeftContainer = Fragment, RightContainer = Fragment, leftContainerProps = {}, rightContainerProps = {} } = props
+        containerProps = {}, submitStrategy, submitForm, value, isLayered = submitStrategy === 'inlineButton',
+        LeftContainer = Fragment, RightContainer = Fragment, rightChildren, leftChildren, 
+        leftContainerProps = {}, rightContainerProps = {}, SubmitButton = Button, hidden } = props
 
-
+ if(hidden) return null;
  if(isLayered) {
     LeftContainer = RightContainer = "div"
     leftContainerProps = {className: 'form-container-left'}
@@ -33,18 +34,24 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
       <Container style={style} {...containerProps} >
 
         <LeftContainer {...leftContainerProps}>
+          {leftChildren}
         {withLabel && label && label}
           <Comp innerClass={classNames} {...props} {...prupz}/>
         </LeftContainer>
 
         <RightContainer {...rightContainerProps}>
-          {isButtonSubmit && isTouched && 
-            <Button onClick={() => submitForm({field})}> {t("submit")} </Button> 
+          {rightChildren}
+          {isButtonSubmit && isTouched && utils.exists(value) &&
+            <div onClick={() => submitForm({field})} >
+              <SubmitButton> {t("submit")} </SubmitButton> 
+            </div>
           }
           
           </RightContainer>
         {withError && error && error}
       </Container>
+
+
 
     )
 }

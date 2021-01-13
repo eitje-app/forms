@@ -8,8 +8,10 @@ const missingOrTrue = (obj, field) => {
   return !hasField || obj[field]
 }
 
+
 class Form extends Component {
-  
+
+
   constructor(props) {
     const fields = props.initialValues && _.isObject(props.initialValues) ? _.cloneDeep(props.initialValues) : {}
     super(props)
@@ -26,10 +28,14 @@ class Form extends Component {
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
+    this.submit = _.debounce(this.submit, 500, {leading: true})
   }
 
+  isForm = true
+
   submitAllowed = () => {
-     return this.empty() || (this.validate() && !this.blocked())
+     const {allowEmpty} = this.props
+     return (allowEmpty && this.empty()) || (this.validate() && !this.blocked())
   }
 
   createRefs = () => {
@@ -59,15 +65,16 @@ class Form extends Component {
     return !filled
   }
 
+  getParams = () => this.state.fields
+
+
   async submit({extraData = {}, field, callback = () => {} } = {} ) {
-    const {nestedField, onSubmit, resetAfterSubmit, 
-          identityField="id", afterSubmMessage,
-          afterSubmit = () => {}} = this.props
+    const {nestedField, onSubmit, 
+          identityField="id"} = this.props         
     const {fields} = this.state
     if(this.blocked()) return;
 
-    let params;
-    params = field ? _.pick(fields, [field, identityField]) : {...fields}
+    let params = field ? _.pick(fields, [field, identityField]) : {...fields}
     params = {...params, ...extraData}
     if(nestedField) params = this.convertFields();
     console.group("FORM")
@@ -76,17 +83,20 @@ class Form extends Component {
       console.log("Params to be submitted", params)
       const res = await onSubmit(params)
       await this.setState({submitted: true})
-      if(!res) return;
-      if(res.ok) {
-        afterSubmMessage && utils.toast(afterSubmMessage)
-        afterSubmit(res, params)
-        callback(res, params)
-        if(resetAfterSubmit) this.resetValues();
-        this.setState({touchedFields: []})
-      } 
+      if(res.ok) this.afterSubmit(params, res, callback);
     }
     
     console.groupEnd()
+  }
+
+
+  afterSubmit(params, res, callback = () => {}) {
+    const {afterSubmMessage, afterSubmit = () => {}, resetAfterSubmit} = this.props
+    afterSubmMessage && utils.toast(afterSubmMessage)
+    afterSubmit(res, params)
+    callback(res, params)
+    if(resetAfterSubmit) this.resetValues();
+    this.setState({touchedFields: [], touched: false})
 
   }
 
@@ -210,6 +220,7 @@ class Form extends Component {
     let errs = {}
     let invalid;
     const hasSpecificFields = fields.length > 0
+    debugger
     this.allFormChildren().forEach(c => {
       const {field} = c.props
       if(hasSpecificFields && !fields.includes(field)) return;
@@ -230,9 +241,10 @@ class Form extends Component {
 
   getFormChildren = (el = this) => {
     if(!el.props) return []
+    if(this.isHidden(el)) return []
     let {children} = el.props
     children = utils.alwaysArray(children)
-    let els = children.filter(c => c && c.props && c.props.field)
+    let els = children.filter(c => c && c.props && c.props.field && !this.isHidden(c))
     let stringEls = children.filter(c => _.isString(c))
     const wrappers = children.filter(c => c && c.props && c.props.fieldWrapper)
     wrappers.forEach(wrapper => {
@@ -284,7 +296,11 @@ class Form extends Component {
     }
   }
 
-  getValue = (field, props) => {
+  getValues = (...fields) => {
+    return _.pick(this.state.fields, fields)
+  }
+
+  getValue = (field, props = {}) => {
     const {namespace, itemId} = props
     const {fields} = this.state
     if(namespace) {
@@ -298,18 +314,20 @@ class Form extends Component {
   }
 
    enhanceChild = (c, {idx, extraProps} = {} ) => {
-    const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
+    const {updatedFields = [], disabled, onSubmit, hiddenFields = [], fieldProps} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
     const _fieldProps = Object.assign({}, extraProps, fieldProps, c.props)
     const {field, itemId, namespace, submitStrategy} = _fieldProps
+    const act = () => touchedFields.includes(field) && this.submit({field})
+    
+    if(submitStrategy === 'blur') condOpts['onBlur'] = act; 
 
-    if(submitStrategy === 'blur') {
-      const act = () => touchedFields.includes(field) && this.submit({field})
-      condOpts['onBlur'] = act
-      condOpts['onKeyUp'] = e => e.keyCode === 13 && act()
+    if(submitStrategy === 'blur' || submitStrategy === 'inlineButton') {
+      condOpts['onKeyUp'] = e => {
+        e.keyCode === 13 && act()
+      }
     }
-
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
                                         updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, _fieldProps), isTouched: touchedFields.includes(field), 
@@ -319,7 +337,10 @@ class Form extends Component {
     return newEl;
   }
 
-
+  isHidden = c => {
+    const {hiddenFields = []} = this.props
+    return (hiddenFields.includes(c.props.field) || c.props.hidden)
+  }
 
   renderChild = (c, idx) => {
     if(!c) return null;
@@ -330,7 +351,7 @@ class Form extends Component {
     }
 
     if(!c.props) return;
-
+    if(this.isHidden(c)) return null;
     const {errors, fields} = this.state
     const {field, fieldWrapper, namespace, submitButton} = c.props
 
@@ -357,6 +378,7 @@ mapChildren = (children = [], extraProps = {}) => {
   const childs = utils.alwaysDefinedArray(children).flat()
   return childs.map(c => {
     if(!c || !c.props) return c;
+    if(this.isHidden(c)) return null;
     if(c.props.field) return this.enhanceChild(c, {extraProps});
     if(c.props.submitButton) return this.makeSubmitButton(c)
     if(!c.props.children) return c;
