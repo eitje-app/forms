@@ -31,7 +31,7 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
 
 
   return (
-      <Container style={style} {...containerProps} >
+      <Container className="elementContainer" style={style} {...containerProps} >
 
         <LeftContainer {...leftContainerProps}>
           {leftChildren}
