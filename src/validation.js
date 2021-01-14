@@ -21,17 +21,16 @@ const fieldRules = {
   password_confirmation: (value, data) => data.password === value,
   password: value => isPass(value),
   email: value => isEmail(value),
-  telefoonnummer: value => value.match(phoneRegex),
-  phone: value => value.match(phoneRegex)
+  telefoonnummer: value => !value || value.match(phoneRegex),
+  phone: value => !value || value.match(phoneRegex)
 }
 
 const nameRules = {
   team_image_url: (value, data) => {
     return !data['chatgroep_actief'] || utils.exists(value) || data["remote_avatar_url"]
   },
-  phone: value => value.match(phoneRegex)
+  phone: value => !value || value.match(phoneRegex)
 }
-
 
 
 const fieldMessages = {
