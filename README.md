@@ -38,13 +38,15 @@ To 'formify' nested fields, you have to pass the prop fieldWrapper to the contai
 | ------------- |:-------------:| -----:|
 | initialValues     | Initial values of the form, provided as an object | {}  |
 | onSubmit    | What to do when form is submitted, provides formData as first arg     | data => {}    |
-| afterSubmit | Functions to run after submit was successfull    | () => {}    |
+| afterSubmit | Functions to run after submit was successfull    | () => {}  |
+| afterSubmMessage | Message to display after successfull submit, will use eitje utils.toast | null
 | disabled | disable whole form, prop will be passed to all children    | false    |
 | nestedField | Useful if you want to edit multiple nested items in one form. This builds your nested params  |     |
 | afterChange | callback you can use after any field changes. Invoked with arguments (fieldName, value)  |    |
 | submitOnChange | submits the form on every (valid) change. Only submits the field that's being edited | false |
 | resetAfterSubmit | reset form to initialValues after submit | false |
-
+| fieldProps | props to be passed down to all form children with a field prop | {} |
+| hiddenFields | array of fields that should be hidden (hidden means: not visible, wont be sent along with request, wont be validated) | [] |
 
 
 ## Imperative actions
@@ -73,7 +75,9 @@ Actions:
 | resetValues(empty) | Reset form state to default    | If empty is false (default), form will reset to initialValues, otherwise empty object.   |
 | getValue(field)    |  Get value of field |  |
 | submit | Submit the form     |     |
-| validate | Validate the form (show errors) |     |
+| validate | Validate the form (renders errors) |     |
+| getValues(fields | return values as object {field: value, field2: value} | array of fields
+| blockSubmit(field, blocked) | blocks or de-blocks the form from submitting, automatically re-enables it after 15 seconds | field is name of the field to allow your UI components to render a special 'blocked' state, blocked is a boolean designating whether it's a block or a de-block
 
 
 
@@ -92,6 +96,8 @@ The second are props passed by the form to the fields, making them 'formified', 
 | error | error text |     |
 | value | current value |     |
 | getNext | function to get the next form child, useful for setting focus |     |
+| submitStrategy | the strategy to submit this field, can either be blur, change or inlineButton (spawns a button next to the input for user confirmation). If left open field can only be submitted through the form. NOTE: submitStrategy only submits the field being changed | null
+
 
 __NOTE: Further info about field props can be found on the form-fields-web page__ 
 
