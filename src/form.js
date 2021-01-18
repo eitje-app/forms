@@ -13,6 +13,7 @@ class Form extends Component {
 
 
   constructor(props) {
+    const {debounceTime = 1000} = props
     const fields = props.initialValues && _.isObject(props.initialValues) ? _.cloneDeep(props.initialValues) : {}
     super(props)
     this.createRefs()
@@ -28,7 +29,7 @@ class Form extends Component {
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
-    this.submit = _.debounce(this.submit, 500, {leading: true})
+    this.submit = _.debounce(this.submit, debounceTime, {leading: true})
   }
 
   isForm = true
@@ -193,7 +194,7 @@ class Form extends Component {
     let error = null
     let valid;
     const isReq = checkRequired && this.handleRequired(required)
-
+    
     if(isReq) error = !utils.exists(value) && t("form.required");
 
     if(validate && !error) {
