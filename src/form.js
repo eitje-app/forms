@@ -8,6 +8,22 @@ const missingOrTrue = (obj, field) => {
   return !hasField || obj[field]
 }
 
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};
+
+
 
 class Form extends Component {
 
@@ -29,7 +45,7 @@ class Form extends Component {
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
-    this.submit = _.debounce(this.submit, debounceTime, {leading: true})
+    this.submit = debounce(this.submit, debounceTime, true)
   }
 
   isForm = true
