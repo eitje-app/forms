@@ -22,7 +22,7 @@ const fieldRules = {
   password: value => isPass(value),
   email: value => isEmail(value),
   telefoonnummer: value => !value || value.match(phoneRegex),
-  phone: value => !value || value.match(phoneRegex)
+  phone: value => !value || value.match(phoneRegex),
 }
 
 const nameRules = {

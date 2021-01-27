@@ -27,14 +27,12 @@ function debounce(func, wait, immediate) {
 
 class Form extends Component {
 
-
   constructor(props) {
     const {debounceTime = 1000} = props
     const fields = props.initialValues && _.isObject(props.initialValues) ? _.cloneDeep(props.initialValues) : {}
     super(props)
     this.createRefs()
     this.state = {
-
       loading: false,
 
       blocked: {},
@@ -101,9 +99,18 @@ class Form extends Component {
       const res = await onSubmit(params)
       await this.setState({submitted: true})
       if(res.ok) this.afterSubmit(params, res, callback);
+      if(res.status == 422) this.handleErrors(res)
     }
     
     console.groupEnd()
+  }
+
+  handleErrors(res) {
+    const errors = res.data?.errors
+    if(!_.isObject(errors)) return;
+    const newErrors = _.mapValues(errors, err => err[0] ) 
+    console.log(newErrors)
+    this.setState({errors: {...this.state.errors, ...newErrors} })
   }
 
 
@@ -119,10 +126,9 @@ class Form extends Component {
 
 
   blocked() {
-    const {alert} = this.props
     const {blocked = {}} = this.state
     if (Object.values(blocked).some(s => s)){
-      alert(t("oneSec"), t("stillUploading"))
+      config.alert(t("oneSec"), t("stillUploading"))
       return true;
     }
   }
@@ -182,7 +188,7 @@ class Form extends Component {
       this.validateField(field, true, fieldProps)
     }
       
-    afterChange && afterChange(field, val)
+    afterChange && afterChange(field, val, newFields)
       
     if(!touchedFields.includes(field)) {
       this.setState({touchedFields: [...touchedFields, field] })
@@ -191,6 +197,7 @@ class Form extends Component {
     if(!touched) {
       this.setState({touched: true})
     }
+
     if(fieldProps.submitStrategy === 'change') {
       this.submit({field})
     }
@@ -330,7 +337,7 @@ class Form extends Component {
   }
 
    enhanceChild = (c, {idx, extraProps} = {} ) => {
-    const {updatedFields = [], disabled, onSubmit, hiddenFields = [], fieldProps} = this.props
+    const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
     const _fieldProps = Object.assign({}, extraProps, fieldProps, c.props)
@@ -353,9 +360,12 @@ class Form extends Component {
     return newEl;
   }
 
+
   isHidden = c => {
     const {hiddenFields = []} = this.props
-    return (hiddenFields.includes(c.props.field) || c.props.hidden)
+    const {fields} = this.state
+    const hidden = c?.props?.hidden
+    return (hiddenFields.includes(c.props.field) || utils.funcOrBool(hidden, fields) )
   }
 
   renderChild = (c, idx) => {
