@@ -98,6 +98,7 @@ class Form extends Component {
       console.log("Params to be submitted", params)
       const res = await onSubmit(params)
       await this.setState({submitted: true})
+      if(!res) return;
       if(res.ok) this.afterSubmit(params, res, callback);
       if(res.status == 422) this.handleErrors(res)
     }
@@ -413,6 +414,7 @@ mapChildren = (children = [], extraProps = {}) => {
 }
 
   makeSubmitButton(c) {
+    if(c.props.showAfterTouch && !this.state.touched) return null;
     return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit() })
   }
 
