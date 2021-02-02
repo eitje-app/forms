@@ -82,14 +82,16 @@ class Form extends Component {
 
   getParams = () => this.state.fields
 
+  fieldNames = () => utils.alwaysDefinedArray( this.allFormChildren().map(c => c?.props?.field) )
 
   async submit({extraData = {}, field, callback = () => {} } = {} ) {
     const {nestedField, onSubmit, 
           identityField="id"} = this.props         
     const {fields} = this.state
     if(this.blocked()) return;
+    
+    let params = field ? _.pick(fields, [field, identityField]) : _.pick(fields, [...this.fieldNames(), identityField])
 
-    let params = field ? _.pick(fields, [field, identityField]) : {...fields}
     params = {...params, ...extraData}
     if(nestedField) params = this.convertFields();
     console.group("FORM")

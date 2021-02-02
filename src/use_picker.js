@@ -1,9 +1,9 @@
 import React from 'react'
 import _ from 'lodash'
-import {t} from './base'
+import {t, isScoped} from './base'
 
 export const simpleMap = (item) => {
-  return {label: t(item), key: item, value: item }
+  return {label: t(isScoped ? `form.dropdown.${item}` : item, item), key: item, value: item }
 }
 
 const usePicker = ({items, noSort, value, multiple, defaultTitle = '-', formData, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {

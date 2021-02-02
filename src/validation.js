@@ -23,6 +23,8 @@ const fieldRules = {
   email: value => isEmail(value),
   telefoonnummer: value => !value || value.match(phoneRegex),
   phone: value => !value || value.match(phoneRegex),
+  // start_date: (value, data) => !data['end_date'] || value < data['end_date'],
+  // end_date: (value, data) => !data['start_date'] || value > data['start_date']
 }
 
 const nameRules = {
