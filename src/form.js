@@ -68,7 +68,6 @@ class Form extends Component {
     const {nestedField} = this.props
     const {fields} = this.state
     return Object.keys(fields).map(id => ( {[nestedField]: id, ...fields[id] } ) )
-
   }
 
   submitted = () => {
@@ -76,7 +75,8 @@ class Form extends Component {
   }
 
   empty() {
-    const filled = Object.values(this.state.fields).some(val => utils.exists(val))
+    const formFields = Object.values( _.pick(this.state.fields, this.fieldNames())) // to prevent extra initialValues from always making the form filled
+    const filled = formFields.some(val => utils.exists(val))
     return !filled
   }
 

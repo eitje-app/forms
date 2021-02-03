@@ -4,14 +4,23 @@ import utils from '@eitje/utils'
 import _ from 'lodash'
 import {t, Button, alert, Prompt} from './base'
 
+
+// [0,1,2,3]
+
 class MultiForm extends React.Component {
   constructor(props) {
     super(props)
+    const {amtForms = 2} = props
+    let forms = []
+    _.times(amtForms, num => forms.push(num) )
+
     this.state = {
-      amtForms: props.amtForms || 2,
+      amtForms,
+      forms,
     }
     this.createRefs()
     this.getParams = this.getParams.bind(this)
+    this.removeForm = this.removeForm.bind(this)
   }
 
   createRefs = (a) => {
@@ -21,34 +30,40 @@ class MultiForm extends React.Component {
     })
   }
 
-  makeForm(idx) {
-    const {autoAdd, initialValue = {}, initialValues = [], formProps = {} } = this.props
+  removeForm(formNum) {
+    const {forms} = this.state
+    this.setState({forms: forms.filter(f => f != formNum)})
+  }
+
+  makeForm(idx, formNum) {
+    const {autoAdd, initialValue = {}, allowEmpty = true, initialValues = [], formProps = {} } = this.props
     const {amtForms} = this.state
     const relevantChildren = this.safeChildren().filter(c => !c.props.ignoreForm && !c.props.submitButton)
-    const formInitial = initialValues[idx] || initialValue
+    const formInitial = initialValues[formNum] || initialValue)
 
     return (
-        <Form afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, getMultiFormData: this.getParams}} {...formProps} 
-              initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx)} 
-              onFocus={() => autoAdd && this.addForm(idx)} ref={this[`child-${idx}`]}> 
+        <Form key={formNum} allowEmpty afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} {...formProps} 
+              initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx, formNum)} 
+              ref={this[`child-${idx}`]}> 
           {relevantChildren}
         </Form>
       )
   }
 
-  _afterChange(field, data, idx) {
-    const {afterChange} = this.props
+  _afterChange(field, data, idx, formNum) {
+    const {afterChange, autoAdd} = this.props
+    this.addForm(formNum)
     if(!afterChange) return;
     const allData = this.getParams()
     afterChange(field, allData)
   }
 
-  async addForm(idx) {
-    const {amtForms, maxAmtForms} = this.state
-    const isLast = idx + 1 === amtForms
-    if(isLast && (!maxAmtForms || maxAmtForms < amtForms)) {
-      this[`child-${amtForms}`] = createRef()
-      await this.setState({amtForms: amtForms + 1})
+  async addForm(formNum = this.state.forms[this.state.forms.length - 1]) {
+    const {amtForms, maxAmtForms, forms} = this.state
+    const isLast = forms[forms.length - 1] == formNum
+    if(isLast && (!maxAmtForms || maxAmtForms < forms.length)) {
+      this[`child-${formNum + 1}`] = createRef()
+      await this.setState({forms: [...forms, formNum + 1]})
     }
   }
 
@@ -71,7 +86,7 @@ class MultiForm extends React.Component {
 
   handleSubmit = async (childs) => {
     const {onSubmit, afterSubmit = () => {}} = this.props
-    const data = childs.map(c => c.state.fields).filter(c => !utils.objectEmpty(c)) // no empty forms plz
+    const data = childs.filter(c => !c.empty()).map(c => c.state.fields).filter(c => !utils.objectEmpty(c)) // no empty forms plz
     
     if(data.length === 0) {
       alert(t("oops"), t("fillInSomething")) // must become alert
@@ -102,12 +117,14 @@ class MultiForm extends React.Component {
   }
 
   render() {
-    const {amtForms, touched} = this.state
+    const {AddButton = Button, hideAddButton} = this.props
+    const {amtForms, forms, touched} = this.state
     const submitButton = this.safeChildren().find(c => c.props?.submitButton)
     return (
         <Fragment>
-          {_.times(amtForms, idx => this.makeForm(idx) )}
+          {forms.map((f, idx) => this.makeForm(idx, f))}
           {!!submitButton && (!submitButton.props.showAfterTouch || touched) && React.cloneElement(submitButton, {onClick: () => this.submit()}) }
+          {!hideAddButton && <AddButton onClick={() => this.addForm() }> Add  </AddButton>}
         </Fragment>
       )
   }

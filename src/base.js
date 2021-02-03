@@ -10,7 +10,6 @@ const setup = ({translatorFunc, alertFunc, scoped, button} = {}) => {
   if(scoped) isScoped = scoped;
   if(button) Button = button;
   if(prompt) Prompt = prompt;
-
 }
 export {t, alert, isScoped, Button, Prompt}
 
