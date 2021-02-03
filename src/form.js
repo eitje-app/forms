@@ -213,7 +213,7 @@ class Form extends Component {
   }
 
   validateField(field, direct = false, fieldProps, {checkRequired} = {} ) {
-    const {rules, messages} = this.props
+    const {rules = {field: {}, name: {}, }, messages = {field: {}, name: {} }} = this.props
     const {fields, errors} = this.state
     const {validate, required, validateMessage, name} = fieldProps
     const value = this.getValue(field, fieldProps)
