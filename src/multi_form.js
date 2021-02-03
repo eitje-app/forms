@@ -11,6 +11,7 @@ class MultiForm extends React.Component {
       amtForms: props.amtForms || 2,
     }
     this.createRefs()
+    this.getParams = this.getParams.bind(this)
   }
 
   createRefs = (a) => {
@@ -27,7 +28,7 @@ class MultiForm extends React.Component {
     const formInitial = initialValues[idx] || initialValue
 
     return (
-        <Form afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx}} {...formProps} 
+        <Form afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, getMultiFormData: this.getParams}} {...formProps} 
               initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx)} 
               onFocus={() => autoAdd && this.addForm(idx)} ref={this[`child-${idx}`]}> 
           {relevantChildren}
