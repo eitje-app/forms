@@ -30,9 +30,10 @@ class MultiForm extends React.Component {
     })
   }
 
-  removeForm(formNum) {
+  async removeForm(formNum) {
     const {forms} = this.state
-    this.setState({forms: forms.filter(f => f != formNum)})
+    await this.setState({forms: forms.filter(f => f != formNum)})
+    this[`child-${formNum}`] = null
   }
 
   makeForm(idx, formNum) {
@@ -44,7 +45,7 @@ class MultiForm extends React.Component {
     return (
         <Form key={formNum} allowEmpty afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} {...formProps} 
               initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx, formNum)} 
-              ref={this[`child-${idx}`]}> 
+              ref={this[`child-${formNum}`]}> 
           {relevantChildren}
         </Form>
       )
