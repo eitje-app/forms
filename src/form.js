@@ -344,7 +344,11 @@ class Form extends Component {
     const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
-    const _fieldProps = Object.assign({}, extraProps, fieldProps, c.props)
+
+
+    const fieldPropsToMerge = c.props?.ignoreFieldProps ? {} : fieldProps
+
+    const _fieldProps = Object.assign({}, extraProps, fieldPropsToMerge, c.props)
     const {field, itemId, namespace, submitStrategy} = _fieldProps
     const act = () => touchedFields.includes(field) && this.submit({field})
     

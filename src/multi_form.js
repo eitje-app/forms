@@ -52,7 +52,7 @@ class MultiForm extends React.Component {
 
   _afterChange(field, data, idx, formNum) {
     const {afterChange, autoAdd} = this.props
-    this.addForm(formNum)
+    autoAdd && this.addForm(formNum)
     if(!afterChange) return;
     const allData = this.getParams()
     afterChange(field, allData)
@@ -74,7 +74,7 @@ class MultiForm extends React.Component {
   }
 
   submitAllowed() {
-    return this.formChildren().every(c => c.submitAllowed())
+    return this.formChildren().every(c =>  c.submitAllowed())
   }
 
   setValues = (data) => {
