@@ -345,8 +345,7 @@ class Form extends Component {
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
 
-
-    const fieldPropsToMerge = c.props?.ignoreFieldProps ? {} : fieldProps
+    const fieldPropsToMerge = utils.funcOrVal(c.props?.ignoreFieldProps, fields) ? {} : fieldProps
 
     const _fieldProps = Object.assign({}, extraProps, fieldPropsToMerge, c.props)
     const {field, itemId, namespace, submitStrategy} = _fieldProps
