@@ -88,6 +88,7 @@ class Form extends Component {
     const {nestedField, onSubmit, 
           identityField="id"} = this.props         
     const {fields} = this.state
+    
     if(this.blocked()) return;
     
     let params = field ? _.pick(fields, [field, identityField]) : _.pick(fields, [...this.fieldNames(), identityField])

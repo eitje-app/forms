@@ -39,7 +39,7 @@ class MultiForm extends React.Component {
     const {autoAdd, initialValue = {}, allowEmpty = true, initialValues = [], formProps = {} } = this.props
     const {amtForms} = this.state
     const relevantChildren = this.safeChildren().filter(c => !c.props.ignoreForm && !c.props.submitButton)
-    const formInitial = initialValues[formNum] || initialValue)
+    const formInitial = initialValues[formNum] || initialValue
 
     return (
         <Form key={formNum} allowEmpty afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} {...formProps} 
@@ -70,8 +70,11 @@ class MultiForm extends React.Component {
   submit() {
     const {amtForms} = this.state
     const childs = this.formChildren();
-    const mayPass = childs.every(c => c.submitAllowed())
-    if(mayPass) this.handleSubmit(childs);
+    if(this.submitAllowed()) this.handleSubmit(childs);
+  }
+
+  submitAllowed() {
+    return this.formChildren().every(c => c.submitAllowed())
   }
 
   setValues = (data) => {
@@ -80,8 +83,8 @@ class MultiForm extends React.Component {
     })
   }
 
-  getParams = () => {
-    return this.formChildren().map(c => c.getParams())
+  getParams = () => {    
+    return this.formChildren().filter(c => !c.empty()).map(c => c.getParams()) 
   }
 
   handleSubmit = async (childs) => {
@@ -102,13 +105,8 @@ class MultiForm extends React.Component {
 
 
   formChildren() {
-    const {amtForms} = this.state
-    let items = []
-    _.times(amtForms, i => {
-      const form = this[`child-${i}`]
-      items.push(form.current)
-    })
-    return items;
+    const {forms} = this.state
+    return forms.map(i => this[`child-${i}`]?.current )
   }
 
   safeChildren() {
