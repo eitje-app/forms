@@ -99,8 +99,6 @@ class Form extends Component {
     if(this.blocked()) return;
     
     let params;
-    debuggers
-    console.log("tesssssst")
 
     if(field) {
       params = _.pick(fields, [field, identityField])

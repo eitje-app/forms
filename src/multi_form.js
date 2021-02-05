@@ -100,9 +100,13 @@ class MultiForm extends React.Component {
     const res = await onSubmit(data)
     if(res === true || res?.ok) { // explicit true check because we want to prevent truthy values like {error: true} to pass
       afterSubmit(res, data)
+      this.afterSubmit(res, data)
     }
   }
 
+  afterSubmit(res, data) {
+    this.formChildren().filter(c => c.afterSubmit).forEach(c => c.afterSubmit(res, data))
+  }
 
 
   formChildren() {
