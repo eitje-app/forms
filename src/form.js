@@ -82,7 +82,14 @@ class Form extends Component {
 
   getParams = () => this.state.fields
 
-  fieldNames = () => utils.alwaysDefinedArray( this.allFormChildren().map(c => c?.props?.field) )
+  fieldNames = () => utils.alwaysDefinedArray( this.allFormChildren().map(c => this.getFieldName(c)  ))
+
+  getFieldName = c => {
+    if(!c || !c.props) return;
+    if(c.props.namespace) return `${c.props.namespace}.${c.props.field}`
+    return c.props.field;
+  }
+
 
   async submit({extraData = {}, field, callback = () => {} } = {} ) {
     const {nestedField, onSubmit, submitInitialValues,
@@ -92,7 +99,8 @@ class Form extends Component {
     if(this.blocked()) return;
     
     let params;
-
+    debuggers
+    console.log("tesssssst")
 
     if(field) {
       params = _.pick(fields, [field, identityField])
@@ -277,7 +285,7 @@ class Form extends Component {
     if(!el.props) return []
     if(this.isHidden(el)) return []
     let {children} = el.props
-    children = utils.alwaysArray(children)
+    children = utils.alwaysArray(children).flat()
     let els = children.filter(c => c && c.props && c.props.field && !this.isHidden(c))
     let stringEls = children.filter(c => _.isString(c))
     const wrappers = children.filter(c => c && c.props && c.props.fieldWrapper)
