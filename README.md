@@ -1,6 +1,7 @@
 # Forms: opiononated React (web & native) forms library
 
-This library empowers you to write feature-packed forms with only a few lines of code.
+This library empowers you to write feature-packed forms with only a few lines of code.rts
+It exports three main components, the most important/core component being 'Form':
 
 ## Base example
 
@@ -37,6 +38,7 @@ To 'formify' nested fields, you have to pass the prop fieldWrapper to the contai
 | Key        | Explanation           | Default value  | 
 | ------------- |:-------------:| -----:|
 | initialValues     | Initial values of the form, provided as an object | {}  |
+| submitInitialValues | also submits initialValues that aren't part of the form (normally, we filter out all extra initialValues to prevent you from accidentally posting data you don't want to post | false |
 | onSubmit    | What to do when form is submitted, provides formData as first arg     | data => {}    |
 | afterSubmit | Functions to run after submit was successfull    | () => {}  |
 | afterSubmMessage | Message to display after successfull submit, will use eitje utils.toast | null
@@ -46,6 +48,7 @@ To 'formify' nested fields, you have to pass the prop fieldWrapper to the contai
 | resetAfterSubmit | reset form to initialValues after submit | false |
 | fieldProps | props to be passed down to all form children with a field prop | {} |
 | hiddenFields | array of fields that should be hidden (hidden means: not visible, wont be sent along with request, wont be validated) | [] |
+
 
 
 ## Imperative actions
@@ -79,12 +82,33 @@ Actions:
 | blockSubmit(field, blocked) | blocks or de-blocks the form from submitting, automatically re-enables it after 15 seconds | field is name of the field to allow your UI components to render a special 'blocked' state, blocked is a boolean designating whether it's a block or a de-block
 
 
+## MultiForm
 
-## Field props
+The second component is 'MultiForm', which 'duplicates' its children.  Useful if you're editing multiple resources at the same time. 
+You can pass it field children, just as you do with form, and it will render that children x amount of times (controllable by you through the amtForms prop). There's also built-in support for adding/deleting forms. An example might help:
+
+```
+<MultiForm  formProps={{styleKind: 'modal', allowEmpty: true}}  afterSubmit={onCancel} onSubmit={data => inviteUser(data)} 
+                       autoAdd  amtForms={3}>
+      <div className="fRow" fieldWrapper>
+        <Input field="email" required/>
+        <DropdownPicker  containerStyle={ContainerStyleRow} multiple field="team_ids" labelField="naam" items={teams} />
+      </div>
+
+  <Button type="primary" ignoreForm submitButton>{t('submitS')}</Button>
+</MultiForm>
+ ```
+
+This MultiForm will render three forms and will automatically add another form when the last form is changed. 
+
+# Building your own fields
+
+
+## Props passed to every field
 
 
 
-The second are props passed by the form to the fields, making them 'formified', which you can use when building your own. 
+These props are passed by the form to the fields, making them 'formified', which you must implement when building your own. 
 
 | Key        | Explanation           | Default value  |
 | ------------- |:-------------:| -----:|
@@ -102,7 +126,6 @@ __NOTE: Further info about field props can be found on the form-fields-web page_
 
 
 
-## Building your own fields
 
 You can use the above ^ props to build your own form fields, made even easier by the following methods:
 
