@@ -38,12 +38,11 @@ class MultiForm extends React.Component {
 
   makeForm(idx, formNum) {
     const {autoAdd, initialValue = {}, allowEmpty = true, initialValues = [], formProps = {} } = this.props
-    const {amtForms} = this.state
+    const {forms} = this.state
     const relevantChildren = this.safeChildren().filter(c => !c.props.ignoreForm && !c.props.submitButton)
     const formInitial = initialValues[formNum] || initialValue
-
     return (
-        <Form key={formNum} allowEmpty afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} {...formProps} 
+        <Form key={formNum} allowEmpty afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, amtForms: forms.length, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} {...formProps} 
               initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx, formNum)} 
               ref={this[`child-${formNum}`]}> 
           {relevantChildren}
