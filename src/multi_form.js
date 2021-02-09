@@ -120,7 +120,7 @@ class MultiForm extends React.Component {
 
 
   render() {
-    const {AddButton = Button, hideAddButton} = this.props
+    const {AddButton = Button, hideAddButton = true} = this.props
     const {amtForms, forms, touched} = this.state
     const submitButton = this.safeChildren().find(c => c.props?.submitButton)
     return (

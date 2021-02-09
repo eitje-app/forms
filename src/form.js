@@ -446,7 +446,6 @@ mapChildren = (children = [], extraProps = {}) => {
         {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
         {this.renderLoading()}
-        {submitButton && <Button onClick={this.submit}> {t("submit")} </Button> }
       </div>
       )
     }
