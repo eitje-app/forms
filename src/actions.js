@@ -35,10 +35,11 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
           {renderLabel({...props, label, withLabel})}
           {extraLabel}
           {leftChildren}
-          {_Comp}
+          {!extraLabel && _Comp}
         </LeftContainer>
 
         <RightContainer {...rightContainerProps}>
+          {extraLabel && _Comp}
           {rightChildren}
           {isButtonSubmit && isTouched && utils.exists(value) &&
             <div onClick={() => submitForm({field})} >
