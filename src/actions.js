@@ -6,9 +6,11 @@ import utils from '@eitje/utils'
 
 export const makeField = (Comp, {withLabel = true, withError = true} = {}) => props => {
   let {containerStyle = {}, field, Container = 'div', isTouched, disabledStyle = {opacity: 0.2}, 
-        containerProps = {}, submitStrategy, submitForm, value, isLayered = submitStrategy === 'inlineButton',
+        containerProps = {}, submitStrategy, submitForm, value, 
         LeftContainer = Fragment, RightContainer = Fragment, rightChildren, leftChildren, extraLabel,
-        leftContainerProps = {}, rightContainerProps = {}, SubmitButton = Button } = props
+        leftContainerProps = {}, rightContainerProps = {}, readOnly, SubmitButton = Button,
+        isLayered = submitStrategy === 'inlineButton' || extraLabel, } = props
+ 
  if(isLayered) {
     LeftContainer = RightContainer = "div"
     leftContainerProps = {className: 'form-container-left'}
@@ -19,7 +21,8 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
     
   const prupz = useFormField(props)
   const {label, error, warning, disabled} = prupz
-  const classNames = [error && 'has-error'].filter(
+  const classNames = [error && 'has-error', 
+                     readOnly && 'readOnly'].filter(
       Boolean,
   ).join(" ")
 
@@ -29,7 +32,7 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
 
   const _Comp = <Comp innerClass={classNames} {...props} {...prupz}/>
   return (
-      <Container className="elementContainer" style={style} {...containerProps} >
+      <Container className={`elementContainer ${classNames}`} style={style} {...containerProps} >
 
         <LeftContainer {...leftContainerProps}>
           {renderLabel({...props, label, withLabel})}

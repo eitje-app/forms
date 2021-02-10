@@ -92,7 +92,7 @@ class MultiForm extends React.Component {
     const data = childs.filter(c => !c.empty()).map(c => c.state.fields).filter(c => !utils.objectEmpty(c)) // no empty forms plz
     
     if(data.length === 0) {
-      alert(t("oops"), t("fillInSomething")) // must become alert
+      alert(t("oops"), t("form.fillInSomething")) // must become alert
       return;
     }
 
