@@ -184,7 +184,11 @@ class Form extends Component {
     const {fields, errors, touched, touchedFields} = this.state
     const {namespace} = fieldProps
     const {afterChange} = this.props
-    if(_.isArray(val) && val.length === 0) val = undefined;
+
+
+    // if(_.isArray(val) && val.length === 0) val = undefined; THIS USED TO BE HERE, IDK WHY, BREAKS EMPTYING ARRAY FIELDS
+
+
     let newFields = {...this.state.fields}
     let currentHolder = newFields
 
@@ -428,7 +432,8 @@ mapChildren = (children = [], extraProps = {}) => {
     if(c.props.field) return this.enhanceChild(c, {extraProps});
     if(c.props.submitButton) return this.makeSubmitButton(c)
     if(!c.props.children) return c;
-    return React.cloneElement(c, {children: this.mapChildren(c.props.children)})
+    if(c.props.fieldWrapper) return React.cloneElement(c, {children: this.mapChildren(c.props.children)})
+    return React.cloneElement(c)
   })
 }
 

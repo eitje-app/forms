@@ -21,6 +21,7 @@ class MultiForm extends React.Component {
     this.createRefs()
     this.getParams = this.getParams.bind(this)
     this.removeForm = this.removeForm.bind(this)
+    this.addForm = this.addForm.bind(this)
   }
 
   createRefs = (a) => {
@@ -37,13 +38,18 @@ class MultiForm extends React.Component {
   }
 
   makeForm(idx, formNum) {
-    const {autoAdd, initialValue = {}, allowEmpty = true, initialValues = [], formProps = {} } = this.props
+    const {autoAdd, initialValue = {}, maxForms, allowEmpty = true, initialValues = [], formProps = {} } = this.props
     const {forms} = this.state
     const relevantChildren = this.safeChildren().filter(c => !c.props.ignoreForm && !c.props.submitButton && !c.props.addButton)
     const formInitial = initialValues[formNum] || initialValue
+
+    const isFirst = idx == 0
+    const isLast = idx == (forms.length - 1)
+
     return (
-        <Form key={formNum} allowEmpty={allowEmpty} afterTouch={() => this.setState({touched: true})} fieldProps={{formIdx: idx, amtForms: forms.length, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} {...formProps} 
-              initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx, formNum)} 
+        <Form key={formNum} allowEmpty={allowEmpty} afterTouch={() => this.setState({touched: true})} 
+              fieldProps={{formIdx: idx, mayAdd: forms.length < maxForms, isFirst, isLast, addForm: () => this.addForm(), amtForms: forms.length, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} 
+              initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx, formNum)} {...formProps} 
               ref={this[`child-${formNum}`]}> 
           {relevantChildren}
         </Form>
@@ -59,9 +65,9 @@ class MultiForm extends React.Component {
   }
 
   async addForm(formNum = this.state.forms[this.state.forms.length - 1]) {
-    const {amtForms, maxAmtForms, forms} = this.state
+    const {amtForms, maxForms, forms} = this.state
     const isLast = forms[forms.length - 1] == formNum
-    if(isLast && (!maxAmtForms || maxAmtForms < forms.length)) {
+    if(isLast && (!maxForms || maxForms < forms.length)) {
       this[`child-${formNum + 1}`] = createRef()
       await this.setState({forms: [...forms, formNum + 1]})
     }
