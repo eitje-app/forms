@@ -34,9 +34,8 @@ class FormWrapper extends Component {
       let val = c.getParams()
       data[c.props.formKey] = c.getParams()
     })
-    const res = this.doSubmit(data)
-    if(!res) return
-    
+    const res = await this.doSubmit(data)
+    if(_.isObject(res) && !res.ok || !res) return
     childs.filter(c => _.isFunction(c.afterSubmit)).forEach(c => c.afterSubmit(data, res) )
   }
 
