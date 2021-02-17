@@ -29,8 +29,8 @@ function useFormField(props) {
 
   if(_.isFunction(finalLabel)) finalLabel = finalLabel(props)
 
-  warning = warning && <p style={warningStyle}> {warning} </p>
-  error = error && <p style={errorStyle}> {error} </p>
+  warning = warning && <p className="warning-msg" style={warningStyle}> {warning} </p>
+  error = error && <p className="error-msg" style={errorStyle}> {error} </p>
 
   
   return {required: isRequired, error, disabled: actuallyDisabled, label: finalLabel, extraLabel, warning, value: allowEmptyString(displayValue, value, defaultValue)}
