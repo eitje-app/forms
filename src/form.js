@@ -370,11 +370,7 @@ class Form extends Component {
     
     if(submitStrategy === 'blur') condOpts['onBlur'] = act; 
 
-    if(submitStrategy === 'blur' || submitStrategy === 'inlineButton') {
-      condOpts['onKeyUp'] = e => {
-        e.keyCode === 13 && act()
-      }
-    }
+    
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
                                         updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, _fieldProps), isTouched: touchedFields.includes(field), 
