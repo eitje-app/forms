@@ -3,6 +3,8 @@ import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from
 import utils from '@eitje/utils'
 import {t, Button, Prompt} from './base'
 
+const noop = () => {}
+
 const missingOrTrue = (obj, field) => {
   const hasField =  Object.keys(obj).includes(field)
   return !hasField || obj[field]
@@ -131,7 +133,7 @@ class Form extends Component {
 
 
   async afterSubmit(params, res, callback = () => {}) {
-    const {afterSubmMessage, afterTouch, afterSubmit = () => {}, resetAfterSubmit} = this.props
+    const {afterSubmMessage, afterTouch = noop, afterSubmit = () => {}, resetAfterSubmit} = this.props
     afterSubmMessage && utils.toast(afterSubmMessage)
     afterTouch(false)
     await this.setState({touchedFields: [], touched: false})
