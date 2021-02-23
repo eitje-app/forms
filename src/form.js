@@ -126,18 +126,19 @@ class Form extends Component {
     const errors = res.data?.errors
     if(!_.isObject(errors)) return;
     const newErrors = _.mapValues(errors, err => err[0] ) 
-    console.log(newErrors)
     this.setState({errors: {...this.state.errors, ...newErrors} })
   }
 
 
-  afterSubmit(params, res, callback = () => {}) {
-    const {afterSubmMessage, afterSubmit = () => {}, resetAfterSubmit} = this.props
+  async afterSubmit(params, res, callback = () => {}) {
+    const {afterSubmMessage, afterTouch, afterSubmit = () => {}, resetAfterSubmit} = this.props
     afterSubmMessage && utils.toast(afterSubmMessage)
+    afterTouch(false)
+    await this.setState({touchedFields: [], touched: false})
     afterSubmit(res, params)
     callback(res, params)
     if(resetAfterSubmit) this.resetValues();
-    this.setState({touchedFields: [], touched: false})
+    
 
   }
 
@@ -165,7 +166,7 @@ class Form extends Component {
   componentDidUpdate(prevProps, prevState) {
     const {afterTouch = () => {}} = this.props
     if(!prevState.touched && this.state.touched) {
-      afterTouch()
+      afterTouch(true)
     }
 
   if(!_.isEqual(prevProps.initialValues, this.props.initialValues) ) {
@@ -440,7 +441,7 @@ mapChildren = (children = [], extraProps = {}) => {
 
   render() {
     const {children, showPrompt, submitButton, promptMsg="are you sure", debug, onFocus = () => {}} = this.props
-    const {errors, fields, touchedFields} = this.state
+    const {errors, fields, touchedFields, touched} = this.state
     return (
       
       <div tabIndex={-1} onFocus={onFocus} >
