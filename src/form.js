@@ -250,12 +250,14 @@ class Form extends Component {
 
     if(!error && rules.field[field]) {
       valid = rules.field[field](value, fields)
-      error = !valid && (messages.field[field] || t("form.invalid"))
+      let errorMsg = messages.field[field];
+      error = !valid && t(`form.validation.${errorMsg}`, t("form.invalid"))
     }
 
     if(!error && name && rules.name[name]) {
       valid = rules.name[name](value, fields)
-      error = !valid && (messages.name[name] || t("form.invalid"))
+      let errorMsg = messages.name[name]
+      error = !valid && (`form.validation.${errorMsg}`, t("form.invalid"))
     }
 
     const newErrors = {...errors, [field]: error }
