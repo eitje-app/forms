@@ -92,8 +92,11 @@ class Form extends Component {
     return c.props.field;
   }
 
+  setErrors = newErrors => this.setState({errors: {...this.state.errors, ...newErrors} })
+
 
   async submit({extraData = {}, field, callback = () => {} } = {} ) {
+    const {setErrors} = this
     const {nestedField, onSubmit, submitInitialValues,
           identityField="id"} = this.props         
     const {fields} = this.state
@@ -114,7 +117,9 @@ class Form extends Component {
     console.log("Start validation")
     if(this.validate({fields: [field].filter(Boolean) })) {
       console.log("Params to be submitted", params)
-      const res = await onSubmit(params)
+      
+      const res = await onSubmit(params, {setErrors})
+
       await this.setState({submitted: true})
       if(!res) return;
       if(res.ok) this.afterSubmit(params, res, callback);
