@@ -23,11 +23,22 @@ class FormWrapper extends Component {
     }).flat()
   }
 
+  submitAllowed() {
+    return this.formChilds().every(c => c && c.submitAllowed())
+  }
+
+  getParams() {
+    return Object.assign(...this.formChilds().map(c => c.getParams()))
+  }
+
+  afterSubmit(data, res) {
+    this.formChilds().filter(c => _.isFunction(c.afterSubmit) ).forEach(c => c.afterSubmit(data, res))
+  }
+
   async submit() {
     const childs = this.formChilds() 
-    if(!childs.map(c => c.submitAllowed()).every(c => !!c) ) return;
+    if(!this.submitAllowed() ) return;
 
-    
     const allHaveKey = childs.every(c => c.props.formKey)
     let data = {} //allHaveKey ? {} : []
     childs.forEach(c => {
@@ -36,7 +47,7 @@ class FormWrapper extends Component {
     })
     const res = await this.doSubmit(data)
     if(_.isObject(res) && !res.ok || !res) return
-    childs.filter(c => _.isFunction(c.afterSubmit)).forEach(c => c.afterSubmit(data, res) )
+    this.afterSubmit()
   }
 
   async doSubmit(data) {
