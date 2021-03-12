@@ -4,6 +4,8 @@ import utils from '@eitje/utils'
 import {t, Button, Prompt} from './base'
 
 const noop = () => {}
+const trailingDot = /\.$/g
+
 
 const missingOrTrue = (obj, field) => {
   const hasField =  Object.keys(obj).includes(field)
@@ -95,6 +97,7 @@ class Form extends Component {
   setErrors = newErrors => this.setState({errors: {...this.state.errors, ...newErrors} })
 
 
+
   async submit({extraData = {}, field, callback = () => {} } = {} ) {
     const {setErrors} = this
     const {nestedField, onSubmit, submitInitialValues,
@@ -111,6 +114,9 @@ class Form extends Component {
       params = submitInitialValues ? fields : _.pick(fields, [...this.fieldNames(), identityField])
     }
 
+    if(params["amount"]) {
+      params["amount"] = params["amount"].replace(trailingDot, "")
+    }
     params = {...params, ...extraData}
     if(nestedField) params = this.convertFields();
     console.group("FORM")
