@@ -98,7 +98,7 @@ class Form extends Component {
 
 
 
-  async submit({extraData = {}, field, callback = () => {} } = {} ) {
+  async submit({extraData = {}, field, namespace, callback = () => {} } = {} ) {
     const {setErrors} = this
     const {nestedField, onSubmit, submitInitialValues,
           identityField="id"} = this.props         
@@ -109,13 +109,14 @@ class Form extends Component {
     let params;
 
     if(field) {
-      params = _.pick(fields, [field, identityField])
+      const pickName = namespace ? `${namespace}.${field}` : field
+      params = _.pick(fields, [pickName, identityField])
     } else {
       params = submitInitialValues ? fields : _.pick(fields, [...this.fieldNames(), identityField])
     }
 
     if(params["amount"]) {
-      params["amount"] = params["amount"].replace(trailingDot, "")
+      params["amount"] = params["amount"].replace(trailingDot, "") // horrible hacks used for the financial input to prevent 10, from being sent to the back-end
     }
     params = {...params, ...extraData}
     if(nestedField) params = this.convertFields();
@@ -234,7 +235,7 @@ class Form extends Component {
     }
 
     if(fieldProps.submitStrategy === 'change') {
-      this.submit({field})
+      this.submit({field, namespace})
     }
   }
 
