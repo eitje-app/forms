@@ -454,7 +454,7 @@ mapChildren = (children = [], extraProps = {}) => {
   }
 
   render() {
-    const {children, showPrompt, hidePrompt, submitButton, promptMsg="are you sure", debug, onFocus = () => {}} = this.props
+    const {children, showPrompt, hidePrompt, ignoreModalRed, submitButton, promptMsg="leave_unfinished_form", debug, onFocus = () => {}} = this.props
     const {errors, fields, touchedFields, touched} = this.state
 
     return (
@@ -465,15 +465,22 @@ mapChildren = (children = [], extraProps = {}) => {
           {this.renderLoading()}
 
         </div>
-        {!hidePrompt && touched && <Prompt message={t(promptMsg)}/>}
+        {!hidePrompt && touched && <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)}/>}
       </Fragment>
       )
     }
   
 }
 
+const noPromptPaths = ['/login', '/form']
+const handlePrompt = (location, action, promptMsg, ignoreModalRed) => {
+  const {pathname, state = {}} = location
+  const isModalRed = !!state.modalRedirect
+  debugger
+  if(isModalRed && ignoreModalRed) return true; //  this means we shouldn't show the prompt when closing a modal. Mainly relevant for forms on the bg page of a modal
+  if(noPromptPaths.some(p => pathname.startsWith(p)))  return true;
+  return t(promptMsg)
+}
+
 
 export default Form
-
-
-
