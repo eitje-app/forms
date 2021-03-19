@@ -454,15 +454,19 @@ mapChildren = (children = [], extraProps = {}) => {
   }
 
   render() {
-    const {children, showPrompt, submitButton, promptMsg="are you sure", debug, onFocus = () => {}} = this.props
+    const {children, showPrompt, hidePrompt, submitButton, promptMsg="are you sure", debug, onFocus = () => {}} = this.props
     const {errors, fields, touchedFields, touched} = this.state
-    return (
-      
-      <div tabIndex={-1} onFocus={onFocus} >
-        {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
-        {this.renderLoading()}
-      </div>
+    return (
+      <Fragment>
+        <div tabIndex={-1} onFocus={onFocus} >
+          {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
+
+          {this.renderLoading()}
+
+        </div>
+        {!hidePrompt && touched && <Prompt message={t(promptMsg)}/>}
+      </Fragment>
       )
     }
   

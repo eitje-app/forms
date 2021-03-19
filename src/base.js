@@ -4,12 +4,12 @@ let isScoped = false;
 let Button = "p"
 let Prompt = null;
 
-const setup = ({translatorFunc, alertFunc, scoped, button} = {}) => {
+const setup = ({translatorFunc, alertFunc, scoped, button, ...rest}) => {
   if(translatorFunc) t = translatorFunc;
   if(alertFunc) alert = alertFunc;
   if(scoped) isScoped = scoped;
   if(button) Button = button;
-  if(prompt) Prompt = prompt;
+  if(rest.Prompt) Prompt = rest.Prompt;
 }
 export {t, alert, isScoped, Button, Prompt}
 
