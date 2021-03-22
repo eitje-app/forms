@@ -476,7 +476,6 @@ const noPromptPaths = ['/login', '/form']
 const handlePrompt = (location, action, promptMsg, ignoreModalRed) => {
   const {pathname, state = {}} = location
   const isModalRed = !!state.modalRedirect
-  debugger
   if(isModalRed && ignoreModalRed) return true; //  this means we shouldn't show the prompt when closing a modal. Mainly relevant for forms on the bg page of a modal
   if(noPromptPaths.some(p => pathname.startsWith(p)))  return true;
   return t(promptMsg)
