@@ -7,12 +7,13 @@ export const simpleMap = (item, buildLabel) => {
   return {label, key: item, value: item }
 }
 
-const usePicker = ({items, noSort, value, multiple, defaultTitle = '-', formData, buildLabel, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {
+const usePicker = ({items, noSort, value, multiple, defaultTitle = '-', formData, buildLabel = text => text, modifyItems = items => items, labelField="name", valueField="id", sortField=labelField}) => {
+
   let pickerItems = items;
   if(!noSort && sortField) pickerItems = _.sortBy(pickerItems, i => i[sortField]);
 
   pickerItems = pickerItems.map(t => !t[labelField] && !_.isObject(t) ? simpleMap(t, buildLabel) : 
-                                      ({label: t[labelField] || "", key: String(t[valueField]), value: t[valueField], ...t }) ) 
+                                      ({label: buildLabel(t[labelField]) || "", key: String(t[valueField]), value: t[valueField], ...t }) ) 
 
   pickerItems = modifyItems(pickerItems, formData) || []
 
