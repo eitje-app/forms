@@ -143,12 +143,16 @@ class Form extends Component {
     this.setState({errors: {...this.state.errors, ...newErrors} })
   }
 
+  unTouch() {
+    this.setState({touchedFields: [], touched: false})
+  }
+
 
   async afterSubmit(params, res, callback = () => {}) {
     const {afterSubmMessage, afterTouch = noop, afterSubmit = () => {}, resetAfterSubmit} = this.props
     afterSubmMessage && utils.toast(afterSubmMessage)
     afterTouch(false)
-    await this.setState({touchedFields: [], touched: false})
+    await this.unTouch()
     afterSubmit(res, params)
     callback(res, params)
     if(resetAfterSubmit) this.resetValues();
@@ -456,7 +460,6 @@ mapChildren = (children = [], extraProps = {}) => {
   render() {
     const {children, showPrompt, hidePrompt, ignoreModalRed, submitButton, promptMsg="leave_unfinished_form", debug, onFocus = () => {}} = this.props
     const {errors, fields, touchedFields, touched} = this.state
-
     return (
       <Fragment>
         <div tabIndex={-1} onFocus={onFocus} >
