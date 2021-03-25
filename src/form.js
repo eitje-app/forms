@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react';
 import utils from '@eitje/utils'
-import {t, Button, Prompt} from './base'
+import {t, Button, Prompt, alert} from './base'
 
 const noop = () => {}
 const trailingDot = /\.$/g
@@ -164,7 +164,7 @@ class Form extends Component {
   blocked() {
     const {blocked = {}} = this.state
     if (Object.values(blocked).some(s => s)){
-      config.alert(t("oneSec"), t("stillUploading"))
+      alert(t("oneSec"), t("stillUploading"))
       return true;
     }
   }
