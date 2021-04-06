@@ -156,10 +156,7 @@ class Form extends Component {
     afterSubmit(res, params)
     callback(res, params)
     if(resetAfterSubmit) this.resetValues();
-    
-
   }
-
 
   blocked() {
     const {blocked = {}} = this.state
@@ -468,7 +465,7 @@ mapChildren = (children = [], extraProps = {}) => {
           {this.renderLoading()}
 
         </div>
-        {!hidePrompt && touched && <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)}/>}
+        {!hidePrompt && touched && Prompt && <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)}/>}
       </Fragment>
       )
     }
