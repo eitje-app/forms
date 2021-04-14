@@ -404,10 +404,12 @@ class Form extends Component {
     
 
     const newEl = React.cloneElement(c, {key: itemId ? `${itemId}-${field}` : field,  formDisabled: disabled, innerRef: c.props.innerRef || this[`child-${idx}`], 
-                                        updated: updatedFields.includes(field), formData: fields, value: this.getValue(field, _fieldProps), isTouched: touchedFields.includes(field), 
+                                        updated: updatedFields.includes(field), formData: fields, isTouched: touchedFields.includes(field), 
                                         blockSubmit: (block = true) => this.blockSubmit(field, block), submitForm: this.submit, resetForm: this.resetValues,
-                                        onChange: val => this.updateField(field, val, itemId, _fieldProps), error: errors[field], getNext: () => this.getNext(idx),
-                                        ...condOpts, ...extraProps, ..._fieldProps })
+                                         error: errors[field], getNext: () => this.getNext(idx),
+                                        ...condOpts, ...extraProps, ..._fieldProps, 
+                                        // NECESSARY PROPS (THAT FIELD CAN NOT OVERRIDE):
+                                        onChange: val => this.updateField(field, val, itemId, _fieldProps),  value: this.getValue(field, _fieldProps)  })
     return newEl;
   }
 
