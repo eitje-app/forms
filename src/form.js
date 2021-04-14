@@ -375,6 +375,15 @@ class Form extends Component {
     return itemId ? fields[itemId][field] : fields[field]   
   }
 
+  getImperativeFieldProps = (c) => {
+    const impProps = {}
+    const {useSubmitStrategy} = this.props
+    if(!c.submitStrategy && useSubmitStrategy) {
+      impProps['submitStrategy'] = c.props.defaultSubmitStrategy || 'change'
+    }
+    return impProps;
+  }
+
    enhanceChild = (c, {idx, extraProps} = {} ) => {
     const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
     const {errors, fields, touchedFields} = this.state
@@ -382,7 +391,11 @@ class Form extends Component {
 
     const fieldPropsToMerge = utils.funcOrVal(c.props?.ignoreFieldProps, fields) ? {} : fieldProps
 
-    const _fieldProps = Object.assign({}, extraProps, fieldPropsToMerge, c.props)
+    const imperativeProps = this.getImperativeFieldProps(c)
+
+    const _fieldProps = Object.assign({}, extraProps, fieldPropsToMerge, imperativeProps, c.props)
+
+
     const {field, itemId, namespace, submitStrategy} = _fieldProps
     const act = () => touchedFields.includes(field) && this.submit({field})
     
