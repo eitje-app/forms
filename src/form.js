@@ -196,10 +196,10 @@ class Form extends Component {
     this.setState({fields: newFields})
   }
 
-  updateField = async (field, val, itemId, fieldProps) => {
+  updateField = async (field, val, itemId, fieldProps = {}) => {
     const {fields, errors, touched, touchedFields} = this.state
     const {namespace} = fieldProps
-    const {afterChange} = this.props
+    const {afterChange, setState, mirrorFields = []} = this.props
 
 
     // if(_.isArray(val) && val.length === 0) val = undefined; THIS USED TO BE HERE, IDK WHY, BREAKS EMPTYING ARRAY FIELDS
@@ -238,6 +238,12 @@ class Form extends Component {
     if(fieldProps.submitStrategy === 'change') {
       this.submit({field, namespace})
     }
+
+    if(mirrorFields.length > 0 && setState && mirrorFields.includes(field)) {
+      setState({[field]: val})
+    }
+
+
   }
 
   handleRequired(required, val) {
