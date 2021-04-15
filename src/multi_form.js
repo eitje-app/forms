@@ -37,18 +37,44 @@ class MultiForm extends React.Component {
     this[`child-${formNum}`] = null
   }
 
+  makeAddDel() {
+   
+  }
+
+  mayAdd() {
+    const {maxForms} = this.props
+    const {forms} = this.state
+    return forms.length < maxForms
+  }
+
+
+
   makeForm(idx, formNum) {
-    const {autoAdd, initialValue = {}, maxForms, allowEmpty = true, initialValues = [], formProps = {} } = this.props
+    const {autoAdd, initialValue = {}, hideControls, allowEmpty = true, initialValues = [], formProps = {} } = this.props
     const {forms} = this.state
     const relevantChildren = this.safeChildren().filter(c => !c.props.ignoreForm && !c.props.submitButton && !c.props.addButton)
     const formInitial = initialValues[formNum] || initialValue
 
+    let condProps = {}
+
     const isFirst = idx == 0
     const isLast = idx == (forms.length - 1)
 
+    const removeForm = () => this.removeForm(formNum)
+
+    const deleter = <p className="multi-form-deleter" style={{transform: 'rotate(45deg)'}} onClick={removeForm}>+</p>
+    const adder = <p className="multi-form-adder" onClick={() => this.addForm()}> +</p>
+    const rightChildren = [forms.length > 1 && deleter, isLast && this.mayAdd() && adder].filter(Boolean)
+    
+    if(!hideControls && relevantChildren.length == 1) { // for now, well only allow this for forms with only one field
+      condProps['rightChildren'] = rightChildren
+      condProps['isLayered'] = true
+    }
+
+
     return (
         <Form key={formNum} allowEmpty={allowEmpty} afterTouch={() => this.setState({touched: true})} 
-              fieldProps={{formIdx: idx, mayAdd: forms.length < maxForms, isFirst, isLast, addForm: () => this.addForm(), amtForms: forms.length, formNum, removeForm: () => this.removeForm(formNum), getMultiFormData: this.getParams}} 
+              fieldProps={{formIdx: idx, mayAdd: this.mayAdd(), isFirst, isLast, addForm: () => this.addForm(), amtForms: forms.length, formNum, removeForm, getMultiFormData: this.getParams, ...condProps}} 
               initialValues={formInitial} afterChange={(field, data) => this._afterChange(field, data, idx, formNum)} {...formProps} 
               ref={this[`child-${formNum}`]}> 
           {relevantChildren}
