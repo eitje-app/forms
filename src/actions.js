@@ -9,7 +9,7 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
         containerProps = {}, submitStrategy, submitForm, value, 
         LeftContainer = Fragment, RightContainer = Fragment, rightChildren, leftChildren, extraLabel,
         leftContainerProps = {}, rightContainerProps = {}, readOnly, SubmitButton = Button,
-        isLayered = submitStrategy === 'inlineButton' || extraLabel, } = props
+        isLayered = submitStrategy === 'inlineButton' || extraLabel || rightChildren, } = props
  
  if(isLayered) {
     LeftContainer = RightContainer = "div"
