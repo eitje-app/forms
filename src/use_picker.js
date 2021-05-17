@@ -13,7 +13,7 @@ const usePicker = ({items, noSort, value, multiple, defaultTitle = '-', formData
   if(!noSort && sortField) pickerItems = _.sortBy(pickerItems, i => i[sortField]);
 
   pickerItems = pickerItems.map(t => !t[labelField] && !_.isObject(t) ? simpleMap(t, buildLabel) : 
-                                      ({label: (buildLabel ? buildLabel(t) : t[labelField]) || "", key: String(t[valueField]), value: t[valueField], ...t }) ) 
+                                      ({label: (buildLabel ? buildLabel(t[labelField], t) : t[labelField]) || "", key: String(t[valueField]), value: t[valueField], ...t }) ) 
 
   pickerItems = modifyItems(pickerItems, formData) || []
 
