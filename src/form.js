@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react';
 import utils from '@eitje/utils'
-import {t, Button, Prompt, alert} from './base'
+import {t, Button, Prompt, Wrapper, alert} from './base'
 
 const noop = () => {}
 const trailingDot = /\.$/g
@@ -480,12 +480,12 @@ mapChildren = (children = [], extraProps = {}) => {
     const {errors, fields, touchedFields, touched} = this.state
     return (
       <Fragment>
-        <div tabIndex={-1} onFocus={onFocus} >
+        <Wrapper tabIndex={-1} onFocus={onFocus} >
           {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
           {this.renderLoading()}
 
-        </div>
+        </Wrapper>
         {!hidePrompt && touched && Prompt && <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)}/>}
       </Fragment>
       )
