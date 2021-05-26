@@ -1,7 +1,6 @@
 import React, {Fragment} from 'react'
-import {Tooltip} from 'antd'
 import useFormField from './use_form_field'
-import {Button, t} from './base'
+import {Button, Tooltip, t} from './base'
 import utils from '@eitje/utils'
 
 export const makeField = (Comp, {withLabel = true, withError = true} = {}) => props => {
