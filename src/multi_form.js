@@ -50,7 +50,7 @@ class MultiForm extends React.Component {
 
 
   makeForm(idx, formNum) {
-    const {autoAdd, initialValue = {}, hideControls, allowEmpty = true, initialValues = [], formProps = {} } = this.props
+    const {autoAdd, initialValue = {}, afterRemove = _.noop, hideControls, allowEmpty = true, initialValues = [], formProps = {} } = this.props
     const {forms} = this.state
     const relevantChildren = this.safeChildren().filter(c => !c.props.ignoreForm && !c.props.submitButton && !c.props.addButton)
     const formInitial = initialValues[formNum] || initialValue
@@ -60,7 +60,10 @@ class MultiForm extends React.Component {
     const isFirst = idx == 0
     const isLast = idx == (forms.length - 1)
 
-    const removeForm = () => this.removeForm(formNum)
+    const removeForm = () => {
+      this.removeForm(formNum)
+      afterRemove(idx)
+    }
 
     const deleter = <p className="multi-form-deleter" style={{transform: 'rotate(45deg)'}} onClick={removeForm}>+</p>
     const adder = <p className="multi-form-adder" onClick={() => this.addForm()}> +</p>
