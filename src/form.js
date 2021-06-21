@@ -6,7 +6,6 @@ import {t, Button, Prompt, Wrapper, alert} from './base'
 const noop = () => {}
 const trailingDot = /\.$/g
 
-
 const missingOrTrue = (obj, field) => {
   const hasField =  Object.keys(obj).includes(field)
   return !hasField || obj[field]
@@ -116,7 +115,7 @@ class Form extends Component {
     }
 
     if(params["amount"]) {
-      params["amount"] = params["amount"].replace(trailingDot, "") // horrible hacks used for the financial input to prevent 10, from being sent to the back-end
+      params["amount"] = params["amount"].replace(trailingDot, "") // horrible hacks used for the financial input to prevent '10,' from being sent to the back-end
     }
     params = {...params, ...extraData}
     if(nestedField) params = this.convertFields();
@@ -129,7 +128,11 @@ class Form extends Component {
 
       await this.setState({submitted: true})
       if(!res) return;
-      if(res.ok) this.afterSubmit(params, res, callback);
+      if(res.ok) {
+        this.setState({lastSubmittedFields: fields})
+        const partialSubmit = !!field
+        this.afterSubmit(params, res, callback, {partialSubmit});
+      }
       if(res.status == 422) this.handleErrors(res)
     }
     
@@ -137,10 +140,30 @@ class Form extends Component {
   }
 
   handleErrors(res) {
+    const {fields, lastSubmittedFields} = this.state
+    const {resetErrorFields, hideLabelErrors, initialValues} = this.props
     const errors = res.data?.errors
     if(!_.isObject(errors)) return;
     const newErrors = _.mapValues(errors, err => err[0] ) 
-    this.setState({errors: {...this.state.errors, ...newErrors} })
+
+    if(!hideLabelErrors) {
+      this.setState({errors: {...this.state.errors, ...newErrors} })
+    }
+
+
+    if(resetErrorFields) {
+      const prevState = lastSubmittedFields || initialValues || {}
+      const newState = {}
+      const errorKeys = Object.keys(errors)
+      errorKeys.forEach(k => newState[k] = prevState[k]  )
+      this.setState({
+        fields: {
+          ...fields,
+          ...newState
+        }
+      })
+    }
+
   }
 
   unTouch() {
