@@ -171,12 +171,12 @@ class Form extends Component {
   }
 
 
-  async afterSubmit(params, res, callback = () => {}) {
+  async afterSubmit(params, res, callback = () => {}, rest = {}) {
     const {afterSubmMessage, afterTouch = noop, afterSubmit = () => {}, resetAfterSubmit} = this.props
     afterSubmMessage && utils.toast(afterSubmMessage)
     afterTouch(false)
     await this.unTouch()
-    afterSubmit(res, params)
+    afterSubmit(res, params, rest)
     callback(res, params)
     if(resetAfterSubmit) this.resetValues();
   }
