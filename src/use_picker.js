@@ -33,10 +33,10 @@ const usePicker = ({
     !t[labelField] && !_.isObject(t)
       ? simpleMap(t, buildLabel)
       : {
-          label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField])) || '',
+          ...t,
           key: String(t[valueField]),
           value: t[valueField],
-          ...t,
+          label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField])) || '',
         },
   )
 
