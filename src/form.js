@@ -95,7 +95,7 @@ class Form extends Component {
 
   async submit({extraData = {}, field, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
-    const {nestedField, onSubmit, submitInitialValues, identityField = 'id'} = this.props
+    const {nestedField, onSubmit, submitInitialValues, initialValues, identityField = 'id'} = this.props
     const {fields, touchedFields} = this.state
 
     if (this.blocked()) return
