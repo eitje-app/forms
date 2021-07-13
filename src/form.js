@@ -159,6 +159,10 @@ class Form extends Component {
     }
   }
 
+  touch() {
+    this.setState({touched: true})
+  }
+
   unTouch() {
     this.setState({touchedFields: [], touched: false})
   }
@@ -301,7 +305,7 @@ class Form extends Component {
     this.allFormChildren().forEach((c) => {
       const {field} = c.props
       if (hasSpecificFields && !fields.includes(field)) return
-      const error = this.validateField(field, false, c.props, {checkRequired: true})
+      const error = this.validateField(field, false, this.makeProps(c), {checkRequired: true})
       errs[field] = error
 
       if (!invalid && error) {
@@ -396,18 +400,23 @@ class Form extends Component {
     return impProps
   }
 
+  makeProps = (c, extraProps = {}) => {
+    const {fieldProps} = this.props
+    const {fields} = this.state
+
+    const fieldPropsToMerge = utils.funcOrVal(c.props?.ignoreFieldProps, fields) ? {} : fieldProps
+    const imperativeProps = this.getImperativeFieldProps(c)
+    return Object.assign({}, extraProps, fieldPropsToMerge, imperativeProps, c.props)
+  }
+
   enhanceChild = (c, {idx, extraProps} = {}) => {
-    const {updatedFields = [], disabled, onSubmit, fieldProps} = this.props
+    const {updatedFields = [], disabled, onSubmit} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
 
-    const fieldPropsToMerge = utils.funcOrVal(c.props?.ignoreFieldProps, fields) ? {} : fieldProps
+    const fieldProps = this.makeProps(c, extraProps)
 
-    const imperativeProps = this.getImperativeFieldProps(c)
-
-    const _fieldProps = Object.assign({}, extraProps, fieldPropsToMerge, imperativeProps, c.props)
-
-    const {field, itemId, namespace, submitStrategy} = _fieldProps
+    const {field, itemId, namespace, submitStrategy} = fieldProps
     const act = () => touchedFields.includes(field) && this.submit({field})
 
     if (submitStrategy === 'blur') condOpts['onBlur'] = act
@@ -426,10 +435,10 @@ class Form extends Component {
       getNext: () => this.getNext(idx),
       ...condOpts,
       ...extraProps,
-      ..._fieldProps,
+      ...fieldProps,
       // NECESSARY PROPS (THAT FIELD CAN NOT OVERRIDE):
-      onChange: (val) => this.updateField(field, val, itemId, _fieldProps),
-      value: this.getValue(field, _fieldProps),
+      onChange: (val) => this.updateField(field, val, itemId, fieldProps),
+      value: this.getValue(field, fieldProps),
     })
     return newEl
   }
