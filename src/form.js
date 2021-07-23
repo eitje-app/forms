@@ -496,6 +496,14 @@ class Form extends Component {
     return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit()})
   }
 
+  touchedAndFilled() {
+    const {initialValues} = this.props
+    const {touched, touchedFields, fields} = this.state
+
+    debugger
+    return touched && touchedFields.some((s) => utils.exists(fields[s]) && fields[s] != initialValues[s])
+  }
+
   render() {
     const {
       children,
@@ -507,7 +515,8 @@ class Form extends Component {
       debug,
       onFocus = () => {},
     } = this.props
-    const {errors, fields, touchedFields, touched} = this.state
+    const {errors, fields, touchedFields} = this.state
+
     return (
       <Fragment>
         <Wrapper tabIndex={-1} onFocus={onFocus}>
@@ -515,7 +524,9 @@ class Form extends Component {
 
           {this.renderLoading()}
         </Wrapper>
-        {!hidePrompt && touched && Prompt && <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)} />}
+        {!hidePrompt && this.touchedAndFilled() && Prompt && (
+          <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)} />
+        )}
       </Fragment>
     )
   }
@@ -525,7 +536,8 @@ const noPromptPaths = ['/login', '/form']
 const handlePrompt = (location, action, promptMsg, ignoreModalRed) => {
   const {pathname, state = {}} = location
   const isModalRed = !!state.modalRedirect
-  if (isModalRed && ignoreModalRed) return true //  this means we shouldn't show the prompt when closing a modal. Mainly relevant for forms on the bg page of a modal
+  const wasModal = !!state.fromModal
+  if (isModalRed || wasModal || ignoreModalRed) return true //  this means we shouldn't show the prompt when closing a modal. Mainly relevant for forms on the bg page of a modal
   if (noPromptPaths.some((p) => pathname.startsWith(p))) return true
   return t(promptMsg)
 }
