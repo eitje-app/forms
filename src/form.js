@@ -41,6 +41,7 @@ class Form extends Component {
       errors: {},
 
       fields,
+      prevFields: fields,
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
@@ -95,7 +96,7 @@ class Form extends Component {
 
   async submit({extraData = {}, field, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
-    const {nestedField, onSubmit, submitInitialValues, initialValues, identityField = 'id'} = this.props
+    const {nestedField, onSubmit, submitInitialValues, initialValues, rollbackOnError = field, identityField = 'id'} = this.props
     const {fields, touchedFields} = this.state
 
     if (this.blocked()) return
@@ -124,9 +125,10 @@ class Form extends Component {
       await this.setState({submitted: true})
       if (!res) return
       if (res.ok) {
-        this.setState({lastSubmittedFields: fields})
         const partialSubmit = !!field
         this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
+      } else {
+        if (rollbackOnError) this.rollback()
       }
       if (res.status == 422) this.handleErrors(res)
     }
@@ -134,28 +136,20 @@ class Form extends Component {
     console.groupEnd()
   }
 
+  rollback() {
+    const {prevFields} = this.state
+    this.setState({fields: prevFields})
+  }
+
   handleErrors(res) {
-    const {fields, lastSubmittedFields} = this.state
-    const {resetErrorFields, hideLabelErrors, initialValues} = this.props
+    const {fields} = this.state
+    const {hideLabelErrors, initialValues} = this.props
     const errors = res.data?.errors
     if (!_.isObject(errors)) return
     const newErrors = _.mapValues(errors, (err) => err[0])
 
     if (!hideLabelErrors) {
       this.setState({errors: {...this.state.errors, ...newErrors}})
-    }
-
-    if (resetErrorFields) {
-      const prevState = lastSubmittedFields || initialValues || {}
-      const newState = {}
-      const errorKeys = Object.keys(errors)
-      errorKeys.forEach((k) => (newState[k] = prevState[k]))
-      this.setState({
-        fields: {
-          ...fields,
-          ...newState,
-        },
-      })
     }
   }
 
@@ -205,6 +199,10 @@ class Form extends Component {
 
     if (!_.isEqual(prevProps.initialValues, this.props.initialValues)) {
       this.updateUnTouchedFields(this.props.initialValues)
+    }
+
+    if (!_.isEqual(this.state.fields, prevState.fields)) {
+      this.setState({prevFields: prevState.fields})
     }
   }
 
@@ -497,10 +495,8 @@ class Form extends Component {
   }
 
   touchedAndFilled() {
-    const {initialValues} = this.props
-    const {touched, touchedFields, fields} = this.state
-
-    debugger
+    const {initialValues = {}} = this.props
+    const {touched, touchedFields, fields = {}} = this.state
     return touched && touchedFields.some((s) => utils.exists(fields[s]) && fields[s] != initialValues[s])
   }
 
