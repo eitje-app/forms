@@ -2,6 +2,7 @@ import _ from 'lodash'
 import React, {Component, useState, Fragment, PropTypes, useRef, createRef} from 'react'
 import utils from '@eitje/utils'
 import {t, Button, Prompt, Wrapper, alert} from './base'
+import {debounce} from './utils'
 
 const noop = () => {}
 const trailingDot = /\.$/g
@@ -9,22 +10,6 @@ const trailingDot = /\.$/g
 const missingOrTrue = (obj, field) => {
   const hasField = Object.keys(obj).includes(field)
   return !hasField || obj[field]
-}
-
-function debounce(func, wait, immediate) {
-  var timeout
-  return function () {
-    var context = this,
-      args = arguments
-    var later = function () {
-      timeout = null
-      if (!immediate) func.apply(context, args)
-    }
-    var callNow = immediate && !timeout
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-    if (callNow) func.apply(context, args)
-  }
 }
 
 class Form extends Component {
