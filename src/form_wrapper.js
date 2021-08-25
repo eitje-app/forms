@@ -15,12 +15,12 @@ class FormWrapper extends Component {
 
   formChilds(children = this.props.children) {
     children = utils.alwaysDefinedArray(children) || []
-    return children.map(c => {
+    return _.flatten(children.map(c => {
       let arr = []
       if(isForm(c)) arr.push(c.ref.current)
       if(isWrapper(c)) arr.push(...this.formChilds(c.props.children))
       return arr;
-    }).flat()
+    }))
   }
 
   submitAllowed() {

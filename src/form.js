@@ -306,7 +306,7 @@ class Form extends Component {
     if (!el.props) return []
     if (this.isHidden(el)) return []
     let {children} = el.props
-    children = utils.alwaysArray(children).flat()
+    children = _.flatten(utils.alwaysArray(children))
     let els = children.filter((c) => c && c.props && c.props.field && !this.isHidden(c))
     let stringEls = children.filter((c) => _.isString(c))
     const wrappers = children.filter((c) => c && c.props && c.props.fieldWrapper)
@@ -462,7 +462,7 @@ class Form extends Component {
   }
 
   mapChildren = (children = [], extraProps = {}) => {
-    const childs = utils.alwaysDefinedArray(children).flat()
+    const childs = _.flatten(utils.alwaysDefinedArray(children))
     return childs.map((c) => {
       if (!c || !c.props) return c
       if (this.isHidden(c)) return null
