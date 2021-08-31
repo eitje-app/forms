@@ -500,7 +500,7 @@ class Form extends Component {
 
     return (
       <Fragment>
-        <Wrapper tabIndex={-1} onFocus={onFocus}>
+        <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
           {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
           {this.renderLoading()}

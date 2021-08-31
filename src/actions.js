@@ -3,7 +3,7 @@ import useFormField from './use_form_field'
 import {Button, Tooltip, t} from './base'
 import utils from '@eitje/utils'
 
-export const makeField = (Comp, {withLabel = true, withError = true} = {}) => props => {
+export const makeField = (Comp, {withLabel = true, withError = true, className = ""} = {}) => props => {
   let {containerStyle = {}, field, Container = 'div', isTouched, disabledStyle = {opacity: 0.2}, 
         containerProps = {}, submitStrategy, submitForm, value, 
         LeftContainer = Fragment, RightContainer = Fragment, rightChildren, leftChildren, extraLabel,
@@ -31,7 +31,7 @@ export const makeField = (Comp, {withLabel = true, withError = true} = {}) => pr
 
   const _Comp = <Comp innerClass={classNames} {...props} {...prupz}/>
   return (
-      <Container className={`elementContainer ${classNames}`} style={style} {...containerProps} >
+      <Container className={`elementContainer ${classNames} ${className}`} style={style} {...containerProps} >
 
         <LeftContainer {...leftContainerProps}>
           {renderLabel({...props, label, withLabel})}

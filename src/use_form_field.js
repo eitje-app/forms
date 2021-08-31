@@ -19,11 +19,11 @@ function useFormField(props) {
   let finalLabel = !labelVisible ? null : isDisabled ? (disabledLabel || lbl) : lbl
 
   if(_.isString(finalLabel) ) {
-    finalLabel = <p style={labelStyle}> {utils.capitalize( t(finalLabel) ) } </p>
+    finalLabel = <p className="eitje-label" style={labelStyle}> {utils.capitalize( t(finalLabel) ) } </p>
   }
 
   if(_.isString(extraLabel)) {
-    extraLabel = <p style={extraLabelStyle}> {t(extraLabel)} </p>
+    extraLabel = <p className="eitje-extra-label" style={extraLabelStyle}> {t(extraLabel)} </p>
   }
   if(_.isFunction(extraLabel)) extraLabel = extraLabel(props)
 
