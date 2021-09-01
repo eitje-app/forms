@@ -413,6 +413,7 @@ class Form extends Component {
       isTouched: touchedFields.includes(field),
       blockSubmit: (block = true) => this.blockSubmit(field, block),
       getBlockedFields: () => this.state.blocked,
+      getFormData: () => this.state.fields,
       submitForm: this.submit,
       resetForm: this.resetValues,
       error: errors[field],
