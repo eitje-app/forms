@@ -177,13 +177,17 @@ class Form extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const {afterTouch = () => {}} = this.props
+    const {afterTouch = () => {}, overrideInitialValues} = this.props
     if (!prevState.touched && this.state.touched) {
       afterTouch(true)
     }
 
     if (!_.isEqual(prevProps.initialValues, this.props.initialValues)) {
-      this.updateUnTouchedFields(this.props.initialValues)
+      if(overrideInitialValues) {
+        this.setState({fields: {...this.state.fields, ...this.props.initialValues} })
+      } else {
+        this.updateUnTouchedFields(this.props.initialValues)
+      }
     }
 
     if (!_.isEqual(this.state.fields, prevState.fields)) {
