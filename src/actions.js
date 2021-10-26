@@ -21,6 +21,7 @@ export const makeField = (Comp, {withLabel = true, withError = true, className =
   const prupz = useFormField(props)
   const {label, error, warning, disabled} = prupz
   const classNames = [error && 'error-msg-container', 
+                      isLayered && 'form-container-split',
                      readOnly && 'readOnly'].filter(
       Boolean,
   ).join(" ")
