@@ -76,7 +76,6 @@ class MultiForm extends React.Component {
     )
     const adder = (
       <p className="multi-form-adder" onClick={() => this.addForm()}>
-        {' '}
         +
       </p>
     )
@@ -115,12 +114,19 @@ class MultiForm extends React.Component {
     )
   }
 
-  _afterChange(field, data, idx, formNum) {
+  _afterChange(field, data, idx, formNum, onChange) {
     const {afterChange, autoAdd} = this.props
+    this.updateParentForm()
     autoAdd && this.addForm(formNum)
     if (!afterChange) return
     const allData = this.getParams()
     afterChange(field, allData)
+  }
+
+  updateParentForm = () => {
+    const {field, onChange} = this.props
+    if (!field || !onChange) return
+    onChange(this.getParams())
   }
 
   async addForm(formNum = this.state.forms[this.state.forms.length - 1]) {
@@ -134,13 +140,14 @@ class MultiForm extends React.Component {
 
   submit() {
     const {amtForms} = this.state
-    const childs = this.formChildren()
-    if (this.submitAllowed()) this.handleSubmit(childs)
+    if (this.submitAllowed()) this.handleSubmit()
   }
 
-  submitAllowed() {
+  submitAllowed = () => {
     return this.formChildren().every((c) => c.submitAllowed())
   }
+
+  validate = this.submitAllowed
 
   setValues = (data) => {
     this.formChildren().forEach((f) => {
@@ -152,14 +159,12 @@ class MultiForm extends React.Component {
     return this.formChildren()
       .filter((c) => !c.empty())
       .map((c) => c.getParams())
+      .filter((c) => !utils.objectEmpty(c))
   }
 
-  handleSubmit = async (childs) => {
+  handleSubmit = async (childs = this.formChildren()) => {
     const {onSubmit, afterSubmit = () => {}} = this.props
-    const data = childs
-      .filter((c) => !c.empty())
-      .map((c) => c.state.fields)
-      .filter((c) => !utils.objectEmpty(c)) // no empty forms plz
+    const data = this.getParams()
 
     if (data.length === 0) {
       alert(t('oops'), t('form.fillInSomething')) // must become alert

@@ -183,8 +183,8 @@ class Form extends Component {
     }
 
     if (!_.isEqual(prevProps.initialValues, this.props.initialValues)) {
-      if(overrideInitialValues) {
-        this.setState({fields: {...this.state.fields, ...this.props.initialValues} })
+      if (overrideInitialValues) {
+        this.setState({fields: {...this.state.fields, ...this.props.initialValues}})
       } else {
         this.updateUnTouchedFields(this.props.initialValues)
       }
@@ -290,9 +290,17 @@ class Form extends Component {
     let invalid
     const hasSpecificFields = fields.length > 0
     this.allFormChildren().forEach((c) => {
+      let error
       const {field} = c.props
-      if (hasSpecificFields && !fields.includes(field)) return
-      const error = this.validateField(field, false, this.makeProps(c), {checkRequired: true})
+
+      if (c?.ref?.current?.validate) {
+        // custom validator fn is currently used by MultiForm, but may be more widely used in the future
+        error = !c.ref.current.validate()
+      } else {
+        if (hasSpecificFields && !fields.includes(field)) return
+        error = this.validateField(field, false, this.makeProps(c), {checkRequired: true})
+      }
+
       errs[field] = error
 
       if (!invalid && error) {
@@ -492,41 +500,49 @@ class Form extends Component {
   }
 
   render() {
-    const {
-      children,
-      showPrompt,
-      hidePrompt,
-      ignoreModalRed,
-      submitButton,
-      promptMsg = 'leave_unfinished_form',
-      debug,
-      onFocus = () => {},
-    } = this.props
+    const {children, showPrompt, hidePrompt, submitButton, promptMsg = 'leave_unfinished_form', debug, onFocus = () => {}} = this.props
     const {errors, fields, touchedFields} = this.state
 
     return (
-      <Fragment>
-        <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
-          {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
+      <form autocomplete="nope">
+        <Fragment>
+          <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
+            {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
-          {this.renderLoading()}
-        </Wrapper>
-        {!hidePrompt && this.touchedAndFilled() && Prompt && (
-          <Prompt message={(loc, act) => handlePrompt(loc, act, promptMsg, ignoreModalRed)} />
-        )}
-      </Fragment>
+            {this.renderLoading()}
+          </Wrapper>
+          {!hidePrompt && this.touchedAndFilled() && Prompt && (
+            <Prompt message={(loc, act, previousLoc) => handlePrompt(loc, previousLoc, promptMsg, this)} />
+          )}
+        </Fragment>
+      </form>
     )
   }
 }
 
-const noPromptPaths = ['/login', '/form']
-const handlePrompt = (location, action, promptMsg, ignoreModalRed) => {
-  const {pathname, state = {}} = location
-  const isModalRed = !!state.modalRedirect
-  const wasModal = !!state.fromModal
-  if (isModalRed || wasModal || ignoreModalRed) return true //  this means we shouldn't show the prompt when closing a modal. Mainly relevant for forms on the bg page of a modal
+const noPromptPaths = ['/login']
+const handlePrompt = (nextLoc, initialLoc, promptMsg, form) => {
+  const {pathname} = nextLoc
+  if (pageStaysVisible(nextLoc, initialLoc)) return true
   if (noPromptPaths.some((p) => pathname.startsWith(p))) return true
   return t(promptMsg)
 }
+
+const pageStaysVisible = (nextLoc, initialLoc) => {
+  if (nextLoc?.pathname == initialLoc.pathname) return true
+  if (nextLoc?.state?.background?.pathname == initialLoc.pathname) return true
+}
+
+// cases:
+// 1. from modal back to bg, bg form should not prompt, modal form should prompt
+// 2. frok bg form to modal, never prompt
+// 3. from modal form to other modal form,  modal form should prompt.
+
+// what we know:
+// 1. we know if previous route was modal or normal
+// 2.  WE KNOW it all!!!! whooohooo
+
+// strange things we know:
+// 1. if both bg form & modal form have unsaved changes, only modal form prompt will be called, it looks like only one prompt can be called, and that's always at the 'lowest level'.
 
 export default Form
