@@ -264,7 +264,7 @@ class Form extends Component {
     if (isReq) error = !utils.exists(value) && t('form.required')
 
     if (validate && !error) {
-      error = !validate(value, fields) && (validateMessage || t('form.invalid'))
+      error = !validate(value, {fieldProps, getFormData: this.getParams}) && (validateMessage || t('form.invalid'))
     }
 
     if (!error && rules.field[field]) {
