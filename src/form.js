@@ -500,14 +500,23 @@ class Form extends Component {
   }
 
   render() {
-    const {children, showPrompt, hidePrompt, submitButton, promptMsg = 'leave_unfinished_form', debug, onFocus = () => {}} = this.props
+    const {
+      children,
+      showPrompt,
+      onSubmit,
+      hidePrompt,
+      submitButton,
+      promptMsg = 'leave_unfinished_form',
+      debug,
+      onFocus = () => {},
+    } = this.props
     const {errors, fields, touchedFields} = this.state
 
     return (
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          this.submit()
+          onSubmit && this.submit()
         }}
         autocomplete="nope"
       >
