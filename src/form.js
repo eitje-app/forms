@@ -504,7 +504,13 @@ class Form extends Component {
     const {errors, fields, touchedFields} = this.state
 
     return (
-      <form autocomplete="nope">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          this.submit()
+        }}
+        autocomplete="nope"
+      >
         <Fragment>
           <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
             {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
