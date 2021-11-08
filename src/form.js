@@ -14,7 +14,7 @@ const missingOrTrue = (obj, field) => {
 
 class Form extends Component {
   constructor(props) {
-    const {debounceTime = 1000} = props
+    const {debounceTime = 1000, throttleTime = 500} = props
     const fields = props.initialValues && _.isObject(props.initialValues) ? _.cloneDeep(props.initialValues) : {}
     super(props)
     this.createRefs()
@@ -30,6 +30,7 @@ class Form extends Component {
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
+    this.throttledSubmit = _.debounce(this.submit, throttleTime, {trailing: true})
     this.submit = debounce(this.submit, debounceTime, true)
   }
 
@@ -235,6 +236,10 @@ class Form extends Component {
 
     if (!touched) {
       this.setState({touched: true})
+    }
+
+    if (fieldProps.submitStrategy === 'throttledChange') {
+      this.throttledSubmit({field, namespace})
     }
 
     if (fieldProps.submitStrategy === 'change') {
