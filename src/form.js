@@ -80,27 +80,37 @@ class Form extends Component {
 
   setErrors = (newErrors) => this.setState({errors: {...this.state.errors, ...newErrors}})
 
-  async submit({extraData = {}, field, namespace, callback = () => {}} = {}) {
+  async submit({extraData = {}, field, onlyTouched, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
     const {nestedField, onSubmit, submitInitialValues, initialValues, rollbackOnError = field, identityField = 'id'} = this.props
     const {fields, touchedFields} = this.state
 
     if (this.blocked()) return
 
+    let toPick
     let params
 
     if (field) {
       const pickName = namespace ? `${namespace}.${field}` : field
-      params = _.pick(fields, [pickName, identityField])
+      toPick = [pickName, identityField]
+    } else if (onlyTouched) {
+      toPick = [...touchedFields, identityField]
     } else {
-      params = submitInitialValues ? fields : _.pick(fields, [...this.fieldNames(), identityField])
+      if (submitInitialValues) params = fields
+      toPick = [...this.fieldNames(), identityField]
     }
+
+    if (!params) params = _.pick(fields, toPick)
 
     if (params['amount']) {
       params['amount'] = params['amount'].replace(trailingDot, '') // horrible hacks used for the financial input to prevent '10,' from being sent to the back-end
     }
     params = {...params, ...extraData}
     if (nestedField) params = this.convertFields()
+    if (params.length == 0) {
+      return
+      console.error('Tried submitting form without params')
+    }
     console.group('FORM')
     console.log('Start validation')
     if (this.validate({fields: [field].filter(Boolean)})) {
@@ -239,7 +249,7 @@ class Form extends Component {
     }
 
     if (fieldProps.submitStrategy === 'throttledChange') {
-      this.throttledSubmit({field, namespace})
+      this.throttledSubmit({onlyTouched: true, namespace})
     }
 
     if (fieldProps.submitStrategy === 'change') {
@@ -549,8 +559,8 @@ const handlePrompt = (nextLoc, initialLoc, promptMsg, form) => {
 }
 
 const pageStaysVisible = (nextLoc, initialLoc) => {
-  if (nextLoc?.pathname == initialLoc.pathname) return true
-  if (nextLoc?.state?.background?.pathname == initialLoc.pathname) return true
+  if (nextLoc?.pathname == initialLoc?.pathname) return true
+  if (nextLoc?.state?.background?.pathname == initialLoc?.pathname) return true
 }
 
 // cases:

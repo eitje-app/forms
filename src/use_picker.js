@@ -28,7 +28,6 @@ const usePicker = ({
 }) => {
   let pickerItems = items
   if (!noSort && sortField) pickerItems = _.sortBy(pickerItems, (i) => i[sortField])
-
   pickerItems = pickerItems.map((t) =>
     !t[labelField] && !_.isObject(t)
       ? simpleMap(t, buildLabel)
