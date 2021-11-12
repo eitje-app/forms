@@ -56,7 +56,6 @@ class MultiForm extends React.Component {
       formProps = {},
     } = this.props
     const {forms} = this.state
-    const relevantChildren = this.safeChildren().filter((c) => !c.props.ignoreForm && !c.props.submitButton && !c.props.addButton)
     const formInitial = initialValues[formNum] || initialValue
 
     let condProps = {}
@@ -68,6 +67,10 @@ class MultiForm extends React.Component {
       this.removeForm(formNum)
       afterRemove(idx)
     }
+
+    const relevantChildren = this.safeChildren({removeForm, isLast, isFirst}).filter(
+      (c) => !c.props.ignoreForm && !c.props.submitButton && !c.props.addButton,
+    )
 
     const deleter = (
       <p className="multi-form-deleter" style={{transform: 'rotate(45deg)'}} onClick={removeForm}>
@@ -190,9 +193,18 @@ class MultiForm extends React.Component {
     return forms.map((i) => this[`child-${i}`]?.current).filter(Boolean)
   }
 
-  safeChildren() {
+  getChildren(props) {
     const {children} = this.props
-    return utils.alwaysDefinedArray(children)
+    const {addForm} = this
+    const _addForm = () => addForm() // we dont wanna allow args..
+    const actualChilds = utils.funcOrVal(children, {addForm: this.mayAdd() && _addForm, ...props})
+    return actualChilds
+  }
+
+  safeChildren(props = {}) {
+    const {children} = this.props
+    const childs = this.getChildren(props)
+    return utils.alwaysDefinedArray(childs)
   }
 
   render() {
