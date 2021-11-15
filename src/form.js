@@ -528,27 +528,32 @@ class Form extends Component {
     const {errors, fields, touchedFields} = this.state
 
     return (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSubmit && this.submit()
-        }}
-        autocomplete="nope"
-      >
-        <Fragment>
-          <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
-            {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
+      <Fragment>
+        <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
+          {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
-            {this.renderLoading()}
-          </Wrapper>
-          {!hidePrompt && this.touchedAndFilled() && Prompt && (
-            <Prompt message={(loc, act, previousLoc) => handlePrompt(loc, previousLoc, promptMsg, this)} />
-          )}
-        </Fragment>
-      </form>
+          {this.renderLoading()}
+        </Wrapper>
+        {!hidePrompt && this.touchedAndFilled() && Prompt && (
+          <Prompt message={(loc, act, previousLoc) => handlePrompt(loc, previousLoc, promptMsg, this)} />
+        )}
+      </Fragment>
     )
   }
 }
+
+{
+  /*<form
+  onSubmit={(e) => {
+    e.preventDefault()
+    onSubmit && this.submit()
+  }}
+  autocomplete="nope"
+>
+*/
+}
+
+// above code was in here, let's move it to the web project, of even create a new lib 'web-form'
 
 const noPromptPaths = ['/login']
 const handlePrompt = (nextLoc, initialLoc, promptMsg, form) => {
