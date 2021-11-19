@@ -39,7 +39,7 @@ export const makeField =
     const prupz = useFormField(props)
     let {label, error, warning, disabled} = prupz
     extraLabel = prupz.extraLabel
-    const classNames = [error && 'error-msg-container', isLayered && 'form-container-split', readOnly && 'readOnly']
+    const classNames = [`eitje-field-${field}`, error && 'error-msg-container', isLayered && 'form-container-split', readOnly && 'readOnly']
       .filter(Boolean)
       .join(' ')
 
