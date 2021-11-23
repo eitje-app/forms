@@ -3,10 +3,10 @@ export const fields = {
 }
 
 export const general = {
-  required: 'verplicht',
-  invalid: 'ongeldig'
+  required: 'Dit veld is verplicht',
+  invalid: 'ongeldig',
 }
 
 const form = {...general, field: fields}
 
-export default form;
+export default form

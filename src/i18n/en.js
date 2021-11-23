@@ -3,12 +3,12 @@ export const fields = {
 }
 
 export const names = {
-  team: 'Team'
+  team: 'Team',
 }
 
 export const general = {
-  required: 'required',
-  invalid: 'invalid'
+  required: 'This input is required',
+  invalid: 'invalid',
 }
 
 const form = {...general, field: fields, name: names}
