@@ -63,9 +63,10 @@ class MultiForm extends React.Component {
     const isFirst = idx == 0
     const isLast = idx == forms.length - 1
 
-    const removeForm = () => {
-      this.removeForm(formNum)
+    const removeForm = async () => {
+      await this.removeForm(formNum)
       afterRemove(idx)
+      this.updateParentForm()
     }
 
     const relevantChildren = this.safeChildren({removeForm, isLast, isFirst}).filter(
