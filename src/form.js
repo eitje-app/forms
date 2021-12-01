@@ -529,7 +529,16 @@ class Form extends Component {
 
     return (
       <Fragment>
-        <Wrapper className="eitje-form" tabIndex={-1} onFocus={onFocus}>
+        <Wrapper
+          onSubmit={(e) => {
+            e.preventDefault()
+            onSubmit && this.submit()
+          }}
+          autocomplete="nope"
+          className="eitje-form"
+          tabIndex={-1}
+          onFocus={onFocus}
+        >
           {React.Children.map(children, (c, idx) => this.renderChild(c, idx))}
 
           {this.renderLoading()}
