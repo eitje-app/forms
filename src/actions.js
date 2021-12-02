@@ -25,6 +25,7 @@ export const makeField =
       readOnly,
       SubmitButton = Button,
       extraLabel,
+      className: _className,
       isLayered = submitStrategy === 'inlineButton' || extraLabel,
     } = props
 
@@ -39,7 +40,13 @@ export const makeField =
     const prupz = useFormField(props)
     let {label, error, warning, disabled} = prupz
     extraLabel = prupz.extraLabel
-    const classNames = [`eitje-field-${field}`, error && 'error-msg-container', isLayered && 'form-container-split', readOnly && 'readOnly']
+    const classNames = [
+      `eitje-field-${field}`,
+      error && 'error-msg-container',
+      isLayered && 'form-container-split',
+      readOnly && 'readOnly',
+      _className,
+    ]
       .filter(Boolean)
       .join(' ')
 
