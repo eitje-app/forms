@@ -12,6 +12,18 @@ const missingOrTrue = (obj, field) => {
   return !hasField || obj[field]
 }
 
+const parseValidObj = (validObj, defaultMessage) => {
+  if (_.isPlainObject(validObj)) {
+    const {message} = validObj
+    if (message) validObj.message = `form.validation.${message}`
+    return validObj
+  }
+  if (_.isString(validObj)) return {message: `form.validation.${validObj}`, valid: false}
+  if (_.isBoolean(validObj)) return {valid: validObj, message: defaultMessage}
+
+  return {valid: true}
+}
+
 class Form extends Component {
   constructor(props) {
     const {debounceTime = 1000, throttleTime = 500} = props
@@ -30,6 +42,7 @@ class Form extends Component {
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
+    this.updateField = this.updateField.bind(this)
     this.throttledSubmit = _.debounce(this.submit, throttleTime, {trailing: true})
     this.submit = debounce(this.submit, debounceTime, true)
   }
@@ -279,7 +292,10 @@ class Form extends Component {
     if (isReq) error = !utils.exists(value) && t('form.required')
 
     if (validate && !error) {
-      error = !validate(value, {fieldProps, getFormData: this.getParams}) && (validateMessage || t('form.invalid'))
+      const validateResult = validate(value, {fieldProps, getFormData: this.getParams})
+      const validObj = parseValidObj(validateResult, validateMessage || 'form.invalid')
+      const {valid, message} = validObj
+      if (!valid) error = t(message)
     }
 
     if (!error && rules.field[field]) {
@@ -450,6 +466,7 @@ class Form extends Component {
       ...fieldProps,
       // NECESSARY PROPS (THAT FIELD CAN NOT OVERRIDE):
       onChange: (val) => this.updateField(field, val, itemId, fieldProps),
+      setFormData: this.updateField,
       value: this.getValue(field, fieldProps),
     })
     return newEl
