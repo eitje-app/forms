@@ -208,7 +208,10 @@ class Form extends Component {
 
     if (!_.isEqual(prevProps.initialValues, this.props.initialValues)) {
       if (overrideInitialValues) {
-        this.setState({fields: {...this.state.fields, ...this.props.initialValues}})
+        const overrideStyle = overrideInitialValues == 'hard' ? 'hard' : 'soft'
+        overrideStyle == 'soft'
+          ? this.setState({fields: {...this.state.fields, ...this.props.initialValues}})
+          : this.setState({fields: this.props.initialValues})
       } else {
         this.updateUnTouchedFields(this.props.initialValues)
       }
