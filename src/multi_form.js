@@ -2,8 +2,9 @@ import React, {useRef, createRef, Fragment} from 'react'
 import Form from './form'
 import utils from '@eitje/utils'
 import _ from 'lodash'
-import {t, Button, alert, Prompt} from './base'
+import {t, Button, alert, Prompt, MultiFormWrapper} from './base'
 import {debounce} from './utils'
+
 
 class MultiForm extends React.Component {
   constructor(props) {
@@ -213,13 +214,13 @@ class MultiForm extends React.Component {
     const {amtForms, forms, touched} = this.state
     const submitButton = this.safeChildren().find((c) => c.props?.submitButton)
     return (
-      <Fragment>
+      <MultiFormWrapper>
         {forms.map((f, idx) => this.makeForm(idx, f))}
         {!!submitButton &&
           (!submitButton.props.showAfterTouch || touched) &&
           React.cloneElement(submitButton, {onClick: () => this.submit()})}
         {!hideAddButton && <AddButton onClick={() => this.addForm()}> Add </AddButton>}
-      </Fragment>
+      </MultiFormWrapper>
     )
   }
 }
