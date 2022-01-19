@@ -550,6 +550,7 @@ class Form extends Component {
     return (
       <Fragment>
         <Wrapper
+          action="javascript:" // This is needed to prevent nested forms from reloading the page on enter.. dont ask me why
           onSubmit={(e) => {
             e.preventDefault()
             onSubmit && this.submit()
