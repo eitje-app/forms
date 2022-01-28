@@ -33,46 +33,29 @@ function useFormField(props) {
   const isRequired = _.isFunction(required) ? required(formData) : required
 
   const actuallyDisabled = formDisabled || isDisabled
+
+  const mainLabel = findDecoration({...props, decorationType: 'label'})
+  let subLabel = findDecoration({...props, decorationType: 'extraLabel'})
+  const placeholder = findDecoration({...props, decorationType: 'placeholder'})
+
   const lbl = findLabel(props)
 
-  let finalLabel = !labelVisible ? null : isDisabled ? disabledLabel || lbl : lbl
+  let finalLabel = !labelVisible ? null : isDisabled ? disabledLabel || mainLabel : mainLabel
 
-  if (_.isString(finalLabel)) {
+  if (_.isString(mainLabel)) {
     finalLabel = (
       <p className="eitje-label" style={labelStyle}>
-        {utils.capitalize(t(finalLabel))}
+        {utils.capitalize(finalLabel)}
       </p>
     )
   }
 
-  if (_.isString(extraLabel)) {
-    extraLabel = (
+  if (_.isString(subLabel)) {
+    subLabel = (
       <p className="eitje-extra-label" style={extraLabelStyle}>
-        {t(extraLabel)}
+        {subLabel}
       </p>
     )
-  }
-
-  if (_.isFunction(extraLabel)) {
-    extraLabel = extraLabel(props)
-    if (_.isString(extraLabel)) {
-      extraLabel = (
-        <p className="eitje-label" style={extraLabelStyle}>
-          {extraLabel}
-        </p>
-      )
-    }
-  }
-
-  if (_.isFunction(finalLabel)) {
-    finalLabel = finalLabel(props)
-    if (_.isString(finalLabel)) {
-      finalLabel = (
-        <p className="eitje-label" style={labelStyle}>
-          {finalLabel}
-        </p>
-      )
-    }
   }
 
   warning = warning && (
@@ -87,14 +70,32 @@ function useFormField(props) {
   )
 
   return {
+    placeholder,
     required: isRequired,
     error,
     disabled: actuallyDisabled,
     label: finalLabel,
-    extraLabel,
+    extraLabel: subLabel,
     warning,
     value: allowEmptyString(displayValue, value, defaultValue),
   }
+}
+
+// [label, extraLabel, placeholder]
+
+const findDecoration = (props) => {
+  let {field, decorationType, ...rest} = props
+  let value = props[decorationType]
+  if (_.isFunction(value)) return value(rest)
+  if (!field) return
+  if (_.isBoolean(value)) return makeTranslation({...props, value})
+  return decorationType == 'label' ? t(findLabel(props)) : null
+}
+
+const makeTranslation = (props) => {
+  const {value, decorationType, field, transNamespace} = props
+  if (!transNamespace) return
+  return t(`form.${transNamespace}.${decorationType}.${field}`) // form.exportLayouts.labels.name
 }
 
 const findLabel = ({label, name, field}) => {
@@ -108,5 +109,3 @@ const findLabel = ({label, name, field}) => {
 }
 
 export default useFormField
-
-console.log('hiiii')
