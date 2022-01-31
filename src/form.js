@@ -439,7 +439,7 @@ class Form extends Component {
   }
 
   enhanceChild = (c, {idx, extraProps} = {}) => {
-    const {updatedFields = [], disabled, onSubmit, transNamespace} = this.props
+    const {updatedFields = [], disabled, onSubmit} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
 
@@ -467,7 +467,6 @@ class Form extends Component {
       ...condOpts,
       ...extraProps,
       ...fieldProps,
-      transNamespace,
       // NECESSARY PROPS (THAT FIELD CAN NOT OVERRIDE):
       onChange: (val) => this.updateField(field, val, itemId, fieldProps),
       setFormData: this.updateField,
