@@ -36,7 +36,7 @@ function useFormField(props) {
 
   const mainLabel = findDecoration({...props, decorationType: 'label'})
   let subLabel = findDecoration({...props, decorationType: 'extraLabel'})
-  const placeholder = findDecoration({...props, decorationType: 'placeholder'})
+  const placeholder = _.isBoolean(placeholder) && findDecoration({...props, decorationType: 'placeholder'})
 
   const lbl = findLabel(props)
 
@@ -69,8 +69,9 @@ function useFormField(props) {
     </p>
   )
 
-  return {
-    placeholder,
+  debugger
+
+  let obj = {
     required: isRequired,
     error,
     disabled: actuallyDisabled,
@@ -79,6 +80,8 @@ function useFormField(props) {
     warning,
     value: allowEmptyString(displayValue, value, defaultValue),
   }
+  if (placeholder) obj['placeholder'] = placeholder
+  return obj
 }
 
 // [label, extraLabel, placeholder]
@@ -87,8 +90,7 @@ const findDecoration = (props) => {
   let {field, decorationType, ...rest} = props
   let value = props[decorationType]
   if (_.isFunction(value)) return value(rest)
-  if (!field) return
-  if (_.isBoolean(value)) return makeTranslation({...props, value})
+  if (_.isBoolean(value) && field) return makeTranslation({...props, value})
   return decorationType == 'label' ? t(findLabel(props)) : null
 }
 
