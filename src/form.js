@@ -439,7 +439,7 @@ class Form extends Component {
   }
 
   enhanceChild = (c, {idx, extraProps} = {}) => {
-    const {updatedFields = [], disabled, onSubmit} = this.props
+    const {updatedFields = [], disabled, onSubmit, transNamespace} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
 
@@ -471,6 +471,7 @@ class Form extends Component {
       onChange: (val) => this.updateField(field, val, itemId, fieldProps),
       setFormData: this.updateField,
       value: this.getValue(field, fieldProps),
+      transNamespace,
     })
     return newEl
   }

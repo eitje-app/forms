@@ -97,7 +97,15 @@ function useFormField(props) {
   }
 }
 
-const findLabel = ({label, name, field}) => {
+const makeTranslation = (props) => {
+  const {label, decorationType = 'label', field, transNamespace} = props
+  if (!transNamespace) return
+  return t(`form.${transNamespace}.${decorationType}.${field}`) // form.exportLayouts.labels.name
+}
+
+const findLabel = (props) => {
+  const {label, name, field} = props
+  if (_.isBoolean(label) && field && isScoped) return makeTranslation(props)
   if (label) return label
   const val = field
   const _name = 'field'
