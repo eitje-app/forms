@@ -1,6 +1,6 @@
 {
   "name": "@eitje/form",
-  "version": "1.10.13",
+  "version": "1.10.14",
   "description": "Beautiful forms made easy",
   "main": "index.js",
   "scripts": {
