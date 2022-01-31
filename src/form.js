@@ -439,7 +439,7 @@ class Form extends Component {
   }
 
   enhanceChild = (c, {idx, extraProps} = {}) => {
-    const {updatedFields = [], disabled, onSubmit, transNamespace} = this.props
+    const {updatedFields = [], disabledFields = [], disabled, onSubmit, transNamespace} = this.props
     const {errors, fields, touchedFields} = this.state
     const condOpts = {}
 
@@ -451,6 +451,7 @@ class Form extends Component {
     if (submitStrategy === 'blur') condOpts['onBlur'] = act
 
     const newEl = React.cloneElement(c, {
+      disabled: disabledFields.includes(field),
       key: itemId ? `${itemId}-${field}` : field,
       formDisabled: disabled,
       innerRef: c.props.innerRef || this[`child-${idx}`],
