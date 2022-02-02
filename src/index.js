@@ -7,14 +7,15 @@ import usePicker from './use_picker'
 import MultiForm from './multi_form'
 import FormWrapper from './form_wrapper'
 import Form from './form'
+import ContextForm, {useForm} from './context_form'
 // console.log(nl)
 
 const nl = {form: dutch}
 const en = {form: english}
 const translations = {en, nl}
 
-export {setup, configure, translations, useFormField, usePicker, MultiForm, Form, FormWrapper}
+export {setup, configure, translations, useForm, ContextForm, useFormField, usePicker, MultiForm, Form, FormWrapper}
 
-Object.assign(module.exports, require('./actions'));
-Object.assign(module.exports, require('./components'));
-
+Object.assign(module.exports, require('./actions'))
+Object.assign(module.exports, require('./components'))
+Object.assign(module.exports, require('./use_register_field'))

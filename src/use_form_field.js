@@ -5,7 +5,7 @@ import utils from '@eitje/utils'
 
 const allowEmptyString = (...vals) => vals.find((v) => v == '' || v)
 
-function useFormField(props) {
+function useFormField(props = {}) {
   let {
     required,
     disabled,
@@ -80,6 +80,7 @@ function useFormField(props) {
       {warning}
     </p>
   )
+
   error = error && (
     <p className="error-msg" style={errorStyle}>
       {error}

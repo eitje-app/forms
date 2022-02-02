@@ -2,8 +2,9 @@ import React, {Fragment} from 'react'
 import useFormField from './use_form_field'
 import {Button, Tooltip, t} from './base'
 import utils from '@eitje/utils'
+import {makeRegisteredField} from './use_register_field'
 
-export const makeField =
+const decorateField =
   (Comp, {withLabel = true, withError = true, className = ''} = {}) =>
   (props) => {
     let {
@@ -27,6 +28,10 @@ export const makeField =
       extraLabel,
       className: _className,
       isLayered = submitStrategy === 'inlineButton' || extraLabel,
+      label,
+      error,
+      warning,
+      disabled,
     } = props
 
     if (isLayered) {
@@ -37,9 +42,6 @@ export const makeField =
 
     const isButtonSubmit = submitStrategy === 'inlineButton'
 
-    const prupz = useFormField(props)
-    let {label, error, warning, disabled} = prupz
-    extraLabel = prupz.extraLabel
     const classNames = [
       `eitje-field-${field}`,
       error && 'error-msg-container',
@@ -50,10 +52,12 @@ export const makeField =
       .filter(Boolean)
       .join(' ')
 
+    debugger
+
     let style = containerStyle
     if (disabled) style = {...disabledStyle, ...style}
 
-    const _Comp = <Comp innerClass={classNames} {...props} {...prupz} />
+    const _Comp = <Comp innerClass={classNames} {...props} />
     return (
       <Container className={`elementContainer ${classNames} ${className}`} style={style} {...containerProps}>
         <LeftContainer {...leftContainerProps}>
@@ -85,4 +89,9 @@ const renderLabel = ({label, withLabel, info}) => {
     return <Tooltip title={info}>{label}</Tooltip>
   }
   return label
+}
+
+export const makeField = (Comp, compOpts = {}) => {
+  const Formified = decorateField(Comp)
+  return makeRegisteredField(Formified, compOpts)
 }
