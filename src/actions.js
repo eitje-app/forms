@@ -52,8 +52,6 @@ const decorateField =
       .filter(Boolean)
       .join(' ')
 
-    debugger
-
     let style = containerStyle
     if (disabled) style = {...disabledStyle, ...style}
 
