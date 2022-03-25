@@ -214,6 +214,7 @@ class MultiForm extends React.Component {
   getContext() {
     const {addForm, removeForm, submit} = this
     const {forms} = this.state
+    const _addForm = () => addForm()
     return {addForm: this.mayAdd() && _addForm, submit, removeForm, amtForms: forms.length, getData: this.getParams}
   }
 
