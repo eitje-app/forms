@@ -1,10 +1,12 @@
-import React, {useRef, createRef, Fragment} from 'react'
-import Form from './form'
+import React, {useRef, createRef, useContext, Fragment} from 'react'
+import Form from './context_form'
 import utils from '@eitje/utils'
 import _ from 'lodash'
 import {t, Button, alert, Prompt, MultiFormWrapper} from './base'
 import {debounce} from './utils'
 
+const MultiFormContext = React.createContext({})
+const {Provider} = MultiFormContext
 
 class MultiForm extends React.Component {
   constructor(props) {
@@ -70,7 +72,7 @@ class MultiForm extends React.Component {
       this.updateParentForm()
     }
 
-    const relevantChildren = this.safeChildren({removeForm, isLast, isFirst}).filter(
+    const relevantChildren = this.safeChildren({removeForm, idx, isLast, isFirst}).filter(
       (c) => !c.props.ignoreForm && !c.props.submitButton && !c.props.addButton,
     )
 
@@ -209,20 +211,32 @@ class MultiForm extends React.Component {
     return utils.alwaysDefinedArray(childs)
   }
 
+  getContext() {
+    const {addForm, removeForm, submit} = this
+    const {forms} = this.state
+    return {addForm: this.mayAdd() && _addForm, submit, removeForm, amtForms: forms.length, getData: this.getParams}
+  }
+
   render() {
     const {AddButton = Button, hideAddButton = true} = this.props
     const {amtForms, forms, touched} = this.state
     const submitButton = this.safeChildren().find((c) => c.props?.submitButton)
     return (
       <MultiFormWrapper>
-        {forms.map((f, idx) => this.makeForm(idx, f))}
-        {!!submitButton &&
-          (!submitButton.props.showAfterTouch || touched) &&
-          React.cloneElement(submitButton, {onClick: () => this.submit()})}
-        {!hideAddButton && <AddButton onClick={() => this.addForm()}> Add </AddButton>}
+        <Provider value={this.getContext()}>
+          {forms.map((f, idx) => this.makeForm(idx, f))}
+          {!!submitButton &&
+            (!submitButton.props.showAfterTouch || touched) &&
+            React.cloneElement(submitButton, {onClick: () => this.submit()})}
+          {!hideAddButton && <AddButton onClick={() => this.addForm()}> Add </AddButton>}
+        </Provider>
       </MultiFormWrapper>
     )
   }
+}
+
+export const useMultiForm = () => {
+  return useContext(MultiFormContext)
 }
 
 export default MultiForm
