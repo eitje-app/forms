@@ -136,12 +136,15 @@ class MultiForm extends React.Component {
     onChange(this.getParams())
   }
 
-  async addForm(formNum = this.state.forms[this.state.forms.length - 1]) {
+  async addForm(formNum = this.state.forms[this.state.forms.length - 1], formData) {
     const {amtForms, maxForms, forms} = this.state
     const isLast = forms[forms.length - 1] == formNum
     if (isLast && (!maxForms || maxForms < forms.length)) {
       this[`child-${formNum + 1}`] = createRef()
       await this.setState({forms: [...forms, formNum + 1]})
+      if (formData) {
+        setValuesAtIndex(formData, formNum + 1)
+      }
     }
   }
 
@@ -160,6 +163,11 @@ class MultiForm extends React.Component {
     this.formChildren().forEach((f) => {
       f.setValues(data)
     })
+  }
+
+  setValuesAtIndex = (data, index) => {
+    const form = this.formChildren()[index]
+    if (form) form.setValues(data)
   }
 
   getParams = () => {
