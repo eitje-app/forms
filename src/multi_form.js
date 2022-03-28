@@ -237,7 +237,11 @@ class MultiForm extends React.Component {
           {!!submitButton &&
             (!submitButton.props.showAfterTouch || touched) &&
             React.cloneElement(submitButton, {onClick: () => this.submit()})}
-          {!hideAddButton && <AddButton onClick={() => this.addForm()}> Add </AddButton>}
+          {!hideAddButton && (
+            <AddButton className="multi-form-add-button" onClick={() => this.addForm()}>
+              Add
+            </AddButton>
+          )}
         </Provider>
       </MultiFormWrapper>
     )
