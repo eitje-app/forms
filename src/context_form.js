@@ -111,7 +111,7 @@ class Form extends Component {
 
     if (!params) params = _.pick(fields, toPick)
 
-    if (params['amount']) {
+    if (params['amount'] && params['amount'].replace) {
       params['amount'] = params['amount'].replace(trailingDot, '') // horrible hacks used for the financial input to prevent '10,' from being sent to the back-end
     }
     params = {...params, ...extraData}
