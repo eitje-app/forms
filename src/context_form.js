@@ -510,10 +510,11 @@ class Form extends Component {
       submitButton,
       promptMsg = 'leave_unfinished_form',
       debug,
+      className,
       onFocus = () => {},
     } = this.props
     const {errors, fields, touchedFields} = this.state
-
+    const classNames = utils.makeCns(className, 'eitje-form')
     return (
       <Fragment>
         <Wrapper
@@ -523,7 +524,7 @@ class Form extends Component {
             onSubmit && this.submit()
           }}
           autocomplete="nope"
-          className="eitje-form"
+          className={classNames}
           tabIndex={-1}
           onFocus={onFocus}
         >
