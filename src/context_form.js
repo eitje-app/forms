@@ -486,9 +486,9 @@ class Form extends Component {
   // 3. useForm -> consumes context (onSubmit, validate, getData)
 
   getContext() {
-    const {submit, resetValues, validate, getParams, registerField, enhanceField, unregisterField} = this
+    const {submit, setValues, resetValues, validate, getParams, registerField, enhanceField, unregisterField} = this
 
-    return {submit, resetValues, validate, getData: getParams, enhanceField, registerField, unregisterField}
+    return {submit, resetValues, setValues, validate, getData: getParams, enhanceField, registerField, unregisterField}
   }
 
   registerField(fieldName, props) {
