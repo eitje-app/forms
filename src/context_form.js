@@ -60,6 +60,7 @@ class Form extends Component {
     this.getValue = this.getValue.bind(this)
     this.enhanceField = this.enhanceField.bind(this)
     this.unregisterField = this.unregisterField.bind(this)
+    this.touchedAndFilled = this.touchedAndFilled.bind(this)
     this.throttledSubmit = _.debounce(this.submit, throttleTime, {trailing: true})
     this.submit = debounce(this.submit, debounceTime, true)
   }
