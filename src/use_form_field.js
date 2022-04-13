@@ -34,7 +34,6 @@ function useFormField(props = {}) {
 
   const actuallyDisabled = formDisabled || isDisabled
   const lbl = findLabel(props)
-
   let finalLabel = !labelVisible ? null : isDisabled ? disabledLabel || lbl : lbl
 
   if (_.isString(finalLabel)) {
@@ -117,5 +116,3 @@ const findLabel = (props) => {
 }
 
 export default useFormField
-
-console.log('hiiii')

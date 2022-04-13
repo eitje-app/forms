@@ -17,5 +17,6 @@ const translations = {en, nl}
 export {setup, configure, translations, useForm, useMultiForm, ContextForm, useFormField, usePicker, MultiForm, Form, FormWrapper}
 
 Object.assign(module.exports, require('./actions'))
+Object.assign(module.exports, require('./legacy_actions'))
 Object.assign(module.exports, require('./components'))
 Object.assign(module.exports, require('./use_register_field'))
