@@ -452,6 +452,7 @@ class Form extends Component {
     return {
       disabled: disabledFields.includes(field),
       updated: updatedFields.includes(field),
+      formData: fields, //
       isTouched: touchedFields.includes(field),
       blockSubmit: (block = true) => this.blockSubmit(field, block),
       error: errors[field],
