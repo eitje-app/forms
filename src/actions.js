@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react'
 import useFormField from './use_form_field'
-import {Button, Tooltip, t} from './base'
+import {Button, Tooltip, t, tooltipElement} from './base'
 import utils from '@eitje/utils'
 import {makeRegisteredField} from './use_register_field'
 
@@ -81,10 +81,15 @@ const decorateField =
 
 const renderError = ({error, warning}) => {}
 
-const renderLabel = ({label, withLabel, info}) => {
+const renderLabel = ({label, withLabel, tooltip}) => {
   if (!withLabel || !label) return null
-  if (info) {
-    return <Tooltip title={info}>{label}</Tooltip>
+  if (tooltip) {
+    return (
+      <Tooltip title={tooltip}>
+        {label}
+        {tooltipElement}
+      </Tooltip>
+    )
   }
   return label
 }

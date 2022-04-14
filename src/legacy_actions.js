@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react'
-import useFormField from './use_form_field'
+import useFormField from './use_legacy_form_field'
 import {Button, Tooltip, t} from './base'
 import utils from '@eitje/utils'
 

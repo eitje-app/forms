@@ -11,108 +11,66 @@ function useFormField(props = {}) {
     disabled,
     error,
     disabledLabel,
-    name,
     value,
     warning,
-    labelStyle = {},
-    extraLabelStyle = {},
-    extraLabel,
-    errorStyle = {color: 'red'},
     defaultValue,
     labelVisible = true,
     formDisabled,
     formData,
     label,
-    field,
-    hidden,
     displayValue,
-    warningStyle = {color: 'orange'},
   } = props
+
   warning = utils.funcOrObj(warning, value, formData)
   const isDisabled = _.isFunction(disabled) ? disabled(formData) : disabled
   const isRequired = _.isFunction(required) ? required(formData) : required
 
   const actuallyDisabled = formDisabled || isDisabled
-  const lbl = findLabel(props)
-  let finalLabel = !labelVisible ? null : isDisabled ? disabledLabel || lbl : lbl
 
-  if (_.isString(finalLabel)) {
-    finalLabel = (
-      <p className="eitje-label" style={labelStyle}>
-        {utils.capitalize(t(finalLabel))}
-      </p>
-    )
-  }
+  let labelProps = isDisabled && disabledLabel ? {...props, label: disabledLabel} : props
+  label = labelVisible ? buildDecoration({...labelProps, decorationType: 'label'}) : null
+  let placeholder = buildDecoration({...props, decorationType: 'placeholder'})
+  let extraLabel = buildDecoration({...props, decorationType: 'extraLabel'})
+  let tooltip = buildDecoration({...props, decorationType: 'tooltip'})
 
-  if (_.isString(extraLabel)) {
-    extraLabel = (
-      <p className="eitje-extra-label" style={extraLabelStyle}>
-        {t(extraLabel)}
-      </p>
-    )
-  }
+  if (_.isString(label)) label = <p className="eitje-label"> {label} </p>
+  if (_.isString(extraLabel)) extraLabel = <p className="eitje-extra-label"> {extraLabel} </p>
 
-  if (_.isFunction(extraLabel)) {
-    extraLabel = extraLabel(props)
-    if (_.isString(extraLabel)) {
-      extraLabel = (
-        <p className="eitje-label" style={extraLabelStyle}>
-          {extraLabel}
-        </p>
-      )
-    }
-  }
+  warning = warning && <p className="warning-msg">{warning}</p>
 
-  if (_.isFunction(finalLabel)) {
-    finalLabel = finalLabel(props)
-    if (_.isString(finalLabel)) {
-      finalLabel = (
-        <p className="eitje-label" style={labelStyle}>
-          {finalLabel}
-        </p>
-      )
-    }
-  }
-
-  warning = warning && (
-    <p className="warning-msg" style={warningStyle}>
-      {warning}
-    </p>
-  )
-
-  error = error && (
-    <p className="error-msg" style={errorStyle}>
-      {error}
-    </p>
-  )
+  error = error && <p className="error-msg">{error}</p>
 
   return {
     required: isRequired,
     error,
     disabled: actuallyDisabled,
-    label: finalLabel,
+    label,
     extraLabel,
+    placeholder,
     warning,
+    tooltip,
     value: allowEmptyString(displayValue, value, defaultValue),
   }
 }
 
-const makeTranslation = (props) => {
-  const {label, decorationType = 'label', field, transNamespace} = props
-  if (!transNamespace) return
-  return t(`form.${transNamespace}.${decorationType}.${field}`) // form.exportLayouts.labels.name
+const decorationDefaults = {
+  label: true,
+  placeholder: true,
 }
 
-const findLabel = (props) => {
-  const {label, name, field} = props
-  if (_.isBoolean(label) && field && isScoped) return makeTranslation(props)
-  if (label) return label
-  const val = field
-  const _name = 'field'
-  if (!val) return
-  let finalValue = isScoped ? t(`form.${_name}.${val}`) : val
-  finalValue = finalValue == `form.${_name}.${val}` ? val : finalValue
-  return finalValue
+const buildDecoration = (props) => {
+  const {decorationType} = props
+  let val = props.hasOwnProperty(decorationType) ? props[decorationType] : decorationDefaults[decorationType]
+
+  if (_.isFunction(val)) val = val(props)
+  if (_.isBoolean(val)) return makeTranslation(props)
+  return val
+}
+
+const makeTranslation = (props) => {
+  const {label, decorationType, field, transNamespace} = props
+  if (!transNamespace) return
+  return t(`form.${transNamespace}.fields.${field}.${utils.camelToSnake(decorationType)}`) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
 }
 
 export default useFormField
