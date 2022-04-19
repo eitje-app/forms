@@ -9,6 +9,8 @@ let Tooltip = Fragment
 let Wrapper = Fragment
 let MultiFormWrapper = Fragment
 let tooltipElement = null
+let defaultIcon = null
+let clearIcon = null
 
 const setup = ({translatorFunc, alertFunc, scoped, button, ...rest}) => {
   if (translatorFunc) t = translatorFunc
@@ -20,7 +22,9 @@ const setup = ({translatorFunc, alertFunc, scoped, button, ...rest}) => {
   if (rest.Wrapper) Wrapper = rest.Wrapper
   if (rest.MultiFormWrapper) MultiFormWrapper = rest.MultiFormWrapper
   if (rest.tooltipElement) tooltipElement = rest.tooltipElement
+  if (rest.defaultIcon) defaultIcon = rest.defaultIcon
+  if (rest.clearIcon) clearIcon = rest.clearIcon
 }
-export {t, alert, isScoped, Button, Prompt, Tooltip, Wrapper, MultiFormWrapper, tooltipElement}
+export {t, alert, isScoped, Button, Prompt, Tooltip, Wrapper, MultiFormWrapper, clearIcon, defaultIcon, tooltipElement}
 
 export default setup
