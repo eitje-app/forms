@@ -5,77 +5,50 @@ import utils from '@eitje/utils'
 import {makeRegisteredField} from './use_register_field'
 
 const decorateField =
-  (Comp, {withLabel = true, withError = true, className = ''} = {}) =>
+  (Comp, {withLabel = true, extraChildren, withError = true, className = ''} = {}) =>
   (props) => {
     let {
-      containerStyle = {},
       field,
-      Container = 'div',
       isTouched,
-      disabledStyle = {opacity: 0.2},
-      containerProps = {},
       submitStrategy,
       submitForm,
       value,
-      LeftContainer = Fragment,
-      RightContainer = Fragment,
-      rightChildren,
-      leftChildren,
-      leftContainerProps = {},
-      rightContainerProps = {},
       readOnly,
       SubmitButton = Button,
       extraLabel,
       className: _className,
-      isLayered = submitStrategy === 'inlineButton' || extraLabel,
       label,
       error,
       warning,
       disabled,
     } = props
 
-    if (isLayered) {
-      LeftContainer = RightContainer = 'div'
-      leftContainerProps = {className: 'form-container-left'}
-      rightContainerProps = {className: 'form-container-right'}
-    }
-
     const isButtonSubmit = submitStrategy === 'inlineButton'
 
     const classNames = [
       `eitje-form-2-field-${field}`,
-      error && 'error-msg-container',
-      isLayered && 'form-container-split',
-      readOnly && 'readOnly',
+      disabled && 'eitje-form-2-field-disabled',
+      error && 'eitje-form-2-field-error',
+      readOnly && 'eitje-form-2-read-only',
       _className,
     ]
       .filter(Boolean)
       .join(' ')
 
-    let style = containerStyle
-    if (disabled) style = {...disabledStyle, ...style}
-
     const _Comp = <Comp innerClass={classNames} {...props} />
     return (
-      <Container className={`eitje-form-2-field ${classNames} ${className}`} style={style} {...containerProps}>
-        <LeftContainer {...leftContainerProps}>
-          {renderLabel({...props, label, withLabel})}
-          {extraLabel}
-          {leftChildren}
-          {!extraLabel && _Comp}
-          {withError && (error || warning)}
-        </LeftContainer>
+      <div className={`eitje-form-2-field ${classNames} ${className}`}>
+        {renderLabel({...props, label, withLabel})}
+        {extraLabel}
+        {!extraLabel && _Comp}
+        {withError && (error || warning)}
 
-        <RightContainer {...rightContainerProps}>
-          {extraLabel && _Comp}
-          {rightChildren}
-          {isButtonSubmit && isTouched && !error && (
-            <div onClick={() => submitForm({field})}>
-              <SubmitButton> {t('submit')} </SubmitButton>
-            </div>
-          )}
-        </RightContainer>
-      </Container>
+        {isButtonSubmit && isTouched && !error && (
+          <div onClick={() => submitForm({field})}>
+            <SubmitButton> {t('submit')} </SubmitButton>
+          </div>
+        )}
+      </div>
     )
   }
 
