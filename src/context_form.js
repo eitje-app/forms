@@ -526,7 +526,7 @@ class Form extends Component {
       onFocus = () => {},
     } = this.props
     const {errors, fields, touchedFields} = this.state
-    const classNames = utils.makeCns(className, 'eitje-form')
+    const classNames = utils.makeCns(className, 'eitje-form-2')
     return (
       <Fragment>
         <Wrapper

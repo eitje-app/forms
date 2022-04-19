@@ -43,7 +43,7 @@ const decorateField =
     const isButtonSubmit = submitStrategy === 'inlineButton'
 
     const classNames = [
-      `eitje-field-${field}`,
+      `eitje-form-2-field-${field}`,
       error && 'error-msg-container',
       isLayered && 'form-container-split',
       readOnly && 'readOnly',
@@ -57,7 +57,7 @@ const decorateField =
 
     const _Comp = <Comp innerClass={classNames} {...props} />
     return (
-      <Container className={`elementContainer ${classNames} ${className}`} style={style} {...containerProps}>
+      <Container className={`eitje-form-2-field ${classNames} ${className}`} style={style} {...containerProps}>
         <LeftContainer {...leftContainerProps}>
           {renderLabel({...props, label, withLabel})}
           {extraLabel}
