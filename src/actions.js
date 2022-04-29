@@ -69,8 +69,6 @@ const decorateField =
       className,
     )
 
-    const _Comp = <Comp innerClass={classNames} {...props} />
-
     const clickChild = (e) => {
       const element = e.target.classList.contains('eitje-form-2-field') ? e.target : e.target.parentElement
       if (!element) return
@@ -81,7 +79,7 @@ const decorateField =
       <div onClick={clickChild} className={classNames}>
         {renderLabel({...props, label, withLabel})}
         {extraLabel}
-        {_Comp}
+        <Comp {...props} />
         {withError && (error || warning)}
 
         {isButtonSubmit && isTouched && !error && (
