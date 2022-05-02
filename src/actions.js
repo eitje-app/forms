@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react'
+import React, {Fragment, useState} from 'react'
 import useFormField from './use_form_field'
 import {Button, Tooltip, t, tooltipElement, defaultIcon, clearIcon} from './base'
 import utils from '@eitje/utils'
@@ -20,13 +20,22 @@ function fireMouseEvents(element, eventNames = ['mousedown']) {
   }
 }
 
-const findDropdown = (element) => {
+const ignoreDropdownClasses = ['eitje-form-2-select-all']
+
+let dropdownIsOpen = false
+
+const findDropdown = (e, props) => {
+  if (ignoreDropdownClasses.some((c) => e.target.classList.contains(c))) return
+  const element = e.target.classList.contains('eitje-form-2-field') ? e.target : e.target.parentElement
   const child = element.querySelector('.ant-select-selector')
   if (!child) return
-  fireMouseEvents(child)
+  if (!dropdownIsOpen) {
+    fireMouseEvents(child)
+  }
 }
 
-const findInput = (element) => {
+const findInput = (e) => {
+  const element = e.target.classList.contains('eitje-form-2-field') ? e.target : e.target.parentElement
   let child = element.querySelector('input') // for now, we assume the 'actual' input is always an input AND there is always only one
   child?.focus()
 }
@@ -56,8 +65,18 @@ const decorateField =
       onChange,
       icon = defaultIcon,
     } = props
+    const setOpen = (open) => {
+      // this is only for dropdown, if you click outside antd's area, they trigger a 'clickOutside' event and hide the dropdown menu.
+      // sadly, this event is fired BEFORE our click, and thus we never know if the dropdown ACTUALLY came from a closed state, or if it was just closed by the clickOutside event
+      // the 200ms here is a proxy to differentiate between 'actually closed' & 'just closed by event trigger'
+      setTimeout(() => {
+        dropdownIsOpen = open
+      }, 200)
+    }
 
     const isButtonSubmit = submitStrategy === 'inlineButton'
+    withClearIcon = utils.funcOrVal(withClearIcon, props)
+    withIcon = utils.funcOrVal(withIcon, props)
 
     const classNames = utils.makeCns(
       `eitje-form-2-field `,
@@ -72,16 +91,14 @@ const decorateField =
     )
 
     const clickChild = (e) => {
-      const element = e.target.classList.contains('eitje-form-2-field') ? e.target : e.target.parentElement
-      if (!element) return
-      findFns[className]?.(element)
+      findFns[className]?.(e, props)
     }
 
     return (
       <div onClick={clickChild} className={classNames}>
         {renderLabel({...props, label, withLabel})}
         {extraLabel}
-        <Comp {...props} />
+        <Comp setOpen={setOpen} {...props} />
         {withError && (error || warning)}
 
         {isButtonSubmit && isTouched && !error && (
