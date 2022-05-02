@@ -65,6 +65,8 @@ const decorateField =
       disabled && 'eitje-form-2-field-disabled',
       error && 'eitje-form-2-field-error',
       readOnly && 'eitje-form-2-read-only',
+      withIcon && 'eitje-form-2-field-has-icon',
+      withClearIcon && 'eitje-form-2-field-has-clear-icon',
       _className,
       className,
     )
