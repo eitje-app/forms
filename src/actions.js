@@ -20,13 +20,14 @@ function fireMouseEvents(element, eventNames = ['mousedown']) {
   }
 }
 
-const ignoreDropdownClasses = ['eitje-form-2-select-all']
+const ignoreDropdownClasses = ['eitje-form-2-select-all', 'eitje-form-2-field-clear', 'ant-select-selector']
 
 let dropdownIsOpen = false
 
 const findDropdown = (e, props) => {
   if (ignoreDropdownClasses.some((c) => e.target.classList.contains(c))) return
   const element = e.target.classList.contains('eitje-form-2-field') ? e.target : e.target.parentElement
+
   const child = element.querySelector('.ant-select-selector')
   if (!child) return
   if (!dropdownIsOpen) {
