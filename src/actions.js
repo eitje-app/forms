@@ -64,6 +64,7 @@ const decorateField =
       warning,
       disabled,
       onChange,
+      hideClearIcon,
       icon = defaultIcon,
     } = props
     const setOpen = (open) => {
@@ -109,7 +110,9 @@ const decorateField =
         )}
 
         {withIcon && icon && _.isString(icon) && <img className="eitje-form-2-field-icon" src={icon} />}
-        {clearIcon && withClearIcon && <img className="eitje-form-2-field-clear" src={clearIcon} onClick={() => onChange(null)} />}
+        {clearIcon && withClearIcon && !hideClearIcon && utils.exists(value) && isTouched && (
+          <img className="eitje-form-2-field-clear" src={clearIcon} onClick={() => onChange(null)} />
+        )}
       </div>
     )
   }
