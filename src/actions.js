@@ -110,7 +110,7 @@ const decorateField =
         )}
 
         {withIcon && icon && _.isString(icon) && <img className="eitje-form-2-field-icon" src={icon} />}
-        {clearIcon && withClearIcon && !hideClearIcon && utils.exists(value) && isTouched && (
+        {clearIcon && withClearIcon && !hideClearIcon && utils.exists(value) && (
           <img className="eitje-form-2-field-clear" src={clearIcon} onClick={() => onChange(null)} />
         )}
       </div>
