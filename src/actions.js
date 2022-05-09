@@ -77,8 +77,8 @@ const decorateField =
     }
 
     const isButtonSubmit = submitStrategy === 'inlineButton'
-    withClearIcon = utils.funcOrVal(withClearIcon, props)
-    withIcon = utils.funcOrVal(withIcon, props)
+    const _withClearIcon = utils.funcOrVal(withClearIcon, props)
+    const _withIcon = utils.funcOrVal(withIcon, props)
 
     const classNames = utils.makeCns(
       `eitje-form-2-field `,
@@ -86,8 +86,8 @@ const decorateField =
       disabled && 'eitje-form-2-field-disabled',
       error && 'eitje-form-2-field-error',
       readOnly && 'eitje-form-2-read-only',
-      withIcon && 'eitje-form-2-field-has-icon',
-      withClearIcon && 'eitje-form-2-field-has-clear-icon',
+      _withIcon && 'eitje-form-2-field-has-icon',
+      _withClearIcon && 'eitje-form-2-field-has-clear-icon',
       _className,
       className,
     )
@@ -109,8 +109,8 @@ const decorateField =
           </div>
         )}
 
-        {withIcon && icon && _.isString(icon) && <img className="eitje-form-2-field-icon" src={icon} />}
-        {clearIcon && withClearIcon && !hideClearIcon && utils.exists(value) && (
+        {_withIcon && icon && _.isString(icon) && <img className="eitje-form-2-field-icon" src={icon} />}
+        {clearIcon && _withClearIcon && !hideClearIcon && utils.exists(value) && (
           <img className="eitje-form-2-field-clear" src={clearIcon} onClick={() => onChange(null)} />
         )}
       </div>
