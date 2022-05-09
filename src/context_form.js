@@ -56,6 +56,7 @@ class Form extends Component {
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
     this.updateField = this.updateField.bind(this)
+    this.handleOtherFieldErrors = this.handleOtherFieldErrors.bind(this)
     this.registerField = this.registerField.bind(this)
     this.getValue = this.getValue.bind(this)
     this.enhanceField = this.enhanceField.bind(this)
@@ -214,6 +215,16 @@ class Form extends Component {
     this.setState({fields: newFields})
   }
 
+  handleOtherFieldErrors = (field) => {
+    const {errors, registeredFields} = this.state
+    const errFields = Object.keys(errors).filter((e) => errors[e] && errors[e] != t('form.required'))
+    errFields.forEach((errField) => {
+      const registeredField = registeredFields.find((f) => f.fieldName == errField)
+
+      if (registeredField) this.validateField(errField, true, registeredField?.props)
+    })
+  }
+
   updateField = async (field, val, fieldProps = {}) => {
     const {fields, errors, touched, touchedFields} = this.state
     const {namespace} = fieldProps
@@ -232,6 +243,7 @@ class Form extends Component {
     currentHolder[field] = val
     await this.setState({fields: newFields})
     this.validateField(field, true, fieldProps)
+    this.handleOtherFieldErrors(field)
 
     afterChange && afterChange(field, val, newFields)
 
