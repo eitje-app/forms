@@ -1,4 +1,4 @@
-import setup from './base'
+import setup, {t} from './base'
 import configure from './form_creator'
 import dutch from './i18n/nl'
 import english from './i18n/en'
@@ -28,6 +28,7 @@ export {
   MultiForm,
   Form,
   FormWrapper,
+  t,
 }
 
 Object.assign(module.exports, require('./actions'))
