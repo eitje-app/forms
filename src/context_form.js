@@ -93,7 +93,7 @@ class Form extends Component {
 
   async submit({extraData = {}, field, onlyTouched, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
-    const {onSubmit, submitInitialValues, initialValues, rollbackOnError = field, identityField = 'id'} = this.props
+    const {onSubmit, handleAllErrors, submitInitialValues, initialValues, rollbackOnError = field, identityField = 'id'} = this.props
     const {fields, touchedFields} = this.state
 
     if (this.blocked()) return
@@ -130,14 +130,15 @@ class Form extends Component {
       const res = await onSubmit(params, {setErrors})
 
       await this.setState({submitted: true})
+
       if (!res) return
       if (res.ok) {
         const partialSubmit = !!field
         this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
       } else {
         if (rollbackOnError) this.rollback()
+        if (res?.data?.errors) this.handleErrors(res)
       }
-      if (res.status == 422) this.handleErrors(res)
     }
 
     console.groupEnd()
@@ -151,7 +152,8 @@ class Form extends Component {
   handleErrors(res) {
     const {fields} = this.state
     const {hideLabelErrors, initialValues} = this.props
-    const errors = res.data?.errors
+    let errors = res.data?.errors
+    if (_.isString(errors)) errors = {base: [errors]}
     if (!_.isObject(errors)) return
     const newErrors = _.mapValues(errors, (err) => err[0])
 
@@ -501,8 +503,10 @@ class Form extends Component {
 
   getContext() {
     const {submit, setValues, resetValues, touchedAndFilled, validate, getParams, registerField, enhanceField, unregisterField} = this
+    const {errors} = this.state
 
     return {
+      errors,
       submit,
       resetValues,
       formTouched: touchedAndFilled,
