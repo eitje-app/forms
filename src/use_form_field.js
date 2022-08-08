@@ -70,7 +70,11 @@ const buildDecoration = (props) => {
 const makeTranslation = (props) => {
   const {label, decorationType, field, transNamespace} = props
   if (!transNamespace) return
-  return t(`form.${transNamespace}.fields.${field}.${utils.camelToSnake(decorationType)}`) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
+  const decorationName = utils.camelToSnake(decorationType)
+  const optsName = `${decorationName}Opts`
+  const opts = props[optsName] || {}
+
+  return t(`form.${transNamespace}.fields.${field}.${decorationName}`, opts) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
 }
 
 export default useFormField
