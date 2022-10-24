@@ -47,7 +47,10 @@ const findFns = {
 }
 
 const decorateField =
-  (Comp, {withLabel = true, extraChildren, withIcon = true, withClearIcon, defaultPickerValue, withError = true, className = ''} = {}) =>
+  (
+    Comp,
+    {withLabel = true, extraChildren, withIcon = true, withClearIcon, defaultPickerValue = null, withError = true, className = ''} = {},
+  ) =>
   (props) => {
     let {
       field,
@@ -96,7 +99,7 @@ const decorateField =
       findFns[className]?.(e, props)
     }
 
-    defaultPickerValue = utils.funcOrVal(defaultPickerValue, props)
+    const defPickerValue = utils.funcOrVal(defaultPickerValue, props)
 
     return (
       <div onClick={clickChild} className={classNames}>
@@ -113,7 +116,7 @@ const decorateField =
 
         {_withIcon && icon && _.isString(icon) && !readOnly && <img className="eitje-form-2-field-icon" src={icon} />}
         {clearIcon && _withClearIcon && !hideClearIcon && utils.exists(value) && !readOnly && (
-          <img className="eitje-form-2-field-clear" src={clearIcon} onClick={() => onChange(defaultPickerValue)} />
+          <img className="eitje-form-2-field-clear" src={clearIcon} onClick={() => onChange(defPickerValue)} />
         )}
       </div>
     )
