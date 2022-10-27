@@ -33,8 +33,8 @@ function useFormField(props = {}) {
   let extraLabel = buildDecoration({...props, decorationType: 'extraLabel'})
   let tooltip = buildDecoration({...props, decorationType: 'tooltip'})
 
-  if (_.isString(label) || props.labelOpts?.postProcess) label = <p className="eitje-form-2-label"> {label} </p>
-  if (_.isString(extraLabel)) extraLabel = <p className="eitje-form-2-extra-label"> {extraLabel} </p>
+  if (_.isString(label) || props.labelOpts?.postProcess) label = <p className="eitje-form-2-label">{label}</p>
+  if (_.isString(extraLabel)) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
 
   warning = warning && <p className="eitje-form-2-warning">{warning}</p>
 
