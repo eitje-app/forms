@@ -93,7 +93,15 @@ class Form extends Component {
 
   async submit({extraData = {}, field, onlyTouched, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
-    const {onSubmit, handleAllErrors, submitInitialValues, initialValues, rollbackOnError = field, identityField = 'id'} = this.props
+    const {
+      onSubmit,
+      handleAllErrors,
+      submitInitialValues,
+      untouchOnSubmitFail,
+      initialValues,
+      rollbackOnError = field,
+      identityField = 'id',
+    } = this.props
     const {fields, touchedFields} = this.state
 
     if (this.blocked()) return
@@ -138,6 +146,7 @@ class Form extends Component {
       } else {
         if (rollbackOnError) this.rollback()
         if (res?.data?.errors) this.handleErrors(res)
+        if (untouchOnSubmitFail) this.unTouch()
       }
     }
 
