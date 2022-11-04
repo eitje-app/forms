@@ -135,7 +135,7 @@ class Form extends Component {
     if (this.validate({fields: [field].filter(Boolean)})) {
       console.log('Params to be submitted', params)
 
-      const res = await onSubmit(params, {setErrors})
+      const res = await onSubmit(params, {setErrors, fields})
 
       await this.setState({submitted: true})
 
