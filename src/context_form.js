@@ -534,8 +534,9 @@ class Form extends Component {
   }
 
   unregisterField(fieldName) {
-    const {registeredFields} = this.state
-    this.setState({registeredFields: registeredFields.filter((f) => f.fieldName != fieldName)})
+    this.setState((state) => {
+      registeredFields: state.registeredFields.filter((f) => f.fieldName != fieldName)
+    })
   }
 
   render() {
