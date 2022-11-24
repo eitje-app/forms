@@ -82,6 +82,7 @@ const decorateField =
     const isButtonSubmit = submitStrategy === 'inlineButton'
     const _withClearIcon = utils.funcOrVal(withClearIcon, props)
     const _withIcon = utils.funcOrVal(withIcon, props)
+    const containerClassName = utils.funcOrVal(className, props)
 
     const classNames = utils.makeCns(
       `eitje-form-2-field `,
@@ -92,7 +93,7 @@ const decorateField =
       _withIcon && 'eitje-form-2-field-has-icon',
       _withClearIcon && 'eitje-form-2-field-has-clear-icon',
       _className,
-      className,
+      containerClassName,
     )
 
     const clickChild = (e) => {
