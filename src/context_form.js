@@ -342,7 +342,7 @@ class Form extends Component {
 
       if (!invalid && error) {
         invalid = true
-        console.log('Failed validation', error)
+        console.log(`INVALID ${fieldName}`, error)
       }
     })
     this.setState({errors: errs})
