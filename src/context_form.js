@@ -512,7 +512,7 @@ class Form extends Component {
 
   getContext() {
     const {submit, setValues, resetValues, touchedAndFilled, validate, getParams, registerField, enhanceField, unregisterField} = this
-    const {errors} = this.state
+    const {errors, touchedFields} = this.state
 
     return {
       errors,
@@ -525,6 +525,8 @@ class Form extends Component {
       enhanceField,
       registerField,
       unregisterField,
+      touchedFields,
+      form: this,
     }
   }
 
