@@ -109,13 +109,18 @@ class Form extends Component {
     let toPick
     let params
 
-    if (field) {
+    if (submitInitialValues) {
+      // all
+      params = fields
+      toPick = [...this.fieldNames(), identityField]
+    } else if (field) {
       const pickName = namespace ? `${namespace}.${field}` : field
       toPick = [pickName, identityField]
     } else if (onlyTouched) {
+      // touched + visible
       toPick = [...touchedFields, identityField]
     } else {
-      if (submitInitialValues) params = fields
+      // visible
       toPick = [...this.fieldNames(), identityField]
     }
 
