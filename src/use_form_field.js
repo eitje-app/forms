@@ -33,7 +33,7 @@ function useFormField(props = {}) {
   let extraLabel = buildDecoration({...props, decorationType: 'extraLabel'})
   let tooltip = buildDecoration({...props, decorationType: 'tooltip'})
 
-  if (_.isString(label) || props.labelOpts?.postProcess) label = <p className="eitje-form-2-label">{label}</p>
+  if (_.isString(label) || props.i18nOpts?.postProcess) label = <p className="eitje-form-2-label">{label}</p>
   if (_.isString(extraLabel)) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
 
   warning = warning && <p className="eitje-form-2-warning">{warning}</p>
@@ -71,8 +71,7 @@ const makeTranslation = (props) => {
   const {label, decorationType, field, transNamespace} = props
   if (!transNamespace) return
   const decorationName = utils.camelToSnake(decorationType)
-  const optsName = `${decorationName}Opts`
-  const opts = props[optsName] || {}
+  const opts = props.i18nOpts || {}
 
   return t(`form.${transNamespace}.fields.${field}.${decorationName}`, opts) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
 }
