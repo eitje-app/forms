@@ -145,7 +145,7 @@ class Form extends Component {
       await this.setState({submitted: true})
 
       if (!res) return
-      if (res.ok) {
+      if ((_.isPlainObject(res) && res.ok) || res == true) {
         const partialSubmit = !!field
         this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
       } else {
@@ -388,6 +388,10 @@ class Form extends Component {
     this.setState({fields: newState})
   }
 
+  removeValues = (keys) => {
+    this.setState((state) => ({fields: _.omit(state.fields, keys)}))
+  }
+
   setValues = (obj) => {
     const {fields} = this.state
     this.setState({fields: {...fields, ...obj}})
@@ -516,10 +520,22 @@ class Form extends Component {
   // 3. useForm -> consumes context (onSubmit, validate, getData)
 
   getContext() {
-    const {submit, setValues, resetValues, touchedAndFilled, validate, getParams, registerField, enhanceField, unregisterField} = this
+    const {
+      submit,
+      setValues,
+      removeValues,
+      resetValues,
+      touchedAndFilled,
+      validate,
+      getParams,
+      registerField,
+      enhanceField,
+      unregisterField,
+    } = this
     const {errors, touchedFields} = this.state
 
     return {
+      removeValues,
       errors,
       submit,
       resetValues,

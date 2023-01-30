@@ -70,10 +70,16 @@ const buildDecoration = (props) => {
 const makeTranslation = (props) => {
   const {label, decorationType, field, transNamespace} = props
   if (!transNamespace) return
+  const namespaces = utils.alwaysDefinedArray(transNamespace)
   const decorationName = utils.camelToSnake(decorationType)
   const opts = props.i18nOpts || {}
 
-  return t(`form.${transNamespace}.fields.${field}.${decorationName}`, opts) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
+  let allKeys = namespaces.map((n) => {
+    return `form.${n}.fields.${field}.${decorationName}`
+  })
+  allKeys = [...allKeys, `form.defaults.fields.${field}.${decorationType}`]
+
+  return t(allKeys, opts) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
 }
 
 export default useFormField
