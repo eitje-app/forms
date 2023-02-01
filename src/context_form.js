@@ -567,6 +567,7 @@ class Form extends Component {
       children,
       showPrompt,
       onSubmit,
+      submitOnEnter = true,
       hidePrompt,
       submitButton,
       promptMsg = 'leave_unfinished_form',
@@ -582,7 +583,7 @@ class Form extends Component {
           action="javascript:" // This is needed to prevent nested forms from reloading the page on enter.. dont ask me why
           onSubmit={(e) => {
             e.preventDefault()
-            onSubmit && this.submit()
+            onSubmit && submitOnEnter && this.submit()
           }}
           autocomplete="nope"
           className={classNames}
