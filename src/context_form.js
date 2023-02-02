@@ -91,7 +91,7 @@ class Form extends Component {
 
   setErrors = (newErrors) => this.setState({errors: {...this.state.errors, ...newErrors}})
 
-  async submit({extraData = {}, field, onlyTouched, namespace, callback = () => {}} = {}) {
+  async submit({extraData = {}, field, onlyTouched, skipAfterSubmit, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
     const {
       onSubmit,
@@ -145,9 +145,10 @@ class Form extends Component {
       await this.setState({submitted: true})
 
       if (!res) return
-      if ((_.isPlainObject(res) && res.ok) || res == true) {
+      const resIsOk = (_.isPlainObject(res) && res.ok) || res == true
+      if (resIsOk) {
         const partialSubmit = !!field
-        this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
+        !skipAfterSubmit && this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
       } else {
         if (rollbackOnError) this.rollback()
         if (res?.data?.errors) this.handleErrors(res)
