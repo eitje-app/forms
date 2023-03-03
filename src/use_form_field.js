@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, isValidElement, useEffect, useRef} from 'react'
 import {t, isScoped} from './base'
 import _ from 'lodash'
 import utils from '@eitje/utils'
@@ -34,7 +34,7 @@ function useFormField(props = {}) {
   let tooltip = buildDecoration({...props, decorationType: 'tooltip'})
 
   if (_.isString(label) || props.i18nOpts?.postProcess) label = <p className="eitje-form-2-label">{label}</p>
-  if (_.isString(extraLabel)) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
+  if (extraLabel && !isValidElement(extraLabel)) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
 
   warning = warning && <p className="eitje-form-2-warning">{warning}</p>
 
