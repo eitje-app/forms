@@ -34,7 +34,8 @@ function useFormField(props = {}) {
   let tooltip = buildDecoration({...props, decorationType: 'tooltip'})
 
   if (_.isString(label) || props.i18nOpts?.postProcess) label = <p className="eitje-form-2-label">{label}</p>
-  if (extraLabel && !isValidElement(extraLabel)) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
+
+  if (_.isString(extraLabel) || props.i18nOpts?.postProcess) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
 
   warning = warning && <p className="eitje-form-2-warning">{warning}</p>
 
