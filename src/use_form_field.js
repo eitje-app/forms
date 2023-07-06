@@ -78,7 +78,7 @@ const makeTranslation = (props) => {
   let allKeys = namespaces.map((n) => {
     return `form.${n}.fields.${field}.${decorationName}`
   })
-  allKeys = [...allKeys, `form.defaults.fields.${field}.${decorationType}`]
+  allKeys = [...allKeys, `form.defaults.fields.${field}.${decorationType}`, `records.default.fields.${field}`]
 
   return t(allKeys, opts) // form.exportLayouts.fields.name.label|placeholder|extraLabel|tooltip
 }
