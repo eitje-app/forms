@@ -21,5 +21,5 @@ export const useRegisterField = (field, fieldProps) => {
 
 export const makeRegisteredField = (Comp) => (props) => {
 	const formProps = useRegisterField(props.field, props)
-	return <Comp {...props} {...formProps} />
+	return <Comp {...props} {...formProps} form />
 }
