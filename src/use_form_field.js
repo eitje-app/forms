@@ -68,9 +68,14 @@ const buildDecoration = (props) => {
   return val
 }
 
+const numAtEndRegex = /-\d+\b/g // this is done for compositeField, because it suffixes fields with -number, like user_id-1
+
 const makeTranslation = (props) => {
-  const {label, decorationType, field, transNamespace} = props
-  if (!transNamespace) return
+  let {label, decorationType, field, transNamespace} = props
+  if (!transNamespace || !field) return
+
+  field = field.replace(numAtEndRegex, '')
+
   const namespaces = utils.alwaysDefinedArray(transNamespace)
   const decorationName = utils.camelToSnake(decorationType)
   const opts = props.i18nOpts || {}
