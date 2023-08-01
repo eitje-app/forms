@@ -1,4 +1,3 @@
-import React from "react";
 import _ from "lodash";
 import { t, isScoped } from "./base";
 
@@ -17,7 +16,6 @@ const usePicker = ({
   items,
   noSort,
   value,
-  multiple,
   defaultTitle = "-",
   formData,
   buildLabel,
@@ -25,7 +23,6 @@ const usePicker = ({
   labelField = "name",
   valueField = "id",
   sortField = labelField,
-  test,
 }) => {
   let pickerItems = items;
   if (!noSort && sortField)
@@ -51,16 +48,20 @@ const usePicker = ({
   const selectedBaseItem = items.find((i) => i[valueField] === value);
 
   const selectedItems = _.isArray(value)
-    ? pickerItems.filter((i) => value.includes(i.value))
+    ? items.filter((i) => value.includes(i.value))
+    : [selectedItem].filter((i) => !_.isEmpty(i));
+
+  const unsortedSelectedItems = _.isArray(value)
+    ? _.sortBy(pickerItems, (v) => _.indexOf(value, v[valueField]))
     : [selectedItem].filter((i) => !_.isEmpty(i));
 
   return {
     pickerItems,
     selectedItems,
+    unsortedSelectedItems,
     title,
     selectedBaseItem,
     selectedItem,
-    title,
   };
 };
 
