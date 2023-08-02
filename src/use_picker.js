@@ -48,7 +48,7 @@ const usePicker = ({
   const selectedBaseItem = items.find((i) => i[valueField] === value);
 
   const selectedItems = _.isArray(value)
-    ? items.filter((i) => value.includes(i.value))
+    ? pickerItems.filter((i) => value.includes(i.value))
     : [selectedItem].filter((i) => !_.isEmpty(i));
 
   const unsortedSelectedItems = _.isArray(value)
