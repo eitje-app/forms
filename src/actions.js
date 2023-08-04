@@ -47,10 +47,7 @@ const findFns = {
 }
 
 const decorateField =
-  (
-    Comp,
-    {withLabel = true, extraChildren, withIcon = true, withClearIcon, defaultPickerValue = null, withError = true, className = ''} = {},
-  ) =>
+  (Comp, compOpts = {}) =>
   (props) => {
     let {
       field,
@@ -70,6 +67,18 @@ const decorateField =
       hideClearIcon,
       icon = defaultIcon,
     } = props
+    compOpts = utils.funcOrVal(compOpts, props)
+
+    const {
+      withLabel = true,
+      extraChildren,
+      withIcon = true,
+      withClearIcon,
+      defaultPickerValue = null,
+      withError = true,
+      className = '',
+    } = compOpts
+
     const setOpen = (open) => {
       // this is only for dropdown, if you click outside antd's area, they trigger a 'clickOutside' event and hide the dropdown menu.
       // sadly, this event is fired BEFORE our click, and thus we never know if the dropdown ACTUALLY came from a closed state, or if it was just closed by the clickOutside event
