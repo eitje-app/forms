@@ -52,7 +52,9 @@ const usePicker = ({
     : [selectedItem].filter((i) => !_.isEmpty(i));
 
   const unsortedSelectedItems = _.isArray(value)
-    ? _.sortBy(pickerItems, (v) => _.indexOf(value, v[valueField]))
+    ? _.sortBy(pickerItems, (v) => _.indexOf(value, v[valueField])).filter(
+        (i) => value.includes(i.value)
+      )
     : [selectedItem].filter((i) => !_.isEmpty(i));
 
   return {
