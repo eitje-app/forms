@@ -67,7 +67,8 @@ const decorateField =
       hideClearIcon,
       icon = defaultIcon,
     } = props
-    compOpts = utils.funcOrVal(compOpts, props)
+
+    const opts = utils.funcOrVal(compOpts, props)
 
     const {
       withLabel = true,
@@ -77,7 +78,7 @@ const decorateField =
       defaultPickerValue = null,
       withError = true,
       className = '',
-    } = compOpts
+    } = opts
 
     const setOpen = (open) => {
       // this is only for dropdown, if you click outside antd's area, they trigger a 'clickOutside' event and hide the dropdown menu.
