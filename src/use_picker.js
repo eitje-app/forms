@@ -1,14 +1,18 @@
 import _ from 'lodash'
 import {t, isScoped} from './base'
 import utils from '@eitje/utils'
-export const simpleMap = (item, buildLabel) => {
-  const label = buildLabel ? buildLabel(item) : makeLabel(item)
+
+export const simpleMap = (item, buildLabel, props) => {
+  const label = buildLabel ? buildLabel(item) : makeLabel(item, props)
   return {label, key: item, value: item}
 }
 
-const makeLabel = (label) => {
+const makeLabel = (label, {field, transNamespace} = {}) => {
   if (!label) return
-  if (isScoped) return t(`form.dropdown.${label}`, label)
+  if (isScoped) {
+    if (transNamespace) return t(`form.${transNamespace}.fields.${field}.options.${label}`, label)
+    return t(`form.dropdown.${label}`, label)
+  }
   return t(label, label)
 }
 
@@ -23,21 +27,22 @@ const usePicker = ({
   labelField = 'name',
   valueField = 'id',
   sortField = labelField,
+  ...rest
 }) => {
   if (!items) items = []
   items = utils.alwaysDefinedArray(items)
   let pickerItems = items
   if (!noSort && sortField) pickerItems = _.sortBy(pickerItems, (i) => i[sortField])
-  pickerItems = pickerItems.map((t) =>
-    !t[labelField] && !_.isObject(t)
-      ? simpleMap(t, buildLabel)
-      : {
-          ...t,
-          key: String(t[valueField]),
-          value: t[valueField],
-          label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField])) || '',
-        },
-  )
+
+  pickerItems = pickerItems.map((t) => {
+    if (!_.isObject(t)) return simpleMap(t, buildLabel, rest)
+    return {
+      ...t,
+      key: String(t[valueField]),
+      value: t[valueField],
+      label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField])) || '',
+    }
+  })
 
   pickerItems = modifyItems(pickerItems, formData) || []
 
