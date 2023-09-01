@@ -512,7 +512,7 @@ class Form extends Component {
   touchedAndFilled() {
     const {initialValues = {}} = this.props
     const {touched, touchedFields, fields = {}} = this.state
-    return touched && touchedFields.some((s) => utils.exists(fields[s]) && fields[s] != initialValues[s])
+    return touched && touchedFields.some((s) => fields[s] != initialValues[s])
   }
 
   // 1. registerField -> nec for knowing which fields to submit, try to send along a ref of props OR element (multi-form) -> sends back all form props now sent by enhanceChild
