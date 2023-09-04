@@ -10,7 +10,7 @@ export const simpleMap = (item, buildLabel, props) => {
 const makeLabel = (label, {field, transNamespace} = {}) => {
   if (!label) return
   if (isScoped) {
-    if (transNamespace) return t(`form.${transNamespace}.fields.${field}.options.${label}`, label)
+    if (transNamespace) return t(`form.${transNamespace}.fields.${field}.options.${label}`, t(`form.dropdown.${label}`), label)
     return t(`form.dropdown.${label}`, label)
   }
   return t(label, label)
