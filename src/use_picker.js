@@ -7,8 +7,11 @@ export const simpleMap = (item, buildLabel, props) => {
   return {label, key: item, value: item}
 }
 
+const numAtEndRegex = /-\d+\b/g // this is done for compositeField, because it suffixes fields with -number, like user_id-1
+
 const makeLabel = (label, {field, transNamespace} = {}) => {
-  if (!label) return
+  if (!label || !field) return
+  field = field.replace(numAtEndRegex, '')
   if (isScoped) {
     if (transNamespace) return t(`form.${transNamespace}.fields.${field}.options.${label}`, t(`form.dropdown.${label}`), label)
     return t(`form.dropdown.${label}`, label)
