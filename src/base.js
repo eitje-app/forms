@@ -12,6 +12,8 @@ let tooltipElement = null
 let defaultIcon = null
 let clearIcon = null
 
+let config = {}
+
 const setup = ({translatorFunc, alertFunc, scoped, button, ...rest}) => {
   if (translatorFunc) t = translatorFunc
   if (alertFunc) alert = alertFunc
@@ -24,7 +26,8 @@ const setup = ({translatorFunc, alertFunc, scoped, button, ...rest}) => {
   if (rest.tooltipElement) tooltipElement = rest.tooltipElement
   if (rest.defaultIcon) defaultIcon = rest.defaultIcon
   if (rest.clearIcon) clearIcon = rest.clearIcon
+  config = {...config, ...rest}
 }
-export {t, alert, isScoped, Button, Prompt, Tooltip, Wrapper, MultiFormWrapper, clearIcon, defaultIcon, tooltipElement}
+export {config, t, alert, isScoped, Button, Prompt, Tooltip, Wrapper, MultiFormWrapper, clearIcon, defaultIcon, tooltipElement}
 
 export default setup
