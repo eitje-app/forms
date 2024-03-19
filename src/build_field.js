@@ -10,7 +10,7 @@ import {RightContent} from './right_content'
 const decorateField =
   (Comp, compOpts = {}) =>
   (props) => {
-    let {field, value, readOnly, className, error, disabled, clearIcon, icon = defaultIcon} = props
+    let {field, value, readOnly, formData, className, error, disabled, clearIcon, icon = defaultIcon} = props
 
     const [fieldOpen, setOpen] = useState(false)
 
@@ -29,8 +29,10 @@ const decorateField =
       fn && fn(element.current, {open: fieldOpen})
     }
 
+    const required = utils.funcOrVal(props.required, formData)
+
     const opts = utils.funcOrVal(compOpts, props)
-    const allProps = {...opts, ...props, Comp, onOpenChange, onVisibleChange: onOpenChange}
+    const allProps = {...opts, ...props, required, Comp, onOpenChange, onVisibleChange: onOpenChange}
 
     const classNames = utils.makeCns(
       `eitje-form-3-field`,
@@ -47,7 +49,7 @@ const decorateField =
     const element = useRef(null)
     const {onChange, ...propsWithoutChange} = allProps
     return (
-      <config.Layout {...allProps} ref={element} onClick={clickChild} className={classNames}>
+      <config.Layout {...propsWithoutChange} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
           <div className="form-field-content">
             <LeftContent {...allProps} />
