@@ -1,30 +1,30 @@
 import utils from '@eitje/web_utils'
-import {t} from './base'
-
+import {t, config} from './base'
+import {Text} from '@eitje/web_components'
 export const LeftContent = (props) => {
   const {Comp} = props
-
   return (
-    <div className="form-field-content-left">
+    <config.Layout direction="vertical" className="form-field-content-left">
       <Label {...props} />
       <Comp placeholder="..." {...props} />
       <ValidationError {...props} />
-    </div>
+    </config.Layout>
   )
 }
 
 const Label = (props) => {
   const {required} = props
   const label = buildDecoration({...props, decorationType: 'label'})
+  const popoutTitle = buildDecoration({...props, decorationType: 'tooltip'})
   return (
-    <p className="eitje-form-3-label">
-      {label} {required && '*'}{' '}
-    </p>
+    <Text popoutTitle={popoutTitle} className="eitje-form-3-label">
+      {label} {required && '*'}
+    </Text>
   )
 }
 
 const ValidationError = ({error}) => {
-  return <div className="eitje-form-3-error">{error}</div>
+  return <Text className="eitje-form-3-error">{error}</Text>
 }
 
 const decorationDefaults = {

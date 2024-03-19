@@ -1,6 +1,6 @@
 import React, {Fragment, useState, useRef} from 'react'
 import useFormField from './use_form_field'
-import {Button, Tooltip, t, tooltipElement, defaultIcon, clearIcon} from './base'
+import {Button, Tooltip, config, t, tooltipElement, defaultIcon, clearIcon} from './base'
 import utils from '@eitje/utils'
 import {makeRegisteredField, makeNewRegisteredField} from './use_register_field'
 import {findFns} from './field_click_helper'
@@ -47,14 +47,14 @@ const decorateField =
     const element = useRef(null)
 
     return (
-      <div ref={element} onClick={clickChild} className={classNames}>
+      <config.Layout {...allProps} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
           <div className="form-field-content">
             <LeftContent {...allProps} />
             <RightContent {...allProps} />
           </div>
         </TooltipWrapper>
-      </div>
+      </config.Layout>
     )
   }
 
