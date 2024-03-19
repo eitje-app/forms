@@ -5,26 +5,8 @@ import {t, Button, Prompt, Wrapper, alert} from './base'
 import {debounce} from './utils'
 import {Provider, useForm} from './context'
 
-export {useForm}
-
 const noop = () => {}
 const trailingDot = /\.$/g
-
-const missingOrTrue = (obj, field) => {
-  const hasField = Object.keys(obj).includes(field)
-  return !hasField || obj[field]
-}
-
-const useWatch = (fields) => {
-  const [state, setState] = useState({})
-  const {watch, unwatch} = useForm()
-  useEffect(() => {
-    watch(fields, setState) // form state to watch
-    return () => unwatch(fields)
-  }, [])
-  return state
-  // inside form -> watch sets form state, only fields that are part of form state are broadcasted, only downside is then that it counts for every component inside the tree
-}
 
 const parseValidObj = (validObj, defaultMessage) => {
   if (_.isPlainObject(validObj)) {
@@ -38,7 +20,7 @@ const parseValidObj = (validObj, defaultMessage) => {
   return {valid: true}
 }
 
-class Form extends Component {
+export class NewForm extends Component {
   constructor(props) {
     const {debounceTime = 1000, throttleTime = 500} = props
     const fields = props.initialValues && _.isObject(props.initialValues) ? _.cloneDeep(props.initialValues) : {}
@@ -299,7 +281,6 @@ class Form extends Component {
     let error = null
     let valid
     const isReq = checkRequired && this.handleRequired(required)
-
     if (isReq) error = !utils.exists(value) && t('form.required')
 
     if (validate && !error) {
@@ -398,15 +379,6 @@ class Form extends Component {
     this.setState({fields: {...fields, ...obj}})
   }
 
-  getNext = (idx) => {
-    const ch = this[`child-${idx + 1}`]
-    if (ch && !ch.current) {
-      return {current: ch}
-    } else {
-      return ch
-    }
-  }
-
   getValues = (...fields) => {
     return _.pick(this.state.fields, fields)
   }
@@ -460,7 +432,6 @@ class Form extends Component {
       submitForm: this.submit,
       resetForm: this.resetValues,
       error: errors[field],
-      getNext: () => this.getNext(idx),
       ...condOpts,
       ...extraProps,
       ...fieldProps,
@@ -474,7 +445,7 @@ class Form extends Component {
   }
 
   enhanceField(field, _fieldProps) {
-    const {updatedFields = [], disabledFields = [], disabled, onSubmit, transNamespace} = this.props
+    const {updatedFields = [], disabledFields = [], name, disabled, onSubmit, transNamespace} = this.props
     const {errors, fields, touchedFields} = this.state
     let condOpts = {}
     const fieldProps = this.makeProps(_fieldProps)
@@ -484,7 +455,6 @@ class Form extends Component {
     const value = this.getValue(field, fieldProps)
     return {
       disabled: disabledFields.includes(field),
-      updated: updatedFields.includes(field),
       formData: fields, //
       isTouched: touchedFields.includes(field),
       blockSubmit: (block = true) => this.blockSubmit(field, block),
@@ -493,6 +463,7 @@ class Form extends Component {
       ...fieldProps,
       onChange: (val) => this.updateField(field, val, fieldProps),
       value,
+      name,
       transNamespace,
     }
   }
@@ -502,11 +473,6 @@ class Form extends Component {
     const {fields} = this.state
     const hidden = c?.props?.hidden
     return hiddenFields.includes(c.props.field) || utils.funcOrBool(hidden, fields)
-  }
-
-  makeSubmitButton(c) {
-    if (c.props.showAfterTouch && !this.state.touched) return null
-    return React.cloneElement(c, {onClick: () => this.submit(), onPress: () => this.submit()})
   }
 
   touchedAndFilled() {
@@ -577,7 +543,7 @@ class Form extends Component {
       onFocus = () => {},
     } = this.props
     const {errors, fields, touchedFields} = this.state
-    const classNames = utils.makeCns(className, 'eitje-form-2')
+    const classNames = utils.makeCns(className, 'eitje-form-3')
     return (
       <Fragment>
         <Wrapper
@@ -626,4 +592,4 @@ const pageStaysVisible = (nextLoc, initialLoc) => {
 // strange things we know:
 // 1. if both bg form & modal form have unsaved changes, only modal form prompt will be called, it looks like only one prompt can be called, and that's always at the 'lowest level'.
 
-export default Form
+export default NewForm
