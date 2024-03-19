@@ -539,11 +539,12 @@ export class NewForm extends Component {
       submitButton,
       promptMsg = 'leave_unfinished_form',
       debug,
+      variant = 'grid',
       className,
       onFocus = () => {},
     } = this.props
     const {errors, fields, touchedFields} = this.state
-    const classNames = utils.makeCns(className, 'eitje-form-3')
+    const classNames = utils.makeCns(className, 'eitje-form-3', `eitje-form-3-${variant}`)
     return (
       <Fragment>
         <Wrapper

@@ -7,7 +7,7 @@ export const LeftContent = (props) => {
   return (
     <div className="form-field-content-left">
       <Label {...props} />
-      <Comp {...props} />
+      <Comp placeholder="..." {...props} />
       <ValidationError {...props} />
     </div>
   )
