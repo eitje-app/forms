@@ -10,7 +10,7 @@ import {RightContent} from './right_content'
 const decorateField =
   (Comp, compOpts = {}) =>
   (props) => {
-    let {field, isTouched, value, readOnly, className, error, disabled, onChange, clearIcon, icon = defaultIcon} = props
+    let {field, value, readOnly, className, error, disabled, clearIcon, icon = defaultIcon} = props
 
     const [fieldOpen, setOpen] = useState(false)
 
@@ -45,7 +45,7 @@ const decorateField =
     )
 
     const element = useRef(null)
-
+    const {onChange, ...propsWithoutChange} = allProps
     return (
       <config.Layout {...allProps} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
