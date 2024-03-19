@@ -24,8 +24,9 @@ const decorateField =
     }
 
     const clickChild = (e) => {
-      console.log(opts.className)
-      findFns[opts.className]?.(element.current, {open: fieldOpen})
+      const classNames = opts.className.split(' ')
+      const fn = findFns[classNames.find((name) => findFns[name])]
+      fn && fn(element.current, {open: fieldOpen})
     }
 
     const opts = utils.funcOrVal(compOpts, props)

@@ -21,7 +21,8 @@ function fireMouseEvents(element, eventNames = ['mousedown']) {
 }
 
 const findInput = (field) => {
-  let child = field.querySelector('input') // for now, we assume the 'actual' input is always an input AND there is always only one
+  let child = field.querySelector('input') || field.querySelector('textarea') // for now, we assume the 'actual' input is always an input AND there is always only one
+
   child?.focus()
 }
 
