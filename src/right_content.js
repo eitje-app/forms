@@ -1,3 +1,4 @@
+import React from 'react'
 import {Button, Tooltip, t, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
 import {Text} from '@eitje/web_components'
 
