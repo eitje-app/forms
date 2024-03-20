@@ -15,11 +15,15 @@ export const LeftContent = (props) => {
 const Label = (props) => {
   const {required} = props
   const label = buildDecoration({...props, decorationType: 'label'})
+  const extraLabel = buildDecoration({...props, decorationType: 'extraLabel'})
   const popoutTitle = buildDecoration({...props, decorationType: 'tooltip'})
   return (
-    <Text popoutTitle={popoutTitle} className="eitje-form-3-label">
-      {label} {required && '*'}
-    </Text>
+    <>
+      <Text popoutTitle={popoutTitle} className="eitje-form-3-label">
+        {label} {required && '*'}
+      </Text>
+      {extraLabel && <Text className="eitje-form-3-extra-label">{extraLabel}</Text>}
+    </>
   )
 }
 
