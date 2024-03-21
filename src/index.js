@@ -1,4 +1,4 @@
-import setup, {t} from './base'
+import setup, {config, t} from './base'
 import configure from './form_creator'
 import dutch from './i18n/nl'
 import english from './i18n/en'
@@ -35,4 +35,5 @@ export {
   Form,
   FormWrapper,
   t,
+  config,
 }

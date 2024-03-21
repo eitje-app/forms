@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Tooltip, t, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
+import {Button, Tooltip, t, config, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
 import {Text} from '@eitje/web_components'
 
 export const RightContent = (props) => {
@@ -8,11 +8,11 @@ export const RightContent = (props) => {
   const rightElement = getRightElement(props)
   if (hide) return
   return (
-    <div className="form-field-content-right">
+    <config.Layout className="form-field-content-right">
       {icon && <img className="eitje-form-field-3-icon" src={icon} />}
       {clearIcon && <img className="eitje-form-field-3-clear-icon" src={clearIconImg} onClick={() => onChange(defaultPickerValue)} />}
       {rightElement}
-    </div>
+    </config.Layout>
   )
 }
 

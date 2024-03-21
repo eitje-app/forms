@@ -51,10 +51,10 @@ const decorateField =
     return (
       <config.Layout {...propsWithoutChange} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
-          <div className="form-field-content">
+          <config.Layout className="form-field-content">
             <LeftContent {...allProps} />
             <RightContent {...allProps} />
-          </div>
+          </config.Layout>
         </TooltipWrapper>
       </config.Layout>
     )
