@@ -87,7 +87,12 @@ const decorateField =
 				horizontal="spaceBetween"
 			>
 				<TooltipWrapper {...allProps}>
-					<config.Layout className="form-field-content">
+					<config.Layout
+						className="form-field-content"
+						horizontal="spaceBetween"
+						height="full"
+						padding="16 24"
+					>
 						<LeftContent {...allProps} />
 						<RightContent {...allProps} />
 					</config.Layout>
