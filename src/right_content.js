@@ -11,7 +11,9 @@ export const RightContent = props => {
 	return (
 		<config.Layout className="form-field-content-right">
 			{rightElement}
-			{clearIcon && !disabled && !readOnly && <Icon name="cross" onClick={() => onChange(defaultPickerValue)} size={12} />}
+			{clearIcon && !disabled && !readOnly && (
+				<Icon name="cross" className="cross-icon" onClick={() => onChange(defaultPickerValue)} size={12} />
+			)}
 			{!clearIcon && icon && <Icon name="caret-down" size={12} />}
 		</config.Layout>
 	)
