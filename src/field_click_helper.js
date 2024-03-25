@@ -20,7 +20,7 @@ function fireMouseEvents(element, eventNames = ['mousedown']) {
   }
 }
 
-const findInput = (field) => {
+const findInput = field => {
   let child = field.querySelector('input') || field.querySelector('textarea') // for now, we assume the 'actual' input is always an input AND there is always only one
 
   child?.focus()
@@ -37,9 +37,21 @@ const clickListPickerTrigger = (field, {open}) => {
   if (!open) child.click()
 }
 
+const clickSwitch = field => {
+  const el = field.querySelector('.ant-switch-handle')
+  el.click?.()
+}
+
+const clickCheckbox = field => {
+  const el = field.querySelector('.ant-checkbox')
+  el.click?.()
+}
+
 export const findFns = {
   'eitje-input-container': findInput,
   'eitje-time-picker-container': findTimeInput,
   'eitje-date-picker-container': findTimeInput,
   'eitje-list-picker': clickListPickerTrigger,
+  'eitje-switch-container': clickSwitch,
+  'eitje-checkbox-container': clickCheckbox,
 }
