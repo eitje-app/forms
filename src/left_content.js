@@ -14,17 +14,19 @@ export const LeftContent = props => {
 }
 
 const Label = props => {
-  const {required} = props
+  const {required, readOnly, disabled} = props
   const label = buildDecoration({...props, decorationType: 'label'})
   const extraLabel = buildDecoration({
     ...props,
     decorationType: 'extraLabel',
   })
   const popoutTitle = buildDecoration({...props, decorationType: 'tooltip'})
+
+  const showRequired = !readOnly && !disabled
   return (
     <>
       <Text truncate popoutTitle={popoutTitle} darkGrey fontSize={12}>
-        {label} {required && '*'}
+        {label} {showRequired && required && '*'}
       </Text>
       {extraLabel && (
         <Text truncate darkGrey fontSize={12}>
