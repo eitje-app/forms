@@ -57,21 +57,21 @@ export class NewForm extends Component {
 
   empty() {
     const formFields = Object.values(_.pick(this.state.fields, this.fieldNames())) // to prevent extra initialValues from always making the form filled
-    const filled = formFields.some((val) => utils.exists(val))
+    const filled = formFields.some(val => utils.exists(val))
     return !filled
   }
 
   getParams = () => this.state.fields
 
-  fieldNames = () => utils.alwaysDefinedArray(this.state.registeredFields).map((f) => f.fieldName)
+  fieldNames = () => utils.alwaysDefinedArray(this.state.registeredFields).map(f => f.fieldName)
 
-  getFieldName = (c) => {
+  getFieldName = c => {
     if (!c || !c.props) return
     if (c.props.namespace) return `${c.props.namespace}.${c.props.field}`
     return c.props.field
   }
 
-  setErrors = (newErrors) => this.setState({errors: {...this.state.errors, ...newErrors}})
+  setErrors = newErrors => this.setState({errors: {...this.state.errors, ...newErrors}})
 
   async submit({extraData = {}, field, onlyTouched, skipAfterSubmit, namespace, callback = () => {}} = {}) {
     const {setErrors} = this
@@ -152,7 +152,7 @@ export class NewForm extends Component {
     let errors = res.data?.errors
     if (_.isString(errors)) errors = {base: [errors]}
     if (!_.isObject(errors)) return
-    const newErrors = _.mapValues(errors, (err) => err[0])
+    const newErrors = _.mapValues(errors, err => err[0])
 
     if (!hideLabelErrors) {
       this.setState({errors: {...this.state.errors, ...newErrors}})
@@ -179,7 +179,7 @@ export class NewForm extends Component {
 
   blocked() {
     const {blocked = {}} = this.state
-    if (Object.values(blocked).some((s) => s)) {
+    if (Object.values(blocked).some(s => s)) {
       alert(t('oneSec'), t('stillUploading'))
       return true
     }
@@ -207,18 +207,18 @@ export class NewForm extends Component {
     }
   }
 
-  updateUnTouchedFields = (newVals) => {
+  updateUnTouchedFields = newVals => {
     const {touchedFields} = this.state
     const toBeUpdated = _.pickBy(newVals, (val, key) => !touchedFields.includes(key))
     const newFields = {...this.state.fields, ...toBeUpdated}
     this.setState({fields: newFields})
   }
 
-  handleOtherFieldErrors = (field) => {
+  handleOtherFieldErrors = field => {
     const {errors, registeredFields} = this.state
-    const errFields = Object.keys(errors).filter((e) => errors[e] && errors[e] != t('form.required'))
-    errFields.forEach((errField) => {
-      const registeredField = registeredFields.find((f) => f.fieldName == errField)
+    const errFields = Object.keys(errors).filter(e => errors[e] && errors[e] != t('form.required'))
+    errFields.forEach(errField => {
+      const registeredField = registeredFields.find(f => f.fieldName == errField)
 
       if (registeredField) this.validateField(errField, true, registeredField?.props)
     })
@@ -307,13 +307,13 @@ export class NewForm extends Component {
     return error // also possible to return errs instead of writing to state
   }
 
-  validate({fields = []} = {}) {
+  validateInner({fields = []} = {}) {
     const {errors, registeredFields} = this.state
     let errs = {}
     let invalid
     const hasSpecificFields = fields.length > 0
 
-    registeredFields.forEach((f) => {
+    registeredFields.forEach(f => {
       const {props, fieldName} = f
       let error
 
@@ -332,6 +332,11 @@ export class NewForm extends Component {
         console.log(`INVALID ${fieldName}`, error)
       }
     })
+    return {invalid, errs}
+  }
+
+  validate({fields = []} = {}) {
+    const {invalid, errs} = this.validateInner({fields})
     this.setState({errors: errs})
     return !invalid
   }
@@ -343,10 +348,10 @@ export class NewForm extends Component {
     if (this.isHidden(el)) return []
     let {children} = el.props
     children = _.flatten(utils.alwaysArray(children))
-    let els = children.filter((c) => c && c.props && c.props.field && !this.isHidden(c))
-    let stringEls = children.filter((c) => _.isString(c))
-    const wrappers = children.filter((c) => c && c.props && c.props.fieldWrapper)
-    wrappers.forEach((wrapper) => {
+    let els = children.filter(c => c && c.props && c.props.field && !this.isHidden(c))
+    let stringEls = children.filter(c => _.isString(c))
+    const wrappers = children.filter(c => c && c.props && c.props.fieldWrapper)
+    wrappers.forEach(wrapper => {
       els = els.concat(this.getFormChildren(wrapper))
     })
     return els
@@ -365,16 +370,16 @@ export class NewForm extends Component {
     }
   }
 
-  resetValues = (empty) => {
+  resetValues = empty => {
     const newState = empty ? {} : this.props.initialValues
     this.setState({fields: newState})
   }
 
-  removeValues = (keys) => {
-    this.setState((state) => ({fields: _.omit(state.fields, keys)}))
+  removeValues = keys => {
+    this.setState(state => ({fields: _.omit(state.fields, keys)}))
   }
 
-  setValues = (obj) => {
+  setValues = obj => {
     const {fields} = this.state
     this.setState({fields: {...fields, ...obj}})
   }
@@ -388,7 +393,7 @@ export class NewForm extends Component {
     return fields[field]
   }
 
-  getImperativeFieldProps = (props) => {
+  getImperativeFieldProps = props => {
     const impProps = {}
     const {useSubmitStrategy} = this.props
     if (!props.submitStrategy && useSubmitStrategy) {
@@ -436,7 +441,7 @@ export class NewForm extends Component {
       ...extraProps,
       ...fieldProps,
       // NECESSARY PROPS (THAT FIELD CAN NOT OVERRIDE):
-      onChange: (val) => this.updateField(field, val, itemId, fieldProps),
+      onChange: val => this.updateField(field, val, itemId, fieldProps),
       setFormData: this.updateField,
       value: this.getValue(field, fieldProps),
       transNamespace,
@@ -446,11 +451,12 @@ export class NewForm extends Component {
 
   enhanceField(field, _fieldProps) {
     const {updatedFields = [], disabledFields = [], name, disabled, onSubmit, transNamespace} = this.props
-    const {errors, fields, touchedFields} = this.state
+    const {errors, fields, registeredFields, touchedFields} = this.state
     let condOpts = {}
     const fieldProps = this.makeProps(_fieldProps)
     const {submitStrategy} = fieldProps
     const action = () => touchedFields.includes(field) && this.submit({field})
+    const index = registeredFields.findIndex(f => f.fieldName == field)
     if (submitStrategy === 'blur') condOpts['onBlur'] = action
     const value = this.getValue(field, fieldProps)
     return {
@@ -461,14 +467,15 @@ export class NewForm extends Component {
       error: errors[field],
       ...condOpts,
       ...fieldProps,
-      onChange: (val) => this.updateField(field, val, fieldProps),
+      onChange: val => this.updateField(field, val, fieldProps),
+      autoFocus: index == 0,
       value,
       name,
       transNamespace,
     }
   }
 
-  isHidden = (c) => {
+  isHidden = c => {
     const {hiddenFields = []} = this.props
     const {fields} = this.state
     const hidden = c?.props?.hidden
@@ -478,7 +485,7 @@ export class NewForm extends Component {
   touchedAndFilled() {
     const {initialValues = {}} = this.props
     const {touched, touchedFields, fields = {}} = this.state
-    return touched && touchedFields.some((s) => fields[s] != initialValues[s])
+    return touched && touchedFields.some(s => fields[s] != initialValues[s])
   }
 
   // 1. registerField -> nec for knowing which fields to submit, try to send along a ref of props OR element (multi-form) -> sends back all form props now sent by enhanceChild
@@ -520,12 +527,12 @@ export class NewForm extends Component {
 
   registerField(fieldName, props) {
     const obj = {fieldName, props}
-    this.setState((state) => ({registeredFields: [...state.registeredFields, obj]}))
+    this.setState(state => ({registeredFields: [...state.registeredFields, obj]}))
   }
 
   unregisterField(fieldName) {
-    this.setState((state) => ({
-      registeredFields: state.registeredFields.filter((f) => f.fieldName != fieldName),
+    this.setState(state => ({
+      registeredFields: state.registeredFields.filter(f => f.fieldName != fieldName),
     }))
   }
 
@@ -549,7 +556,7 @@ export class NewForm extends Component {
       <Fragment>
         <Wrapper
           action="javascript:" // This is needed to prevent nested forms from reloading the page on enter.. dont ask me why
-          onSubmit={(e) => {
+          onSubmit={e => {
             e.preventDefault()
             onSubmit && submitOnEnter && this.submit()
           }}
@@ -572,7 +579,7 @@ const noPromptPaths = ['/login']
 const handlePrompt = (nextLoc, initialLoc, promptMsg, form) => {
   const {pathname} = nextLoc
   if (pageStaysVisible(nextLoc, initialLoc)) return true
-  if (noPromptPaths.some((p) => pathname.startsWith(p))) return true
+  if (noPromptPaths.some(p => pathname.startsWith(p))) return true
   return t(promptMsg)
 }
 

@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useRef} from 'react'
+import React, {Fragment, useState, useEffect, useRef} from 'react'
 import useFormField from './use_form_field'
 import {Button, Tooltip, config, t, tooltipElement, defaultIcon, clearIcon} from './base'
 import utils from '@eitje/utils'
@@ -10,7 +10,7 @@ import {RightContent} from './right_content'
 const decorateField =
   (Comp, compOpts = {}) =>
   props => {
-    let {readOnly, formData, className, error, disabled} = props
+    let {readOnly, formData, autoFocus, className, error, disabled} = props
 
     const [fieldOpen, setOpen] = useState(false)
 
@@ -52,6 +52,12 @@ const decorateField =
 
     const element = useRef(null)
     const {onChange, ...propsWithoutChange} = allProps
+    useEffect(() => {
+      if (autoFocus) {
+        element.current.querySelector('input').focus?.()
+      }
+    }, [autoFocus])
+
     return (
       <div
         {...propsWithoutChange}
