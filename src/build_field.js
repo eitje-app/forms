@@ -10,7 +10,7 @@ import {RightContent} from './right_content'
 const decorateField =
   (Comp, compOpts = {}) =>
   props => {
-    let {field, value, readOnly, formData, className, error, disabled, clearIcon, icon = defaultIcon} = props
+    let {readOnly, formData, className, error, disabled} = props
 
     const [fieldOpen, setOpen] = useState(false)
 
