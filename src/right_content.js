@@ -1,29 +1,37 @@
 import React, {Fragment} from 'react'
 import {Button, Tooltip, t, config, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
 import {Text, Icon, PopoutCard} from '@eitje/web_components'
+import utils from '@eitje/web_utils'
 
 export const RightContent = props => {
   const rightElement = getRightElement(props)
-  const iconProps = getIcon(props)
-  if (!iconProps && !rightElement) return null
-  const {Wrapper = Fragment, wrapperProps, ...iconRest} = iconProps || {}
+  const icons = utils.alwaysArray(getIcon(props))
+  if (!utils.exists(icons) && !rightElement) return null
   return (
     <config.Layout className="form-field-content-right">
       {rightElement}
-      {iconProps && (
-        <Wrapper {...wrapperProps}>
-          <Icon size={12} {...iconRest} />
-        </Wrapper>
-      )}
+      {icons.map(i => (
+        <FormIcon {...i} />
+      ))}
     </config.Layout>
+  )
+}
+
+const FormIcon = ({Wrapper = Fragment, wrapperProps, ...rest}) => {
+  return (
+    <Wrapper {...wrapperProps}>
+      <Icon size={12} {...rest} />
+    </Wrapper>
   )
 }
 
 const getIcon = ({readOnly, disabled, value, onChange, icon, defaultPickerValue, clearIcon = true}) => {
   if (disabled) return
   if (readOnly) return {name: 'locked', Wrapper: PopoutCard, wrapperProps: {title: t('form.general.tooltips.read_only')}}
-  if (clearIcon && value) return {name: 'cross', className: 'cross-icon', onClick: () => onChange(defaultPickerValue)}
-  if (icon) return {name: 'caret-down'}
+  let buttons = []
+  if (clearIcon && value) buttons.push({name: 'cross', className: 'cross-icon', onClick: () => onChange(defaultPickerValue)})
+  if (icon) buttons.push({name: 'caret-down'})
+  return buttons
 }
 
 const getRightElement = ({rightElement, ...rest}) => {
