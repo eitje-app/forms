@@ -10,8 +10,8 @@ import {RightContent} from './right_content'
 const decorateField =
   (Comp, compOpts = {}) =>
   props => {
-    let {readOnly, formData, autoFocus, className, error, disabled} = props
-
+    let {readOnly, formData, isFirst, autoFocus = true, className, error, disabled} = props
+    const element = useRef(null)
     const [fieldOpen, setOpen] = useState(false)
 
     const onOpenChange = open => {
@@ -37,6 +37,7 @@ const decorateField =
       ...props,
       required,
       Comp,
+      element: element.current,
       onOpenChange,
       onVisibleChange: onOpenChange,
     }
@@ -50,13 +51,12 @@ const decorateField =
       opts.className,
     )
 
-    const element = useRef(null)
     const {onChange, ...propsWithoutChange} = allProps
     useEffect(() => {
-      if (autoFocus) {
+      if (isFirst && autoFocus) {
         element.current.querySelector('input').focus?.()
       }
-    }, [autoFocus])
+    }, [isFirst])
 
     return (
       <div
