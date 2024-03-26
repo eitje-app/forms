@@ -541,7 +541,6 @@ export class NewForm extends Component {
       children,
       showPrompt,
       onSubmit,
-      submitOnEnter = true,
       hidePrompt,
       submitButton,
       promptMsg = 'leave_unfinished_form',
@@ -556,10 +555,6 @@ export class NewForm extends Component {
       <Fragment>
         <Wrapper
           action="javascript:" // This is needed to prevent nested forms from reloading the page on enter.. dont ask me why
-          onSubmit={e => {
-            e.preventDefault()
-            onSubmit && submitOnEnter && this.submit()
-          }}
           autocomplete="nope"
           className={classNames}
           tabIndex={-1}
