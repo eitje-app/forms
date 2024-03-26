@@ -110,7 +110,7 @@ export class NewForm extends Component {
   async afterSubmit({params, res, ...rest}) {
     const {afterSubmit = () => {}, resetAfterSubmit} = this.props
     await this.unTouch()
-    afterSubmit({params, res, ...rest})
+    afterSubmit({params, res, resData: res?.data, ...rest})
     if (resetAfterSubmit) this.resetValues()
   }
 
