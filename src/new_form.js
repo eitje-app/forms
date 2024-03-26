@@ -51,24 +51,24 @@ export class NewForm extends Component {
 
   setErrors = newErrors => this.setState({errors: {...this.state.errors, ...newErrors}})
 
-  async submit({extraData = {}, field, onlyTouched, skipAfterSubmit, namespace} = {}) {
+  async submit({field, onlyTouched, skipAfterSubmit, namespace} = {}) {
     const {setErrors} = this
     const {onSubmit, submitInitialValues, initialValues, identityField = 'id'} = this.props
     const {fields, touchedFields} = this.state
 
-    let params
+    let params, toPick
 
     if (submitInitialValues) {
       params = fields
     } else if (field) {
-      params = [field, identityField]
+      toPick = [field, identityField]
     } else if (onlyTouched) {
-      params = [...touchedFields, identityField]
+      toPick = [...touchedFields, identityField]
     } else {
-      params = [...this.fieldNames(), identityField]
+      toPick = [...this.fieldNames(), identityField]
     }
 
-    params = {...params, ...extraData}
+    if (!params) params = _.pick(fields, toPick)
     if (params.length == 0) {
       return
       console.error('Tried submitting form without params')
@@ -107,10 +107,10 @@ export class NewForm extends Component {
     this.setState({touchedFields: [], touched: false})
   }
 
-  async afterSubmit(params, res, rest = {}) {
+  async afterSubmit({params, res, ...rest}) {
     const {afterSubmit = () => {}, resetAfterSubmit} = this.props
     await this.unTouch()
-    afterSubmit(res, params, rest)
+    afterSubmit({params, res, ...rest})
     if (resetAfterSubmit) this.resetValues()
   }
 
