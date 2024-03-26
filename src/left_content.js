@@ -2,12 +2,24 @@ import React from 'react'
 import utils from '@eitje/web_utils'
 import {t, config} from './base'
 import {Text} from '@eitje/web_components'
+
+const handleKeyPress = (e, {element, ...rest}) => {
+  if (e.key != 'Enter') return
+  const {nextSibling} = element
+  if (nextSibling.className.includes('eitje-form-3-field')) {
+    nextSibling.querySelector('input')?.focus?.()
+  } else {
+    const submitButton = nextSibling.querySelector('.form-submit-button')
+    if (submitButton) submitButton.click()
+  }
+}
+
 export const LeftContent = props => {
   const {Comp} = props
   return (
     <config.Layout direction="vertical" className="form-field-content-left">
       <Label {...props} />
-      <Comp placeholder="..." {...props} />
+      <Comp placeholder="..." onKeyDown={e => handleKeyPress(e, props)} {...props} />
       <ValidationError {...props} />
     </config.Layout>
   )
