@@ -241,7 +241,8 @@ export class NewForm extends Component {
 
     currentHolder[field] = val
     await this.setState({fields: newFields})
-    // this.validateField(field, true, fieldProps)
+
+    if (errors[field]) this.validateField(field, true, fieldProps)
     this.handleOtherFieldErrors(field)
 
     afterChange && afterChange(field, val, newFields)
