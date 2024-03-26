@@ -14,7 +14,7 @@ const parseValidObj = (validObj, defaultMessage) => {
     if (message) validObj.message = `form.validation.${message}`
     return validObj
   }
-  if (_.isString(validObj)) return {message: `form.validation.${validObj}`, valid: false}
+  if (_.isString(validObj)) return {message: validObj, valid: false}
   if (_.isBoolean(validObj)) return {valid: validObj, message: defaultMessage}
 
   return {valid: true}
@@ -241,7 +241,7 @@ export class NewForm extends Component {
 
     currentHolder[field] = val
     await this.setState({fields: newFields})
-    this.validateField(field, true, fieldProps)
+    // this.validateField(field, true, fieldProps)
     this.handleOtherFieldErrors(field)
 
     afterChange && afterChange(field, val, newFields)
@@ -282,7 +282,6 @@ export class NewForm extends Component {
     let valid
     const isReq = checkRequired && this.handleRequired(required)
     if (isReq) error = !utils.exists(value) && t('form.required')
-
     if (validate && !error) {
       const validateResult = validate(value, {fieldProps, getFormData: this.getParams})
       const validObj = parseValidObj(validateResult, validateMessage || 'form.invalid')
@@ -329,7 +328,6 @@ export class NewForm extends Component {
 
       if (!invalid && error) {
         invalid = true
-        console.log(`INVALID ${fieldName}`, error)
       }
     })
     return {invalid, errs}
@@ -468,7 +466,7 @@ export class NewForm extends Component {
       ...condOpts,
       ...fieldProps,
       onChange: val => this.updateField(field, val, fieldProps),
-      autoFocus: index == 0,
+      isFirst: index == 0,
       value,
       name,
       transNamespace,
