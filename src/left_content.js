@@ -5,9 +5,14 @@ import {Text} from '@eitje/web_components'
 
 const handleKeyPress = (e, {element, ...rest}) => {
   if (e.key != 'Enter') return
-  const {nextSibling} = element
+  let {nextSibling} = element
+  while (nextSibling.className.includes('disabled') || nextSibling.className.includes('read-only')) {
+    nextSibling = nextSibling.nextSibling
+  }
+
   if (nextSibling.className.includes('eitje-form-3-field')) {
-    nextSibling.querySelector('input')?.focus?.()
+    const input = nextSibling.querySelector('input') || nextSibling.querySelector('textarea')
+    input?.focus?.()
   } else {
     const submitButton = nextSibling.querySelector('.form-submit-button')
     if (submitButton) submitButton.click()
