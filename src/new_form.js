@@ -279,6 +279,7 @@ export class NewForm extends Component {
     if (submitStrategy === 'blur') condOpts['onBlur'] = action
     const value = this.getValue(field, fieldProps)
     return {
+      formData: fields,
       disabled: disabledFields.includes(field),
       isTouched: touchedFields.includes(field),
       error: errors[field],
