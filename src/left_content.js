@@ -3,15 +3,23 @@ import utils from '@eitje/web_utils'
 import {t, config} from './base'
 import {Text} from '@eitje/web_components'
 
-const handleKeyPress = (e, {element, ...rest}) => {
+const handleKeyPress = (e, {element}) => {
   if (e.key != 'Enter') return
   let {nextSibling} = element
-  while (nextSibling.className.includes('disabled') || nextSibling.className.includes('read-only')) {
-    nextSibling = nextSibling.nextSibling
+
+  if (!nextSibling && element.parentElement.className.includes('eitje-form-3-row')) {
+    nextSibling = element.parentElement?.nextSibling?.children[0]
+  }
+
+  if (!nextSibling) return
+
+  if (nextSibling.className.includes('disabled') || nextSibling.className.includes('read-only')) {
+    return handleKeyPress(e, {element: nextSibling})
   }
 
   if (nextSibling.className.includes('eitje-form-3-field')) {
-    const input = nextSibling.querySelector('input') || nextSibling.querySelector('textarea')
+    const input = nextSibling.querySelector('input') || nextSibling.querySelector('textarea') || nextSibling.querySelector('button')
+    debugger
     input?.focus?.()
   } else {
     const submitButton = nextSibling.querySelector('.form-submit-button')
