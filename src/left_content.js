@@ -12,17 +12,21 @@ const handleKeyPress = (e, {element}) => {
   }
 
   if (!nextSibling) return
-
+  while (nextSibling && !nextSibling.className) {
+    // sometimes nextSibling is just 'text' and that doesn't have a className
+    nextSibling = nextSibling.nextSibling
+  }
   if (nextSibling.className.includes('disabled') || nextSibling.className.includes('read-only')) {
     return handleKeyPress(e, {element: nextSibling})
   }
 
   if (nextSibling.className.includes('eitje-form-3-field')) {
     const input = nextSibling.querySelector('input') || nextSibling.querySelector('textarea') || nextSibling.querySelector('button')
-    debugger
     input?.focus?.()
   } else {
-    const submitButton = nextSibling.querySelector('.form-submit-button')
+    const submitButton = nextSibling.classList.contains('form-submit-button')
+      ? nextSibling
+      : nextSibling.querySelector('.form-submit-button')
     if (submitButton) submitButton.click()
   }
 }
