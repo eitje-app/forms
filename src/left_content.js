@@ -1,7 +1,7 @@
 import React from 'react'
 import utils from '@eitje/web_utils'
 import {t, config} from './base'
-import {Text} from '@eitje/web_components'
+import {Text} from './circular_dependency_fix'
 
 const handleKeyPress = (e, {element}) => {
   if (e.key != 'Enter') return

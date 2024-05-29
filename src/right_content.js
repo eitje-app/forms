@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react'
 import {Button, Tooltip, t, config, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
-import {Text, Icon, PopoutCard} from '@eitje/web_components'
+import {Text, Icon, PopoutCard} from './circular_dependency_fix'
 import utils from '@eitje/web_utils'
 
 export const RightContent = props => {
