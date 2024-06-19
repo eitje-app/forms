@@ -54,7 +54,9 @@ export class NewForm extends Component {
   async submit({field, onlyTouched, skipAfterSubmit, namespace} = {}) {
     const {setErrors} = this
     const {onSubmit, submitInitialValues, initialValues, identityField = 'id'} = this.props
-    const {fields, touchedFields} = this.state
+    const {fields, touchedFields, submitting} = this.state
+
+    if (submitting) return false
 
     let params, toPick
 
@@ -79,7 +81,13 @@ export class NewForm extends Component {
     if (this.validate({fields: [field].filter(Boolean)})) {
       console.log('Params to be submitted', params)
 
-      const res = await onSubmit(params, {setErrors, fields})
+      let res
+      this.setState({submitting: true})
+      try {
+        res = await onSubmit(params, {setErrors, fields})
+      } finally {
+        this.setState({submitting: false})
+      }
 
       if (!res) return
       const resIsOk = (_.isPlainObject(res) && res.ok) || res == true
