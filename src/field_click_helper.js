@@ -33,7 +33,7 @@ const findTimeInput = (field, {open}) => {
 }
 
 const clickListPickerTrigger = (field, {open}) => {
-  const child = document.querySelector('.form-trigger-container')
+  const child = field.querySelector('.form-trigger-container')
   if (!open) child.click()
 }
 
