@@ -50,11 +50,19 @@ const Label = props => {
     decorationType: 'extraLabel',
   })
   const popoutTitle = buildDecoration({...props, decorationType: 'tooltip'})
+  const popoutBody = buildDecoration({...props, decorationType: 'popoutBody'})
 
   const showRequired = !readOnly && !disabled
   return (
     <>
-      <Text truncate popoutTitle={popoutTitle} darkGrey fontSize={12}>
+      <Text
+        truncate
+        popoutTitle={popoutTitle}
+        popoutBody={popoutBody}
+        PopoutComponent={props.PopoutComponent}
+        darkGrey
+        fontSize={12}
+      >
         {label} {showRequired && required && '*'}
       </Text>
       {extraLabel && (

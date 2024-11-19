@@ -277,7 +277,7 @@ export class NewForm extends Component {
   }
 
   enhanceField(field, _fieldProps) {
-    const {updatedFields = [], disabledFields = [], disabled, onSubmit} = this.props
+    const {updatedFields = [], disabledFields = [], disabled, onSubmit, name} = this.props
     const {errors, fields, registeredFields, touchedFields} = this.state
     let condOpts = {}
     const fieldProps = this.makeProps(_fieldProps)
@@ -296,6 +296,7 @@ export class NewForm extends Component {
       onChange: val => this.updateField(field, val, fieldProps),
       isFirst: index == 0,
       value,
+      name
     }
   }
 
