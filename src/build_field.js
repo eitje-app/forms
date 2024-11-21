@@ -1,11 +1,10 @@
-import React, {Fragment, useState, useEffect, useRef} from 'react'
-import useFormField from './use_form_field'
-import {Button, Tooltip, config, t, tooltipElement, defaultIcon, clearIcon} from './base'
 import utils from '@eitje/utils'
-import {makeRegisteredField, makeNewRegisteredField} from './use_register_field'
+import React, {useEffect, useRef, useState} from 'react'
+import {Tooltip, config} from './base'
 import {findFns} from './field_click_helper'
 import {LeftContent} from './left_content'
 import {RightContent} from './right_content'
+import {makeNewRegisteredField} from './use_register_field'
 
 const decorateField =
   (Comp, compOpts = {}) =>
@@ -54,7 +53,7 @@ const decorateField =
     const {onChange, ...propsWithoutChange} = allProps
     useEffect(() => {
       if (isFirst && autoFocus) {
-        element.current.querySelector('input').focus?.()
+        element.current?.querySelector('input')?.focus?.()
       }
     }, [isFirst])
 
