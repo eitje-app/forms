@@ -151,7 +151,8 @@ class Form extends Component {
       const resIsOk = (_.isPlainObject(res) && res.ok) || res == true
       if (resIsOk) {
         const partialSubmit = !!field
-        !skipAfterSubmit && this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
+        const unchangedTouchedFields = touchedFields.filter(f => _.isEqual(this.state.fields[f], params[f]))
+        !skipAfterSubmit && this.afterSubmit(params, res, callback, {initialValues, touchedFields: unchangedTouchedFields, partialSubmit})
       } else {
         if (rollbackOnError) this.rollback()
         if (res?.data?.errors) this.handleErrors(res)
@@ -184,15 +185,16 @@ class Form extends Component {
     this.setState({touched: true})
   }
 
-  unTouch() {
-    this.setState({touchedFields: [], touched: false})
+  unTouch(fields) {
+    const touchedFields = fields ? this.state.touchedFields.filter(f => !fields.includes(f)) : []
+    this.setState({touchedFields, touched: false})
   }
 
   async afterSubmit(params, res, callback = () => {}, rest = {}) {
     const {afterSubmMessage, afterTouch = noop, afterSubmit = () => {}, resetAfterSubmit} = this.props
     afterSubmMessage && utils.toast(afterSubmMessage)
     afterTouch(false)
-    await this.unTouch()
+    await this.unTouch(rest.touchedFields)
     afterSubmit(res, params, rest)
     callback(res, params)
     if (resetAfterSubmit) this.resetValues()

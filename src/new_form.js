@@ -71,10 +71,6 @@ export class NewForm extends Component {
     }
 
     if (!params) params = _.pick(fields, toPick)
-    if (params.length == 0) {
-      return
-      console.error('Tried submitting form without params')
-    }
 
     console.group('FORM')
     console.log('Start validation')
@@ -93,7 +89,8 @@ export class NewForm extends Component {
       const resIsOk = (_.isPlainObject(res) && res.ok) || res == true
       if (resIsOk) {
         const partialSubmit = !!field
-        !skipAfterSubmit && this.afterSubmit({params, res, initialValues, touchedFields, partialSubmit})
+        const unchangedTouchedFields = touchedFields.filter(f => _.isEqual(this.state.fields[f], params[f]))
+        !skipAfterSubmit && this.afterSubmit({params, res, initialValues, touchedFields: unchangedTouchedFields, partialSubmit})
       } else {
         if (res?.data?.errors) this.handleErrors(res)
       }
@@ -111,13 +108,14 @@ export class NewForm extends Component {
     this.setState({errors: {...this.state.errors, ...newErrors}})
   }
 
-  unTouch() {
-    this.setState({touchedFields: [], touched: false})
+  unTouch(fields) {
+    const touchedFields = fields ? this.state.touchedFields.filter(f => !fields.includes(f)) : []
+    this.setState({touchedFields, touched: false})
   }
 
   async afterSubmit({params, res, ...rest}) {
     const {afterSubmit = () => {}, resetAfterSubmit} = this.props
-    await this.unTouch()
+    await this.unTouch(rest.touchedFields)
     afterSubmit({params, res, resData: res?.data, ...rest})
     if (resetAfterSubmit) this.resetValues()
   }
@@ -296,7 +294,7 @@ export class NewForm extends Component {
       onChange: val => this.updateField(field, val, fieldProps),
       isFirst: index == 0,
       value,
-      name
+      name,
     }
   }
 
