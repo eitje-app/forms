@@ -47,6 +47,12 @@ const clickCheckbox = field => {
   el.click?.()
 }
 
+const findDefault = field => {
+  const child = field.querySelector('input')
+  child?.focus?.()
+  fireMouseEvents(child)
+}
+
 export const findFns = {
   'eitje-input-container': findInput,
   'eitje-time-picker-container': findTimeInput,
@@ -54,4 +60,5 @@ export const findFns = {
   'eitje-list-picker': clickListPickerTrigger,
   'eitje-switch-container': clickSwitch,
   'eitje-checkbox-container': clickCheckbox,
+  default: findDefault,
 }

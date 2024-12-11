@@ -24,9 +24,9 @@ const decorateField =
 
     const clickChild = e => {
       const classNames = opts.className.split(' ')
-      const fn = findFns[classNames.find(name => findFns[name])]
+      const fn = findFns[classNames.find(name => findFns[name])] || findFns['default']
       if (readOnly || disabled) return null
-      fn && fn(element.current, {open: fieldOpen})
+      fn(element.current, {open: fieldOpen})
     }
 
     const required = utils.funcOrVal(props.required, formData)
