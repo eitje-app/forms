@@ -33,10 +33,12 @@ const handleKeyPress = (e, {element}) => {
 
 export const LeftContent = props => {
   const {Comp} = props
+  const label = buildDecoration({...props, decorationType: 'label'})
+
   return (
     <config.Layout direction="vertical" className="form-field-content-left">
       <Label {...props} />
-      <Comp placeholder="..." onKeyDown={e => handleKeyPress(e, props)} {...props} />
+      <Comp placeholder="..." onKeyDown={e => handleKeyPress(e, props)} title={label} {...props} />
       <ValidationError {...props} />
     </config.Layout>
   )
