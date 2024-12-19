@@ -162,7 +162,6 @@ export class NewForm extends Component {
 
     newFields[field] = val
     await this.setState({fields: newFields})
-
     if (errors[field]) this.validateField(field, true, fieldProps)
     this.handleOtherFieldErrors(field)
 
@@ -301,7 +300,7 @@ export class NewForm extends Component {
   touchedAndFilled() {
     const {initialValues = {}} = this.props
     const {touched, touchedFields, fields = {}} = this.state
-    return touched && touchedFields.some(s => fields[s] != initialValues[s])
+    return touched && touchedFields.some(s => !_.isEqual(fields[s], initialValues[s]))
   }
 
   getContext() {
