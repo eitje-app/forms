@@ -2,20 +2,17 @@ import React, {Fragment} from 'react'
 import {Button, Tooltip, t, config, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
 import {Text, Icon, PopoutCard} from './circular_dependency_fix'
 import utils from '@eitje/web_utils'
-import {FieldInput} from './field_input'
 
 export const RightContent = props => {
-  const {Comp, inputPosition} = props
   const rightElement = getRightElement(props)
   const icons = utils.alwaysArray(getIcon(props))
-  const hasInput = inputPosition == 'right'
-  if (!hasInput && !utils.exists(icons) && !rightElement) return null
-
+  if (!utils.exists(icons) && !rightElement) return null
   return (
     <config.Layout className="form-field-content-right">
-      {!hasInput && rightElement}
-      {hasInput && <FieldInput {...props} />}
-      {!hasInput && icons.map(i => <FormIcon {...i} />)}
+      {rightElement}
+      {icons.map(i => (
+        <FormIcon {...i} />
+      ))}
     </config.Layout>
   )
 }
