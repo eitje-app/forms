@@ -247,8 +247,7 @@ export class NewForm extends Component {
   }
 
   setValues = obj => {
-    const {fields} = this.state
-    this.setState({fields: {...fields, ...obj}})
+    this.setState(prev => ({fields: {...prev.fields, ...obj}}))
   }
 
   getValue = (field, props = {}) => {
