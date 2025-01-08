@@ -51,6 +51,7 @@ const decorateField =
       opts.className,
     )
 
+    const {onChange, ...propsWithoutChange} = allProps
     useEffect(() => {
       if (isFirst && autoFocus) {
         element.current?.querySelector('input')?.focus?.()
@@ -58,7 +59,7 @@ const decorateField =
     }, [isFirst])
 
     return (
-      <div ref={element} onClick={clickChild} className={classNames}>
+      <div {...propsWithoutChange} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
           <config.Layout className="form-field-content" horizontal="spaceBetween" height="full" padding="16 24" disabled={disabled}>
             <LeftContent {...allProps} />
