@@ -34,5 +34,5 @@ const handleKeyPress = (e, {element}) => {
 
 export const FieldInput = ({Comp, ...rest}) => {
   const label = buildDecoration({...rest, decorationType: 'label'})
-  return <Comp {...rest} placeholder="..." onKeyDown={e => handleKeyPress(e, props)} title={label} {...rest} />
+  return <Comp {...rest} placeholder="..." onKeyDown={e => handleKeyPress(e, rest)} title={label} {...rest} />
 }
