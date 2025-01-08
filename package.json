@@ -1,6 +1,6 @@
 {
   "name": "@eitje/form",
-  "version": "3.1.8-input-position.4",
+  "version": "3.1.8-input-position.5",
   "description": "Beautiful forms made easy",
   "main": "index.js",
   "scripts": {
