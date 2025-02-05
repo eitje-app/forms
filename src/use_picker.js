@@ -50,7 +50,7 @@ const usePicker = ({
       ...t,
       key: String(t[valueField]),
       value: t[valueField],
-      label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField])) || '',
+      label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField], rest)) || '',
     }
   })
 
