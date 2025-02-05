@@ -59,7 +59,7 @@ export const buildDecoration = props => {
   const {decorationType} = props
   let val = props.hasOwnProperty(decorationType) ? props[decorationType] : decorationDefaults[decorationType]
   if (_.isFunction(val)) val = val(props)
-  if (_.isBoolean(val)) return makeTranslation(props)
+  if (_.isBoolean(val) && val) return makeTranslation(props)
   return val
 }
 
