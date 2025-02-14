@@ -53,6 +53,11 @@ const findDefault = field => {
   fireMouseEvents(child)
 }
 
+const clickChild = (field, {target}) => {
+  const child = field.querySelector('input')
+  child?.click?.()
+}
+
 export const findFns = {
   'eitje-input-container': findInput,
   'eitje-time-picker-container': findTimeInput,
@@ -60,5 +65,6 @@ export const findFns = {
   'eitje-list-picker': clickListPickerTrigger,
   'eitje-switch-container': clickSwitch,
   'eitje-checkbox-container': clickCheckbox,
+  'eitje-avatar-picker': clickChild,
   default: findDefault,
 }
