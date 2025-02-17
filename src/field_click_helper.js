@@ -53,9 +53,14 @@ const findDefault = field => {
   fireMouseEvents(child)
 }
 
-const clickChild = (field, {target}) => {
+const clickChild = field => {
   const child = field.querySelector('input')
   child?.click?.()
+}
+
+const clickPopoutCard = (field, {open}) => {
+  const child = field.querySelector('.popout-card-trigger')
+  if (!open) child?.click?.()
 }
 
 export const findFns = {
@@ -66,5 +71,6 @@ export const findFns = {
   'eitje-switch-container': clickSwitch,
   'eitje-checkbox-container': clickCheckbox,
   'eitje-avatar-picker': clickChild,
+  'eitje-team-color-picker': clickPopoutCard,
   default: findDefault,
 }
