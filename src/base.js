@@ -1,7 +1,7 @@
 import {Fragment} from 'react'
 
-let t = (text) => text
-let alert = (text) => console.log(text)
+let t = text => text
+let alert = text => console.log(text)
 let isScoped = false
 let Button = 'p'
 let Prompt = null

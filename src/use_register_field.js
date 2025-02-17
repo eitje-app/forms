@@ -11,17 +11,16 @@ export const useRegisterField = (field, fieldProps) => {
 		registerField(field, fieldProps)
 		return () => unregisterField(field)
 	}, [])
-
 	return enhanceField(field, fieldProps)
 }
 
-export const makeRegisteredField = (Comp) => (props) => {
+export const makeRegisteredField = Comp => props => {
 	const formProps = useRegisterField(props.field, props)
 	const formFieldProps = useFormField(formProps)
 	return <Comp {...props} {...formProps} {...formFieldProps} form />
 }
 
-export const makeNewRegisteredField = (Comp) => (props) => {
+export const makeNewRegisteredField = Comp => props => {
 	const formProps = useRegisterField(props.field, props)
 	return <Comp {...props} {...formProps} form />
 }

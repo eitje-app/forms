@@ -1,65 +1,65 @@
-import React from "react";
-import {
-  Button,
-  Tooltip,
-  t,
-  config,
-  tooltipElement,
-  defaultIcon,
-  clearIcon as clearIconImg,
-} from "./base";
-import { Text } from "@eitje/web_components";
+import React, {Fragment} from 'react'
+import {Button, Tooltip, t, config, tooltipElement, defaultIcon, clearIcon as clearIconImg} from './base'
+import {Text, Icon, PopoutCard} from './circular_dependency_fix'
+import utils from '@eitje/web_utils'
+import {FieldInput} from './field_input'
 
-export const RightContent = (props) => {
-  const {
-    icon = defaultIcon,
-    onChange,
-    required,
-    clearIcon,
-    defaultPickerValue,
-  } = props;
+export const RightContent = props => {
+  const {Comp, inputPosition} = props
+  const rightElement = getRightElement(props)
+  const icons = utils.alwaysArray(getIcon(props))
+  const hasInput = inputPosition == 'right'
+  if (!hasInput && !utils.exists(icons) && !rightElement) return null
 
-  const hide = !icon && !clearIcon;
-  const rightElement = getRightElement(props);
-
-  if (hide) return null;
   return (
     <config.Layout className="form-field-content-right">
-      {icon && <img className="eitje-form-field-3-icon" src={icon} />}
-      {clearIcon && !required && (
-        <img
-          className="eitje-form-field-3-clear-icon"
-          src={clearIconImg}
-          onClick={() => onChange(defaultPickerValue)}
-        />
-      )}
-      {rightElement}
+      {!hasInput && rightElement}
+      {hasInput && <FieldInput {...props} />}
+      {!hasInput && icons.map(i => <FormIcon {...i} />)}
     </config.Layout>
-  );
-};
+  )
+}
 
-const getRightElement = ({ rightElement, ...rest }) => {
-  if (!_.isString(rightElement)) return rightElement;
-  if (rightElement == "charCounter") {
-    return <CharCounter {...rest} />;
-  }
-};
-
-const makeCharClass = (
-  charsLeft,
-  { warningThreshold = 10, dangerThreshold = 5 }
-) => {
-  if (charsLeft < dangerThreshold) return "eitje-form-3-char-counter-danger";
-  if (charsLeft < warningThreshold) return "eitje-form-3-char-counter-warning";
-  return "";
-};
-
-const CharCounter = ({ maxLength, value, ...rest }) => {
-  const charsLeft = maxLength - (value?.length || 0);
-  const className = makeCharClass(charsLeft, rest);
+const FormIcon = ({Wrapper = Fragment, wrapperProps, ...rest}) => {
   return (
-    <Text className={`eitje-form-3-char-counter ${className}`}>
-      {charsLeft}
-    </Text>
-  );
-};
+    <Wrapper {...wrapperProps}>
+      <Icon size={12} {...rest} />
+    </Wrapper>
+  )
+}
+
+const getIcon = ({readOnly, disabled, value, required, onChange, icon, defaultPickerValue, clearIcon = true}) => {
+  if (disabled) return
+  if (readOnly)
+    return {
+      name: 'locked',
+      Wrapper: PopoutCard,
+      wrapperProps: {title: t('form.general.tooltips.read_only')},
+    }
+  let buttons = []
+  if (clearIcon && value && !required)
+    buttons.push({
+      name: 'cross',
+      className: 'cross-icon',
+      onClick: () => onChange(defaultPickerValue),
+    })
+  if (icon) buttons.push({name: 'caret-down'})
+  return buttons
+}
+
+const getRightElement = ({rightElement, ...rest}) => {
+  if (utils.exists(rest.maxLength) && !rightElement) rightElement = 'charCounter'
+
+  if (!_.isString(rightElement)) {
+    return rightElement
+  }
+
+  if (rightElement == 'charCounter') {
+    return <CharCounter {...rest} />
+  }
+}
+
+const CharCounter = ({maxLength, value, ...rest}) => {
+  const charsLeft = maxLength - (value?.length || 0)
+  return <Text>{charsLeft}</Text>
+}

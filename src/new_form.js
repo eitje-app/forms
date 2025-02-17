@@ -14,7 +14,7 @@ const parseValidObj = (validObj, defaultMessage) => {
     if (message) validObj.message = `form.validation.${message}`
     return validObj
   }
-  if (_.isString(validObj)) return {message: `form.validation.${validObj}`, valid: false}
+  if (_.isString(validObj)) return {message: validObj, valid: false}
   if (_.isBoolean(validObj)) return {valid: validObj, message: defaultMessage}
 
   return {valid: true}
@@ -27,13 +27,10 @@ export class NewForm extends Component {
     super(props)
     this.state = {
       loading: false,
-
-      blocked: {},
       touchedFields: [],
       errors: {},
       registeredFields: [],
       fields,
-      prevFields: fields,
     }
     this.resetValues = this.resetValues.bind(this)
     this.submit = this.submit.bind(this)
@@ -48,148 +45,83 @@ export class NewForm extends Component {
     this.submit = debounce(this.submit, debounceTime, true)
   }
 
-  isForm = true
-
-  submitAllowed = () => {
-    const {allowEmpty} = this.props
-    return (allowEmpty && this.empty()) || (this.validate() && !this.blocked())
-  }
-
-  empty() {
-    const formFields = Object.values(_.pick(this.state.fields, this.fieldNames())) // to prevent extra initialValues from always making the form filled
-    const filled = formFields.some((val) => utils.exists(val))
-    return !filled
-  }
-
   getParams = () => this.state.fields
 
-  fieldNames = () => utils.alwaysDefinedArray(this.state.registeredFields).map((f) => f.fieldName)
+  fieldNames = () => utils.alwaysDefinedArray(this.state.registeredFields).map(f => f.fieldName)
 
-  getFieldName = (c) => {
-    if (!c || !c.props) return
-    if (c.props.namespace) return `${c.props.namespace}.${c.props.field}`
-    return c.props.field
-  }
+  setErrors = newErrors => this.setState({errors: {...this.state.errors, ...newErrors}})
 
-  setErrors = (newErrors) => this.setState({errors: {...this.state.errors, ...newErrors}})
-
-  async submit({extraData = {}, field, onlyTouched, skipAfterSubmit, namespace, callback = () => {}} = {}) {
+  async submit({field, onlyTouched, skipAfterSubmit, namespace} = {}) {
     const {setErrors} = this
-    const {
-      onSubmit,
-      handleAllErrors,
-      submitInitialValues,
-      untouchOnSubmitFail,
-      initialValues,
-      rollbackOnError = field,
-      identityField = 'id',
-    } = this.props
-    const {fields, touchedFields} = this.state
+    const {onSubmit, submitInitialValues, initialValues, identityField = 'id'} = this.props
+    const {fields, touchedFields, submitting} = this.state
 
-    if (this.blocked()) return
+    if (submitting) return false
 
-    let toPick
-    let params
+    let params, toPick
 
     if (submitInitialValues) {
-      // all
       params = fields
-      toPick = [...this.fieldNames(), identityField]
     } else if (field) {
-      const pickName = namespace ? `${namespace}.${field}` : field
-      toPick = [pickName, identityField]
+      toPick = [field, identityField]
     } else if (onlyTouched) {
-      // touched + visible
       toPick = [...touchedFields, identityField]
     } else {
-      // visible
       toPick = [...this.fieldNames(), identityField]
     }
 
     if (!params) params = _.pick(fields, toPick)
-
-    if (params['amount'] && params['amount'].replace) {
-      params['amount'] = params['amount'].replace(trailingDot, '') // horrible hacks used for the financial input to prevent '10,' from being sent to the back-end
-    }
-    params = {...params, ...extraData}
-    if (params.length == 0) {
-      return
-      console.error('Tried submitting form without params')
-    }
 
     console.group('FORM')
     console.log('Start validation')
     if (this.validate({fields: [field].filter(Boolean)})) {
       console.log('Params to be submitted', params)
 
-      const res = await onSubmit(params, {setErrors, fields})
-
-      await this.setState({submitted: true})
+      let res
+      this.setState({submitting: true})
+      try {
+        res = await onSubmit(params, {setErrors, fields})
+      } finally {
+        this.setState({submitting: false})
+      }
 
       if (!res) return
       const resIsOk = (_.isPlainObject(res) && res.ok) || res == true
       if (resIsOk) {
         const partialSubmit = !!field
-        !skipAfterSubmit && this.afterSubmit(params, res, callback, {initialValues, touchedFields, partialSubmit})
+        const unchangedTouchedFields = touchedFields.filter(f => _.isEqual(this.state.fields[f], params[f]))
+        !skipAfterSubmit && this.afterSubmit({params, res, initialValues, touchedFields: unchangedTouchedFields, partialSubmit})
       } else {
-        if (rollbackOnError) this.rollback()
         if (res?.data?.errors) this.handleErrors(res)
-        if (untouchOnSubmitFail) this.unTouch()
       }
     }
 
     console.groupEnd()
   }
 
-  rollback() {
-    const {prevFields} = this.state
-    this.setState({fields: prevFields})
-  }
-
   handleErrors(res) {
     const {fields} = this.state
-    const {hideLabelErrors, initialValues} = this.props
     let errors = res.data?.errors
     if (_.isString(errors)) errors = {base: [errors]}
     if (!_.isObject(errors)) return
-    const newErrors = _.mapValues(errors, (err) => err[0])
-
-    if (!hideLabelErrors) {
-      this.setState({errors: {...this.state.errors, ...newErrors}})
-    }
+    const newErrors = _.mapValues(errors, err => err[0])
+    this.setState({errors: {...this.state.errors, ...newErrors}})
   }
 
-  touch() {
-    this.setState({touched: true})
+  unTouch(fields) {
+    const touchedFields = fields ? this.state.touchedFields.filter(f => !fields.includes(f)) : []
+    this.setState({touchedFields, touched: false})
   }
 
-  unTouch() {
-    this.setState({touchedFields: [], touched: false})
-  }
-
-  async afterSubmit(params, res, callback = () => {}, rest = {}) {
-    const {afterSubmMessage, afterTouch = noop, afterSubmit = () => {}, resetAfterSubmit} = this.props
-    afterSubmMessage && utils.toast(afterSubmMessage)
-    afterTouch(false)
-    await this.unTouch()
-    afterSubmit(res, params, rest)
-    callback(res, params)
+  async afterSubmit({params, res, ...rest}) {
+    const {afterSubmit = () => {}, resetAfterSubmit} = this.props
+    await this.unTouch(rest.touchedFields)
+    afterSubmit({params, res, resData: res?.data, ...rest})
     if (resetAfterSubmit) this.resetValues()
   }
 
-  blocked() {
-    const {blocked = {}} = this.state
-    if (Object.values(blocked).some((s) => s)) {
-      alert(t('oneSec'), t('stillUploading'))
-      return true
-    }
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    const {afterTouch = () => {}, overrideInitialValues} = this.props
-    if (!prevState.touched && this.state.touched) {
-      afterTouch(true)
-    }
+    const {overrideInitialValues} = this.props
 
     if (!_.isEqual(prevProps.initialValues, this.props.initialValues)) {
       if (overrideInitialValues) {
@@ -201,24 +133,20 @@ export class NewForm extends Component {
         this.updateUnTouchedFields(this.props.initialValues)
       }
     }
-
-    if (!_.isEqual(this.state.fields, prevState.fields)) {
-      this.setState({prevFields: prevState.fields})
-    }
   }
 
-  updateUnTouchedFields = (newVals) => {
+  updateUnTouchedFields = newVals => {
     const {touchedFields} = this.state
     const toBeUpdated = _.pickBy(newVals, (val, key) => !touchedFields.includes(key))
     const newFields = {...this.state.fields, ...toBeUpdated}
     this.setState({fields: newFields})
   }
 
-  handleOtherFieldErrors = (field) => {
+  handleOtherFieldErrors = field => {
     const {errors, registeredFields} = this.state
-    const errFields = Object.keys(errors).filter((e) => errors[e] && errors[e] != t('form.required'))
-    errFields.forEach((errField) => {
-      const registeredField = registeredFields.find((f) => f.fieldName == errField)
+    const errFields = Object.keys(errors).filter(e => errors[e] && errors[e] != t('form.required'))
+    errFields.forEach(errField => {
+      const registeredField = registeredFields.find(f => f.fieldName == errField)
 
       if (registeredField) this.validateField(errField, true, registeredField?.props)
     })
@@ -227,24 +155,15 @@ export class NewForm extends Component {
   updateField = async (field, val, fieldProps = {}) => {
     const {fields, errors, touched, touchedFields} = this.state
     const {namespace} = fieldProps
-    const {afterChange, setState, mirrorFields = []} = this.props
 
     let newFields = {...this.state.fields}
-    let currentHolder = newFields
 
-    if (namespace) {
-      if (!newFields[namespace]) newFields[namespace] = {}
-      currentHolder = newFields[namespace]
-    }
+    if (newFields[field] === val) return
 
-    if (currentHolder[field] === val) return
-
-    currentHolder[field] = val
+    newFields[field] = val
     await this.setState({fields: newFields})
-    this.validateField(field, true, fieldProps)
+    if (errors[field]) this.validateField(field, true, fieldProps)
     this.handleOtherFieldErrors(field)
-
-    afterChange && afterChange(field, val, newFields)
 
     if (!touchedFields.includes(field)) {
       this.setState({touchedFields: [...touchedFields, field]})
@@ -261,45 +180,28 @@ export class NewForm extends Component {
     if (fieldProps.submitStrategy === 'change') {
       this.submit({field, namespace})
     }
-
-    if (mirrorFields.length > 0 && setState && mirrorFields.includes(field)) {
-      setState({[field]: val})
-    }
   }
 
   handleRequired(required, val) {
     return _.isFunction(required) ? required(this.state.fields) : required
-
     // required fields not being filled is only an issue when a user really submits a form, not when they're typing
   }
 
   validateField(field, direct = false, fieldProps, {checkRequired} = {}) {
-    const {rules = {field: {}, name: {}}, messages = {field: {}, name: {}}} = this.props
     const {fields, errors} = this.state
-    const {validate, required, validateMessage, name} = fieldProps
+    const {validate, required} = fieldProps
     const value = this.getValue(field, fieldProps)
     let error = null
     let valid
     const isReq = checkRequired && this.handleRequired(required)
+
     if (isReq) error = !utils.exists(value) && t('form.required')
 
     if (validate && !error) {
       const validateResult = validate(value, {fieldProps, getFormData: this.getParams})
-      const validObj = parseValidObj(validateResult, validateMessage || 'form.invalid')
+      const validObj = parseValidObj(validateResult, 'form.invalid')
       const {valid, message} = validObj
       if (!valid) error = t(message)
-    }
-
-    if (!error && rules.field[field]) {
-      valid = rules.field[field](value, fields)
-      let errorMsg = messages.field[field]
-      error = !valid && t(`form.validation.${errorMsg}`, t('form.invalid'))
-    }
-
-    if (!error && name && rules.name[name]) {
-      valid = rules.name[name](value, fields)
-      let errorMsg = messages.name[name]
-      error = !valid && (`form.validation.${errorMsg}`, t('form.invalid'))
     }
 
     const newErrors = {...errors, [field]: error}
@@ -307,80 +209,44 @@ export class NewForm extends Component {
     return error // also possible to return errs instead of writing to state
   }
 
-  validate({fields = []} = {}) {
+  validateInner({fields = []} = {}) {
     const {errors, registeredFields} = this.state
     let errs = {}
     let invalid
     const hasSpecificFields = fields.length > 0
 
-    registeredFields.forEach((f) => {
+    registeredFields.forEach(f => {
       const {props, fieldName} = f
       let error
-
-      if (props?.ref?.current?.validate) {
-        // custom validator fn is currently used by MultiForm, but may be more widely used in the future
-        error = !c.ref.current.validate()
-      } else {
-        if (hasSpecificFields && !fields.includes(fieldName)) return
-        error = this.validateField(fieldName, false, this.makeProps(props), {checkRequired: true})
-      }
+      if (hasSpecificFields && !fields.includes(fieldName)) return
+      error = this.validateField(fieldName, false, this.makeProps(props), {checkRequired: true})
 
       errs[fieldName] = error
 
       if (!invalid && error) {
         invalid = true
-        console.log(`INVALID ${fieldName}`, error)
       }
     })
+    return {invalid, errs}
+  }
+
+  validate({fields = []} = {}) {
+    const {invalid, errs} = this.validateInner({fields})
     this.setState({errors: errs})
     return !invalid
   }
 
-  allFormChildren = () => this.getFormChildren()
-
-  getFormChildren = (el = this) => {
-    if (!el.props) return []
-    if (this.isHidden(el)) return []
-    let {children} = el.props
-    children = _.flatten(utils.alwaysArray(children))
-    let els = children.filter((c) => c && c.props && c.props.field && !this.isHidden(c))
-    let stringEls = children.filter((c) => _.isString(c))
-    const wrappers = children.filter((c) => c && c.props && c.props.fieldWrapper)
-    wrappers.forEach((wrapper) => {
-      els = els.concat(this.getFormChildren(wrapper))
-    })
-    return els
-  }
-
-  blockSubmit = (field, blocked) => {
-    this.setState({
-      blocked: {
-        ...this.state.blocked,
-        [field]: blocked,
-      },
-    })
-    const that = this
-    if (blocked) {
-      setTimeout(() => that.blockSubmit(field, false), 15000)
-    }
-  }
-
-  resetValues = (empty) => {
+  resetValues = empty => {
     const newState = empty ? {} : this.props.initialValues
     this.setState({fields: newState})
   }
 
-  removeValues = (keys) => {
-    this.setState((state) => ({fields: _.omit(state.fields, keys)}))
+  removeValues = keys => {
+    this.setState(state => ({fields: _.omit(state.fields, keys)}))
   }
 
-  setValues = (obj) => {
-    const {fields} = this.state
-    this.setState({fields: {...fields, ...obj}})
-  }
-
-  getValues = (...fields) => {
-    return _.pick(this.state.fields, fields)
+  setValues = obj => {
+    this.setState(prev => ({fields: {...prev.fields, ...obj}}))
   }
 
   getValue = (field, props = {}) => {
@@ -388,7 +254,7 @@ export class NewForm extends Component {
     return fields[field]
   }
 
-  getImperativeFieldProps = (props) => {
+  getImperativeFieldProps = props => {
     const impProps = {}
     const {useSubmitStrategy} = this.props
     if (!props.submitStrategy && useSubmitStrategy) {
@@ -406,99 +272,38 @@ export class NewForm extends Component {
     return Object.assign({}, extraProps, fieldPropsToMerge, imperativeProps, props)
   }
 
-  enhanceChild = (c, {idx, extraProps} = {}) => {
-    const {updatedFields = [], disabledFields = [], disabled, onSubmit, transNamespace} = this.props
-    const {errors, fields, touchedFields} = this.state
-    const condOpts = {}
-
-    const fieldProps = this.makeProps(c, extraProps)
-
-    const {field, itemId, namespace, submitStrategy} = fieldProps
-    const act = () => touchedFields.includes(field) && this.submit({field})
-
-    if (submitStrategy === 'blur') condOpts['onBlur'] = act
-
-    const newEl = React.cloneElement(c, {
-      disabled: disabledFields.includes(field),
-      key: itemId ? `${itemId}-${field}` : field,
-      formDisabled: disabled,
-      innerRef: c.props.innerRef || this[`child-${idx}`],
-      updated: updatedFields.includes(field),
-      formData: fields,
-      isTouched: touchedFields.includes(field),
-      blockSubmit: (block = true) => this.blockSubmit(field, block),
-      getBlockedFields: () => this.state.blocked,
-      getFormData: () => this.state.fields,
-      submitForm: this.submit,
-      resetForm: this.resetValues,
-      error: errors[field],
-      ...condOpts,
-      ...extraProps,
-      ...fieldProps,
-      // NECESSARY PROPS (THAT FIELD CAN NOT OVERRIDE):
-      onChange: (val) => this.updateField(field, val, itemId, fieldProps),
-      setFormData: this.updateField,
-      value: this.getValue(field, fieldProps),
-      transNamespace,
-    })
-    return newEl
-  }
-
   enhanceField(field, _fieldProps) {
-    const {updatedFields = [], disabledFields = [], name, disabled, onSubmit, transNamespace} = this.props
-    const {errors, fields, touchedFields} = this.state
+    const {updatedFields = [], disabledFields = [], disabled, onSubmit, name} = this.props
+    const {errors, fields, registeredFields, touchedFields} = this.state
     let condOpts = {}
     const fieldProps = this.makeProps(_fieldProps)
     const {submitStrategy} = fieldProps
     const action = () => touchedFields.includes(field) && this.submit({field})
+    const index = registeredFields.findIndex(f => f.fieldName == field)
     if (submitStrategy === 'blur') condOpts['onBlur'] = action
     const value = this.getValue(field, fieldProps)
     return {
+      formData: fields,
       disabled: disabledFields.includes(field),
-      formData: fields, //
       isTouched: touchedFields.includes(field),
-      blockSubmit: (block = true) => this.blockSubmit(field, block),
       error: errors[field],
       ...condOpts,
       ...fieldProps,
-      onChange: (val) => this.updateField(field, val, fieldProps),
+      onChange: val => this.updateField(field, val, fieldProps),
+      isFirst: index == 0,
       value,
       name,
-      transNamespace,
     }
-  }
-
-  isHidden = (c) => {
-    const {hiddenFields = []} = this.props
-    const {fields} = this.state
-    const hidden = c?.props?.hidden
-    return hiddenFields.includes(c.props.field) || utils.funcOrBool(hidden, fields)
   }
 
   touchedAndFilled() {
     const {initialValues = {}} = this.props
     const {touched, touchedFields, fields = {}} = this.state
-    return touched && touchedFields.some((s) => fields[s] != initialValues[s])
+    return touched && touchedFields.some(s => !_.isEqual(fields[s], initialValues[s]))
   }
 
-  // 1. registerField -> nec for knowing which fields to submit, try to send along a ref of props OR element (multi-form) -> sends back all form props now sent by enhanceChild
-  //                     will be incorporated in makeField -> split into 'formify' (registerField + useFormField) and 'containerify'?
-  // 2. useWatch -> watchers( {fields: [], callback: fn} ), on every change check field match, run callback
-  // 3. useForm -> consumes context (onSubmit, validate, getData)
-
   getContext() {
-    const {
-      submit,
-      setValues,
-      removeValues,
-      resetValues,
-      touchedAndFilled,
-      validate,
-      getParams,
-      registerField,
-      enhanceField,
-      unregisterField,
-    } = this
+    const {submit, setValues, removeValues, resetValues, validate, getParams, registerField, enhanceField, unregisterField} = this
     const {errors, touchedFields} = this.state
 
     return {
@@ -506,7 +311,6 @@ export class NewForm extends Component {
       errors,
       submit,
       resetValues,
-      formTouched: touchedAndFilled,
       setValues,
       validate,
       getData: getParams,
@@ -520,28 +324,24 @@ export class NewForm extends Component {
 
   registerField(fieldName, props) {
     const obj = {fieldName, props}
-    this.setState((state) => ({registeredFields: [...state.registeredFields, obj]}))
+    this.setState(state => ({registeredFields: [...state.registeredFields, obj]}))
   }
 
   unregisterField(fieldName) {
-    this.setState((state) => ({
-      registeredFields: state.registeredFields.filter((f) => f.fieldName != fieldName),
+    this.setState(state => ({
+      registeredFields: state.registeredFields.filter(f => f.fieldName != fieldName),
     }))
   }
 
   render() {
     const {
       children,
-      showPrompt,
       onSubmit,
       submitOnEnter = true,
       hidePrompt,
-      submitButton,
       promptMsg = 'leave_unfinished_form',
-      debug,
       variant = 'grid',
       className,
-      onFocus = () => {},
     } = this.props
     const {errors, fields, touchedFields} = this.state
     const classNames = utils.makeCns(className, 'eitje-form-3', `eitje-form-3-${variant}`)
@@ -549,14 +349,13 @@ export class NewForm extends Component {
       <Fragment>
         <Wrapper
           action="javascript:" // This is needed to prevent nested forms from reloading the page on enter.. dont ask me why
-          onSubmit={(e) => {
+          onSubmit={e => {
             e.preventDefault()
             onSubmit && submitOnEnter && this.submit()
           }}
           autocomplete="nope"
           className={classNames}
           tabIndex={-1}
-          onFocus={onFocus}
         >
           <Provider value={this.getContext()}>{children}</Provider>
         </Wrapper>
@@ -568,11 +367,9 @@ export class NewForm extends Component {
   }
 }
 
-const noPromptPaths = ['/login']
 const handlePrompt = (nextLoc, initialLoc, promptMsg, form) => {
   const {pathname} = nextLoc
   if (pageStaysVisible(nextLoc, initialLoc)) return true
-  if (noPromptPaths.some((p) => pathname.startsWith(p))) return true
   return t(promptMsg)
 }
 
@@ -580,17 +377,5 @@ const pageStaysVisible = (nextLoc, initialLoc) => {
   if (nextLoc?.pathname == initialLoc?.pathname) return true
   if (nextLoc?.state?.background?.pathname == initialLoc?.pathname) return true
 }
-
-// cases:
-// 1. from modal back to bg, bg form should not prompt, modal form should prompt
-// 2. frok bg form to modal, never prompt
-// 3. from modal form to other modal form,  modal form should prompt.
-
-// what we know:
-// 1. we know if previous route was modal or normal
-// 2.  WE KNOW it all!!!! whooohooo
-
-// strange things we know:
-// 1. if both bg form & modal form have unsaved changes, only modal form prompt will be called, it looks like only one prompt can be called, and that's always at the 'lowest level'.
 
 export default NewForm

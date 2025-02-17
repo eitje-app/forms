@@ -20,7 +20,7 @@ function fireMouseEvents(element, eventNames = ['mousedown']) {
   }
 }
 
-const findInput = (field) => {
+const findInput = field => {
   let child = field.querySelector('input') || field.querySelector('textarea') // for now, we assume the 'actual' input is always an input AND there is always only one
 
   child?.focus()
@@ -33,8 +33,34 @@ const findTimeInput = (field, {open}) => {
 }
 
 const clickListPickerTrigger = (field, {open}) => {
-  const child = document.querySelector('.form-trigger-container')
+  const child = field.querySelector('.form-trigger-container')
   if (!open) child.click()
+}
+
+const clickSwitch = field => {
+  const el = field.querySelector('.ant-switch-handle')
+  el.click?.()
+}
+
+const clickCheckbox = field => {
+  const el = field.querySelector('.ant-checkbox')
+  el.click?.()
+}
+
+const findDefault = field => {
+  const child = field.querySelector('input')
+  child?.focus?.()
+  fireMouseEvents(child)
+}
+
+const clickChild = field => {
+  const child = field.querySelector('input')
+  child?.click?.()
+}
+
+const clickPopoutCard = (field, {open}) => {
+  const child = field.querySelector('.popout-card-trigger')
+  if (!open) child?.click?.()
 }
 
 export const findFns = {
@@ -42,4 +68,9 @@ export const findFns = {
   'eitje-time-picker-container': findTimeInput,
   'eitje-date-picker-container': findTimeInput,
   'eitje-list-picker': clickListPickerTrigger,
+  'eitje-switch-container': clickSwitch,
+  'eitje-checkbox-container': clickCheckbox,
+  'eitje-avatar-picker': clickChild,
+  'eitje-team-color-picker': clickPopoutCard,
+  default: findDefault,
 }

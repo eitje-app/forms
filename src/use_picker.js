@@ -1,6 +1,6 @@
-import _ from 'lodash'
-import {t, isScoped} from './base'
 import utils from '@eitje/utils'
+import _ from 'lodash'
+import {isScoped, t} from './base'
 
 export const simpleMap = (item, buildLabel, props) => {
   const label = buildLabel ? buildLabel(item) : makeLabel(item, props)
@@ -9,11 +9,18 @@ export const simpleMap = (item, buildLabel, props) => {
 
 const numAtEndRegex = /-\d+\b/g // this is done for compositeField, because it suffixes fields with -number, like user_id-1
 
-const makeLabel = (label, {field, transNamespace} = {}) => {
+const makeLabel = (label, {field, transNamespace, name} = {}) => {
   if (!label) return
   if (field) field = field.replace(numAtEndRegex, '')
+
+  const _name = utils.alwaysDefinedArray(transNamespace || name)
+
   if (isScoped) {
-    if (transNamespace) return t(`form.${transNamespace}.fields.${field}.options.${label}`, t(`form.dropdown.${label}`), label)
+    if (_name.length > 0) {
+      const nameKeys = _name.map(n => `form.${n}.fields.${field}.options.${label}`)
+      const allKeys = [...nameKeys, `form.dropdown.${label}`, label]
+      return t(allKeys)
+    }
     return t(`form.dropdown.${label}`, label)
   }
   return t(label, label)
@@ -26,7 +33,7 @@ const usePicker = ({
   defaultTitle = '-',
   formData,
   buildLabel,
-  modifyItems = (items) => items,
+  modifyItems = items => items,
   labelField = 'name',
   valueField = 'id',
   sortField = labelField,
@@ -35,29 +42,29 @@ const usePicker = ({
   if (!items) items = []
   items = utils.alwaysDefinedArray(items)
   let pickerItems = items
-  if (!noSort && sortField) pickerItems = _.sortBy(pickerItems, (i) => i[sortField])
+  if (!noSort && sortField) pickerItems = _.sortBy(pickerItems, i => i[sortField])
 
-  pickerItems = pickerItems.map((t) => {
+  pickerItems = pickerItems.map(t => {
     if (!_.isObject(t)) return simpleMap(t, buildLabel, rest)
     return {
       ...t,
       key: String(t[valueField]),
       value: t[valueField],
-      label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField])) || '',
+      label: (buildLabel ? buildLabel(t[labelField], t) : makeLabel(t[labelField], rest)) || '',
     }
   })
 
   pickerItems = modifyItems(pickerItems, formData) || []
 
-  const selectedItem = pickerItems.find((i) => i.value === value) || {}
+  const selectedItem = pickerItems.find(i => i.value === value) || {}
   const title = selectedItem.label || defaultTitle
-  const selectedBaseItem = items.find((i) => i[valueField] === value)
+  const selectedBaseItem = items.find(i => i[valueField] === value)
 
-  const selectedItems = _.isArray(value) ? pickerItems.filter((i) => value.includes(i.value)) : [selectedItem].filter((i) => !_.isEmpty(i))
+  const selectedItems = _.isArray(value) ? pickerItems.filter(i => value.includes(i.value)) : [selectedItem].filter(i => !_.isEmpty(i))
 
   const unsortedSelectedItems = _.isArray(value)
-    ? _.sortBy(pickerItems, (v) => _.indexOf(value, v[valueField])).filter((i) => value.includes(i.value))
-    : [selectedItem].filter((i) => !_.isEmpty(i))
+    ? _.sortBy(pickerItems, v => _.indexOf(value, v[valueField])).filter(i => value.includes(i.value))
+    : [selectedItem].filter(i => !_.isEmpty(i))
 
   return {
     pickerItems,

@@ -1,20 +1,19 @@
-import React, {Fragment, useState, useRef} from 'react'
-import useFormField from './use_form_field'
-import {Button, Tooltip, config, t, tooltipElement, defaultIcon, clearIcon} from './base'
 import utils from '@eitje/utils'
-import {makeRegisteredField, makeNewRegisteredField} from './use_register_field'
+import React, {useEffect, useRef, useState} from 'react'
+import {Tooltip, config} from './base'
 import {findFns} from './field_click_helper'
 import {LeftContent} from './left_content'
 import {RightContent} from './right_content'
+import {makeNewRegisteredField} from './use_register_field'
 
 const decorateField =
   (Comp, compOpts = {}) =>
-  (props) => {
-    let {field, value, readOnly, formData, className, error, disabled, clearIcon, icon = defaultIcon} = props
-
+  props => {
+    let {readOnly, formData, isFirst, autoFocus = true, className, error, disabled} = props
+    const element = useRef(null)
     const [fieldOpen, setOpen] = useState(false)
 
-    const onOpenChange = (open) => {
+    const onOpenChange = open => {
       // this is for date&timepicker, if you click outside antd's area, they trigger a 'clickOutside' event and hide the dropdown menu.
       // sadly, this event is fired BEFORE our click, and thus we never know if the dropdown ACTUALLY came from a closed state, or if it was just closed by the clickOutside event
       // the 200ms here is a proxy to differentiate between 'actually closed' & 'just closed by event trigger'
@@ -23,40 +22,51 @@ const decorateField =
       }, 200)
     }
 
-    const clickChild = (e) => {
+    const clickChild = e => {
       const classNames = opts.className.split(' ')
-      const fn = findFns[classNames.find((name) => findFns[name])]
-      fn && fn(element.current, {open: fieldOpen})
+      const fn = findFns[classNames.find(name => findFns[name])] || findFns['default']
+      if (readOnly || disabled) return null
+      fn(element.current, {open: fieldOpen})
     }
 
     const required = utils.funcOrVal(props.required, formData)
 
     const opts = utils.funcOrVal(compOpts, props)
-    const allProps = {...opts, ...props, required, Comp, onOpenChange, onVisibleChange: onOpenChange}
+    const allProps = {
+      ...opts,
+      ...props,
+      required,
+      Comp,
+      element: element.current,
+      onOpenChange,
+      onVisibleChange: onOpenChange,
+    }
 
     const classNames = utils.makeCns(
       `eitje-form-3-field`,
-      `eitje-form-3-field-${field}`,
-      disabled && 'eitje-form-3-field-disabled',
-      error && 'eitje-form-3-field-error',
-      readOnly && 'eitje-form-3-read-only',
-      icon && 'eitje-form-3-field-has-icon',
-      clearIcon && 'eitje-form-3-field-has-clear-icon',
+      disabled && 'disabled',
+      error && 'error',
+      readOnly && 'read-only',
       className,
       opts.className,
     )
 
-    const element = useRef(null)
     const {onChange, ...propsWithoutChange} = allProps
+    useEffect(() => {
+      if (isFirst && autoFocus) {
+        element.current?.querySelector('input')?.focus?.()
+      }
+    }, [isFirst])
+
     return (
-      <config.Layout {...propsWithoutChange} ref={element} onClick={clickChild} className={classNames}>
+      <div {...propsWithoutChange} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
-          <config.Layout className="form-field-content">
+          <config.Layout className="form-field-content" horizontal="spaceBetween" height="full" padding="16 24" disabled={disabled}>
             <LeftContent {...allProps} />
             <RightContent {...allProps} />
           </config.Layout>
         </TooltipWrapper>
-      </config.Layout>
+      </div>
     )
   }
 
