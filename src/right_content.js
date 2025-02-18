@@ -13,9 +13,9 @@ export const RightContent = props => {
 
   return (
     <config.Layout className="form-field-content-right">
-      {!hasInput && rightElement}
       {hasInput && <FieldInput {...props} />}
       {!hasInput && icons.map(i => <FormIcon {...i} />)}
+      {!hasInput && rightElement}
     </config.Layout>
   )
 }
@@ -28,7 +28,7 @@ const FormIcon = ({Wrapper = Fragment, wrapperProps, ...rest}) => {
   )
 }
 
-const getIcon = ({readOnly, disabled, value, required, onChange, icon, defaultPickerValue, clearIcon = true}) => {
+const getIcon = ({readOnly, rightElement, disabled, value, required, onChange, icon, defaultPickerValue, clearIcon = true}) => {
   if (disabled) return
   if (readOnly)
     return {
@@ -41,9 +41,13 @@ const getIcon = ({readOnly, disabled, value, required, onChange, icon, defaultPi
     buttons.push({
       name: 'cross',
       className: 'cross-icon',
-      onClick: () => onChange(defaultPickerValue),
+      onClick: e => {
+        e.stopPropagation()
+        onChange(defaultPickerValue)
+      },
     })
-  if (icon) buttons.push({name: 'caret-down'})
+
+  if (!rightElement && icon) buttons.push({className: 'caret-down', name: 'caret-down'})
   return buttons
 }
 
