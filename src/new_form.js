@@ -8,6 +8,8 @@ import {Provider, useForm} from './context'
 const noop = () => {}
 const trailingDot = /\.$/g
 
+const ARRAY_FIELD_DELIMITER = 'arrayField--zz--'
+
 const parseValidObj = (validObj, defaultMessage) => {
   if (_.isPlainObject(validObj)) {
     const {message} = validObj
@@ -72,7 +74,7 @@ export class NewForm extends Component {
 
     if (!params) params = _.pick(fields, toPick)
 
-    params = _.pickBy(params, (val, key) => !key.startsWith('arrayField--zz--'))
+    params = _.pickBy(params, (val, key) => !key.startsWith(ARRAY_FIELD_DELIMITER))
 
     console.group('FORM')
     console.log('Start validation')
@@ -301,7 +303,20 @@ export class NewForm extends Component {
   touchedAndFilled() {
     const {initialValues = {}} = this.props
     const {touched, touchedFields, fields = {}} = this.state
-    return touched && touchedFields.some(s => !_.isEqual(fields[s], initialValues[s]))
+    return (
+      touched && touchedFields.filter(t => !t.startsWith(ARRAY_FIELD_DELIMITER)).some(s => this.checkDifferent(fields[s], initialValues[s]))
+    )
+  }
+
+  checkDifferent = (val1, val2) => {
+    if (_.isArray(val1) && _.isArray(val2)) {
+      return !_.isEqual(
+        val1.map(item => _.omit(item, 'id')),
+        val2.map(item => _.omit(item, 'id')),
+      )
+    }
+
+    return !_.isEqual(val1, val2)
   }
 
   getContext() {
