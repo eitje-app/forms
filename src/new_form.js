@@ -72,6 +72,8 @@ export class NewForm extends Component {
 
     if (!params) params = _.pick(fields, toPick)
 
+    params = _.pickBy(params, (val, key) => !key.startsWith('arrayField--zz--'))
+
     console.group('FORM')
     console.log('Start validation')
     if (this.validate({fields: [field].filter(Boolean)})) {
