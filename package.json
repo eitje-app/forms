@@ -2,10 +2,12 @@
   "name": "@eitje/form",
   "version": "3.1.13",
   "description": "Beautiful forms made easy",
-  "main": "index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "sideEffects": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d dist"
+    "build": "rollup -c"
   },
   "author": "Abel van Hoek",
   "license": "ISC",
@@ -24,7 +26,11 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0"
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "rollup": "^4.34.8"
   },
   "dependencies": {
     "password-validator": "2.2.0"
