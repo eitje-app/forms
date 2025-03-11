@@ -65,8 +65,14 @@ export const buildDecoration = props => {
 
 const numAtEndRegex = /-\d+\b/g // this is done for compositeField, because it suffixes fields with -number, like user_id-1
 
+const makeNamespaceTranslation = ({field, decorationName, namespaces}) => {
+  return namespaces.map(n => {
+    return `form.${n}.fields.${field}.${decorationName}`
+  })
+}
+
 const makeTranslation = props => {
-  let {label, decorationType, field, name} = props
+  let {label, decorationType, tableName, field, name} = props
   if (!field) return
 
   field = field.replace(numAtEndRegex, '')
@@ -75,11 +81,16 @@ const makeTranslation = props => {
   const decorationName = utils.camelToSnake(decorationType)
   const opts = props.i18nOpts || {}
 
-  let allKeys = namespaces.map(n => {
-    return `form.${n}.fields.${field}.${decorationName}`
-  })
+  let allKeys = makeNamespaceTranslation({field, decorationName, namespaces})
 
   const lastOption = decorationType == 'placeholder' && '...'
+
+  if (tableName) allKeys = [...allKeys, `records.${tableName}.fields.${field}`]
+
+  if (decorationType == 'tooltip') {
+    // fallback to label title if tooltip isn't defined as it's often the same
+    allKeys = [...allKeys, ...makeNamespaceTranslation({field, decorationName: 'label', namespaces})]
+  }
 
   allKeys = [...allKeys, `form.defaults.fields.${field}.${decorationType}`, `records.default.fields.${field}`, lastOption].filter(Boolean)
 
