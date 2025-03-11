@@ -309,6 +309,7 @@ export class NewForm extends Component {
   }
 
   checkDifferent = (val1, val2) => {
+    // array field adds its own IDs to fields, need to filter that out, otherwise a form is always touched.
     if (_.isArray(val1) && _.isArray(val2)) {
       return !_.isEqual(
         val1.map(item => _.omit(item, 'id')),
