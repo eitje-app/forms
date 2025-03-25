@@ -78,6 +78,9 @@ export class NewForm extends Component {
 
     console.group('FORM')
     console.log('Start validation')
+
+    params = _.mapValues(params, p => (_.isString(p) ? p.trim() : p))
+
     if (this.validate({fields: [field].filter(Boolean)})) {
       console.log('Params to be submitted', params)
 
