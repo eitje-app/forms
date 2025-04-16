@@ -32,7 +32,10 @@ const decorateField =
     const required = utils.funcOrVal(props.required, formData)
 
     const opts = utils.funcOrVal(compOpts, props)
+    const inputRef = useRef()
+
     const allProps = {
+      innerRef: inputRef,
       ...opts,
       ...props,
       required,
