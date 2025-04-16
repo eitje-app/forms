@@ -3,7 +3,7 @@ import {t, isScoped} from './base'
 import _ from 'lodash'
 import utils from '@eitje/utils'
 
-const allowEmptyString = (...vals) => vals.find((v) => v == '' || v)
+const allowEmptyString = (...vals) => vals.find(v => v == '' || v)
 
 function useFormField(props = {}) {
   let {
@@ -33,7 +33,7 @@ function useFormField(props = {}) {
   let extraLabel = buildDecoration({...props, decorationType: 'extraLabel'})
   let tooltip = buildDecoration({...props, decorationType: 'tooltip'})
 
-  if (_.isString(label) || props.i18nOpts?.postProcess) label = <p className="eitje-form-2-label">{label}</p>
+  if (_.isString(label) || props.i18nOpts?.postProcess) label = <p className="eitje-form-2-label truncate">{label}</p>
 
   if (_.isString(extraLabel) || props.i18nOpts?.postProcess) extraLabel = <p className="eitje-form-2-extra-label">{extraLabel}</p>
 
@@ -59,7 +59,7 @@ const decorationDefaults = {
   placeholder: true,
 }
 
-const buildDecoration = (props) => {
+const buildDecoration = props => {
   const {decorationType} = props
   let val = props.hasOwnProperty(decorationType) ? props[decorationType] : decorationDefaults[decorationType]
 
@@ -70,7 +70,7 @@ const buildDecoration = (props) => {
 
 const numAtEndRegex = /-\d+\b/g // this is done for compositeField, because it suffixes fields with -number, like user_id-1
 
-const makeTranslation = (props) => {
+const makeTranslation = props => {
   let {label, decorationType, field, transNamespace} = props
   if (!transNamespace || !field) return
 
@@ -80,7 +80,7 @@ const makeTranslation = (props) => {
   const decorationName = utils.camelToSnake(decorationType)
   const opts = props.i18nOpts || {}
 
-  let allKeys = namespaces.map((n) => {
+  let allKeys = namespaces.map(n => {
     return `form.${n}.fields.${field}.${decorationName}`
   })
 
