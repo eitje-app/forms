@@ -30,7 +30,15 @@ const Label = props => {
   const showRequired = !readOnly && !disabled
   return (
     <>
-      <Text truncate popoutTitle={popoutTitle} popoutBody={popoutBody} PopoutComponent={props.PopoutComponent} darkGrey fontSize={12}>
+      <Text
+        truncate
+        popoutTitle={popoutTitle}
+        {...props.popoutProps}
+        popoutBody={popoutBody}
+        PopoutComponent={props.PopoutComponent}
+        darkGrey
+        fontSize={12}
+      >
         {label} {showRequired && required && '*'}
       </Text>
       {extraLabel && (
