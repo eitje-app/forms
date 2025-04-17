@@ -1,12 +1,9 @@
 import _ from 'lodash'
-import React, {useContext, Component, useState, Fragment, PropTypes, useRef, createRef} from 'react'
+import React, {Component, Fragment} from 'react'
 import utils from '@eitje/utils'
-import {t, Button, Prompt, Wrapper, alert} from './base'
+import {t, Prompt, Wrapper} from './base'
 import {debounce} from './utils'
-import {Provider, useForm} from './context'
-
-const noop = () => {}
-const trailingDot = /\.$/g
+import {Provider} from './context'
 
 const ARRAY_FIELD_DELIMITER = 'arrayField--zz--'
 
@@ -261,44 +258,28 @@ export class NewForm extends Component {
     return fields[field]
   }
 
-  getImperativeFieldProps = props => {
-    const impProps = {}
-    const {useSubmitStrategy} = this.props
-    if (!props.submitStrategy && useSubmitStrategy) {
-      impProps['submitStrategy'] = props.defaultSubmitStrategy || 'change'
-    }
-    return impProps
-  }
-
   makeProps = (props, extraProps = {}) => {
     const {fieldProps} = this.props
     const {fields} = this.state
 
     const fieldPropsToMerge = utils.funcOrVal(props?.ignoreFieldProps, fields) ? {} : fieldProps
-    const imperativeProps = this.getImperativeFieldProps(props)
-    return Object.assign({}, extraProps, fieldPropsToMerge, imperativeProps, props)
+    return Object.assign({}, extraProps, fieldPropsToMerge, props)
   }
 
   enhanceField(field, _fieldProps) {
-    const {updatedFields = [], disabledFields = [], disabled, onSubmit, name} = this.props
-    const {errors, fields, registeredFields, touchedFields} = this.state
+    const {name} = this.props
+    const {errors, registeredFields, touchedFields} = this.state
     let condOpts = {}
     const fieldProps = this.makeProps(_fieldProps)
     const {submitStrategy} = fieldProps
     const action = () => touchedFields.includes(field) && this.submit({field})
     const index = registeredFields.findIndex(f => f.fieldName == field)
     if (submitStrategy === 'blur') condOpts['onBlur'] = action
-    const value = this.getValue(field, fieldProps)
     return {
-      formData: fields,
-      disabled: disabledFields.includes(field),
-      isTouched: touchedFields.includes(field),
-      error: errors[field],
       ...condOpts,
       ...fieldProps,
       onChange: val => this.updateField(field, val, fieldProps),
       isFirst: index == 0,
-      value,
       name,
     }
   }
@@ -324,22 +305,21 @@ export class NewForm extends Component {
   }
 
   getContext() {
-    const {submit, setValues, removeValues, resetValues, validate, getParams, registerField, enhanceField, unregisterField} = this
-    const {errors, touchedFields} = this.state
-
+    const {submit, setValues, getParams, registerField, enhanceField, unregisterField} = this
+    const {errors, fields, registeredFields} = this.state
+    const {fieldProps} = this.props
     return {
-      removeValues,
+      fieldProps,
+      registeredFields,
       errors,
       submit,
-      resetValues,
       setValues,
-      validate,
+      fields,
       getData: getParams,
       enhanceField,
       registerField,
       unregisterField,
-      touchedFields,
-      form: this,
+      newForm: true,
     }
   }
 

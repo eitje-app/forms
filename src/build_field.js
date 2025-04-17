@@ -9,7 +9,7 @@ import {makeNewRegisteredField} from './use_register_field'
 const decorateField =
   (Comp, compOpts = {}) =>
   props => {
-    let {readOnly, formData, isFirst, autoFocus = true, className, error, disabled} = props
+    let {readOnly, isFirst, autoFocus = true, className, error, disabled} = props
     const element = useRef(null)
     const [fieldOpen, setOpen] = useState(false)
 
@@ -29,8 +29,6 @@ const decorateField =
       fn(element.current, {open: fieldOpen})
     }
 
-    const required = utils.funcOrVal(props.required, formData)
-
     const opts = utils.funcOrVal(compOpts, props)
     const inputRef = useRef()
 
@@ -38,7 +36,6 @@ const decorateField =
       innerRef: inputRef,
       ...opts,
       ...props,
-      required,
       Comp,
       element: element.current,
       onOpenChange,

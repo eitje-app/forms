@@ -16,6 +16,7 @@ export * from './legacy_actions'
 export * from './components'
 export * from './use_register_field'
 export * from './build_field'
+export * from './context'
 
 const nl = {form: dutch}
 const en = {form: english}
