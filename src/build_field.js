@@ -36,7 +36,7 @@ const decorateField =
 
     const allProps = {
       innerRef: inputRef,
-      ...opts,
+      ..._.omit(opts, 'className'), // className is meant for container
       ...props,
       required,
       Comp,
