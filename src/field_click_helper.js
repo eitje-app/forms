@@ -64,6 +64,7 @@ const clickPopoutCard = (field, {open}) => {
 }
 
 export const findFns = {
+  'eitje-sentence-picker-container': _.noop,
   'eitje-input-container': findInput,
   'eitje-time-picker-container': findTimeInput,
   'eitje-date-picker-container': findTimeInput,
