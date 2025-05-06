@@ -10,6 +10,5 @@ const loadable = importFunc => {
   )
 }
 
-export const Text = loadable(() => import('@eitje/web_components').then(module => ({default: module.Text})))
 export const Icon = loadable(() => import('@eitje/web_components').then(module => ({default: module.Icon})))
 export const PopoutCard = loadable(() => import('@eitje/web_components').then(module => ({default: module.PopoutCard})))
