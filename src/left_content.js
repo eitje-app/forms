@@ -24,10 +24,10 @@ const Label = props => {
     decorationType: 'extraLabel',
   })
 
-  // keep tooltip and popoutBody decorationTypes for backwards compatibility
+  // use title and body directly from infoIconMessage prop, or use decorationTypes
   const _infoIconMessage = infoIconMessage && {
-    title: buildDecoration({tooltip: true, ...props, decorationType: 'tooltip'}),
-    body: buildDecoration({popoutBody: true, ...props, decorationType: 'popoutBody'}),
+    title: buildDecoration({['popout.title']: true, ...props, decorationType: 'popout.title'}),
+    body: buildDecoration({['popout.body']: true, ...props, decorationType: 'popout.body'}),
     ...infoIconMessage,
   }
 
@@ -91,7 +91,7 @@ const makeTranslation = props => {
 
   if (tableName) allKeys = [...allKeys, `records.${tableName}.fields.${field}`]
 
-  if (decorationType == 'tooltip') {
+  if (decorationType == 'popout.title') {
     // fallback to label title if tooltip isn't defined as it's often the same
     allKeys = [...allKeys, ...makeNamespaceTranslation({field, decorationName: 'label', namespaces})]
   }
