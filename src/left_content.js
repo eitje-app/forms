@@ -80,7 +80,7 @@ const makeNamespaceTranslation = ({field, decorationName, namespaces}) => {
 }
 
 const makeTranslation = props => {
-  let {label, decorationType, tableName, field, name} = props
+  let {label, decorationType, tableName, field, formName: name} = props
   if (!field) return
 
   field = field.replace(numAtEndRegex, '')
