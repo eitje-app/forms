@@ -299,7 +299,7 @@ export class NewForm extends Component {
       onChange: val => this.updateField(field, val, fieldProps),
       isFirst: index == 0,
       value,
-      name,
+      formName: name,
     }
   }
 
