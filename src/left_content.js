@@ -1,7 +1,6 @@
 import React from 'react'
 import utils from '@eitje/web_utils'
 import {t, config} from './base'
-import {Text} from './circular_dependency_fix'
 import {FieldInput} from './field_input'
 
 export const LeftContent = props => {
@@ -18,33 +17,30 @@ export const LeftContent = props => {
 }
 
 const Label = props => {
-  const {required, readOnly, disabled} = props
+  const {required, readOnly, disabled, infoIconMessage} = props
   const label = buildDecoration({...props, decorationType: 'label'})
   const extraLabel = buildDecoration({
     ...props,
     decorationType: 'extraLabel',
   })
-  const popoutTitle = buildDecoration({...props, decorationType: 'tooltip'})
-  const popoutBody = buildDecoration({...props, decorationType: 'popoutBody'})
+
+  // use title and body directly from infoIconMessage prop, or use decorationTypes
+  const _infoIconMessage = infoIconMessage && {
+    title: buildDecoration({['popout.title']: true, ...props, decorationType: 'popout.title'}),
+    body: buildDecoration({['popout.body']: true, ...props, decorationType: 'popout.body'}),
+    ...infoIconMessage,
+  }
 
   const showRequired = !readOnly && !disabled
   return (
     <>
-      <Text
-        truncate
-        popoutTitle={popoutTitle}
-        {...props.popoutProps}
-        popoutBody={popoutBody}
-        PopoutComponent={props.PopoutComponent}
-        darkGrey
-        fontSize={12}
-      >
+      <config.Text truncate infoIconMessage={_infoIconMessage} darkGrey fontSize={12}>
         {label} {showRequired && required && '*'}
-      </Text>
+      </config.Text>
       {extraLabel && (
-        <Text truncate darkGrey fontSize={12}>
+        <config.Text truncate darkGrey fontSize={12}>
           {extraLabel}
-        </Text>
+        </config.Text>
       )}
     </>
   )
@@ -52,9 +48,9 @@ const Label = props => {
 
 const ValidationError = ({error}) => {
   return (
-    <Text fontSize={12} mediumRed>
+    <config.Text fontSize={12} mediumRed>
       {error}
-    </Text>
+    </config.Text>
   )
 }
 
@@ -95,7 +91,7 @@ const makeTranslation = props => {
 
   if (tableName) allKeys = [...allKeys, `records.${tableName}.fields.${field}`]
 
-  if (decorationType == 'tooltip') {
+  if (decorationType == 'popout.title') {
     // fallback to label title if tooltip isn't defined as it's often the same
     allKeys = [...allKeys, ...makeNamespaceTranslation({field, decorationName: 'label', namespaces})]
   }
