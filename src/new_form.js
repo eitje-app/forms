@@ -280,7 +280,7 @@ export class NewForm extends Component {
       ...fieldProps,
       onChange: val => this.updateField(field, val, fieldProps),
       isFirst: index == 0,
-      name,
+      formName: name,
     }
   }
 
