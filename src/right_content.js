@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react'
 import {t, config} from './base'
-import {Text, Icon, PopoutCard} from './circular_dependency_fix'
+import {Icon, PopoutCard} from './circular_dependency_fix'
 import utils from '@eitje/web_utils'
 import {FieldInput} from './field_input'
 
@@ -66,5 +66,5 @@ const getRightElement = ({rightElement, ...rest}) => {
 
 const CharCounter = ({maxLength, value, ...rest}) => {
   const charsLeft = maxLength - (value?.length || 0)
-  return <Text>{charsLeft}</Text>
+  return <config.Text>{charsLeft}</config.Text>
 }
