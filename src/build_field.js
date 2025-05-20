@@ -51,7 +51,22 @@ export const decorateField =
       opts.className,
     )
 
-    const {onChange, ...propsWithoutChange} = allProps
+    const {
+      onChange,
+      items,
+      innerRef,
+      i18nOpts,
+      field,
+      groupField,
+      defaultSubmitStrategy,
+      tableName,
+      value,
+      formName,
+      element: _element,
+      ...htmlProps
+    } = allProps
+    // dont spread props that are useless for HTML
+
     useEffect(() => {
       if (isFirst && autoFocus) {
         element.current?.querySelector('input')?.focus?.()
@@ -59,7 +74,7 @@ export const decorateField =
     }, [isFirst])
 
     return (
-      <div {...propsWithoutChange} ref={element} onClick={clickChild} className={classNames}>
+      <div {...htmlProps} ref={element} onClick={clickChild} className={classNames}>
         <TooltipWrapper {...allProps}>
           <config.Layout className="form-field-content" horizontal="spaceBetween" height="full" padding="16 24" disabled={disabled}>
             <LeftContent {...allProps} />
