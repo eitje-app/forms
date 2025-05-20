@@ -6,7 +6,7 @@ import {LeftContent} from './left_content'
 import {RightContent} from './right_content'
 import {makeNewRegisteredField} from './use_register_field'
 
-const decorateField =
+export const decorateField =
   (Comp, compOpts = {}) =>
   props => {
     let {readOnly, isFirst, autoFocus = true, className, error, disabled} = props
