@@ -34,11 +34,11 @@ const Label = props => {
   const showRequired = !readOnly && !disabled
   return (
     <>
-      <config.Text truncate infoIconMessage={_infoIconMessage} darkGrey fontSize={12}>
+      <config.Text truncate infoIconMessage={_infoIconMessage} color="dark-grey" fontSize={12}>
         {label} {showRequired && required && '*'}
       </config.Text>
       {extraLabel && (
-        <config.Text truncate darkGrey fontSize={12}>
+        <config.Text truncate color="dark-grey" fontSize={12}>
           {extraLabel}
         </config.Text>
       )}
@@ -48,7 +48,7 @@ const Label = props => {
 
 const ValidationError = ({error}) => {
   return (
-    <config.Text fontSize={12} mediumRed>
+    <config.Text fontSize={12} color="medium-red">
       {error}
     </config.Text>
   )
