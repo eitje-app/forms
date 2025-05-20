@@ -1,6 +1,6 @@
 {
   "name": "@eitje/form",
-  "version": "3.1.18-context-selector.6",
+  "version": "3.1.18-context-selector.7",
   "description": "Beautiful forms made easy",
   "main": "index.js",
   "scripts": {
