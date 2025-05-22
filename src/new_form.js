@@ -315,6 +315,7 @@ export class NewForm extends Component {
       submit,
       setValues,
       fields,
+      form: this,
       getData: getParams,
       enhanceField,
       registerField,
