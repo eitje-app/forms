@@ -37,6 +37,11 @@ const clickListPickerTrigger = (field, {open}) => {
   if (!open) child.click()
 }
 
+const clickSelectTrigger = field => {
+  const el = field.querySelector('.form-trigger-container:not([data-open])')
+  if (el) el.click()
+}
+
 const clickSwitch = field => {
   const el = field.querySelector('.ant-switch-handle')
   el.click?.()
@@ -69,6 +74,7 @@ export const findFns = {
   'eitje-time-picker-container': findTimeInput,
   'eitje-date-picker-container': findTimeInput,
   'eitje-list-picker': clickListPickerTrigger,
+  'eitje-select': clickSelectTrigger,
   'eitje-switch-container': clickSwitch,
   'eitje-checkbox-container': clickCheckbox,
   'eitje-avatar-picker': clickChild,

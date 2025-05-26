@@ -29,7 +29,7 @@ const FormIcon = ({Wrapper = Fragment, wrapperProps, ...rest}) => {
   )
 }
 
-const getIcon = ({readOnly, rightElement, disabled, value, required, onChange, icon, defaultPickerValue, clearIcon = true}) => {
+const getIcon = ({readOnly, rightElement, disabled, value, required, onChange, icon, defaultPickerValue, clearIcon = true, ...rest}) => {
   if (disabled) return
   if (readOnly)
     return {
@@ -44,7 +44,8 @@ const getIcon = ({readOnly, rightElement, disabled, value, required, onChange, i
       className: 'cross-icon',
       onClick: e => {
         e.stopPropagation()
-        onChange(defaultPickerValue)
+        const defPickerValue = utils.funcOrVal(defaultPickerValue, rest)
+        onChange(defPickerValue)
       },
     })
 
