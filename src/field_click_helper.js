@@ -37,9 +37,9 @@ const clickListPickerTrigger = (field, {open}) => {
   if (!open) child.click()
 }
 
-const clickSelectTrigger = field => {
-  const el = field.querySelector('.form-trigger-container:not([data-open])')
-  if (el) el.click()
+const clickSelectTrigger = (field, {open}) => {
+  const el = field.querySelector('.select-trigger-container')
+  if (!open) el.click()
 }
 
 const clickSwitch = field => {
