@@ -98,6 +98,8 @@ export class NewForm extends Component {
       } else {
         if (res?.data?.errors) this.handleErrors(res)
       }
+      console.groupEnd()
+      return res
     }
 
     console.groupEnd()
