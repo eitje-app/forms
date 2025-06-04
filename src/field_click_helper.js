@@ -78,6 +78,7 @@ export const findFns = {
   'eitje-switch-container': clickSwitch,
   'eitje-checkbox-container': clickCheckbox,
   'eitje-avatar-picker': clickChild,
+  'eitje-asset-picker': clickChild,
   'eitje-team-color-picker': clickPopoutCard,
   default: findDefault,
 }
