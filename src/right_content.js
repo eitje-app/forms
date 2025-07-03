@@ -29,7 +29,18 @@ const FormIcon = ({Wrapper = Fragment, wrapperProps, ...rest}) => {
   )
 }
 
-const getIcon = ({readOnly, rightElement, disabled, value, required, onChange, icon, defaultPickerValue, clearIcon = true, ...rest}) => {
+const getIcon = ({
+  readOnly,
+  rightElement,
+  disabled,
+  value,
+  required,
+  onChange,
+  icon,
+  defaultPickerValue = null,
+  clearIcon = true,
+  ...rest
+}) => {
   if (disabled) return
   if (readOnly)
     return {
