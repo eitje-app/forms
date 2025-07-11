@@ -1,3 +1,4 @@
+import React from 'react'
 import {buildDecoration} from './build_decoration'
 
 const handleKeyPress = (e, {element}) => {
