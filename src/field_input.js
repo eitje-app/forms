@@ -1,8 +1,4 @@
-import React from 'react'
-import utils from '@eitje/web_utils'
-import {t, config} from './base'
-import {Text} from './circular_dependency_fix'
-import {buildDecoration} from './left_content'
+import {buildDecoration} from './build_decoration'
 
 const handleKeyPress = (e, {element}) => {
   if (e.key != 'Enter') return
