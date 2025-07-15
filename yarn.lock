@@ -926,6 +926,16 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@eitje/utils@1.0.38":
+  version "1.0.38"
+  resolved "https://registry.yarnpkg.com/@eitje/utils/-/utils-1.0.38.tgz#c85c0f227fb80dfcdf9e43f566ace0402d36c8bd"
+  integrity sha512-G0+rd+fFgzeGgG+bgFy7kEFdexcPY73eNX3A/cRgkLdXDv2o97oXxbCXS+ZKmnVloR4fdz/53g6Jgl+QvuBuSQ==
+
+"@eitje/web_utils@1.0.15-alpha":
+  version "1.0.15-alpha"
+  resolved "https://registry.yarnpkg.com/@eitje/web_utils/-/web_utils-1.0.15-alpha.tgz#7c3abf07de9fdbea40145adfd516f7655516c679"
+  integrity sha512-cvpIoXNCscaXBuv1CP0hyMGRkhhh3LUiT3MVNgqsu8DoLNBqBpltEVsx7if2LEgPaoqxZ8Ri/DldXFKqj3m3HA==
+
 "@nicolo-ribaudo/chokidar-2@^2.1.8":
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8.tgz#eef8d9b47e8dc589499f14d656e8d2dd978c3d14"
@@ -2310,6 +2320,11 @@ urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
+
+use-context-selector@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/use-context-selector/-/use-context-selector-1.4.4.tgz#f5d65c7fcd78f994cb33cacd57651007a40595c0"
+  integrity sha512-pS790zwGxxe59GoBha3QYOwk8AFGp4DN6DOtH+eoqVmgBBRXVx4IlPDhJmmMiNQAgUaLlP+58aqRC3A4rdaSjg==
 
 use@^3.1.0:
   version "3.1.1"
