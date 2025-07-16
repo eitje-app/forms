@@ -10,13 +10,13 @@ import FormWrapper from './form_wrapper'
 import Form from './form'
 import ContextForm, {useForm} from './context_form'
 
-export * from './new_form'
-export * from './actions'
-export * from './legacy_actions'
-export * from './components'
-export * from './use_register_field'
-export * from './build_field'
-export * from './context'
+export {NewForm} from './new_form'
+export {makeField} from './actions'
+export {makeLegacyField} from './legacy_actions'
+export {FieldGroup} from './components'
+export {useRegisterField, makeRegisteredField, useNewRegisterField, makeNewRegisteredField} from './use_register_field'
+export {decorateField, makeNewField} from './build_field'
+export {useFormSelector, useFieldValue} from './context'
 
 const nl = {form: dutch}
 const en = {form: english}
