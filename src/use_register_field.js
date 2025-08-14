@@ -1,22 +1,5 @@
-import React, {useEffect} from 'react'
-import {useForm} from './context_form'
-import {useFieldValue, useFormSelector} from './context'
-import useFormField from './use_form_field'
-
-export const useRegisterField = (field, fieldProps) => {
-  const {registerField = _.noop, enhanceField = _.noop, unregisterField = _.noop} = useForm()
-  useEffect(() => {
-    registerField(field, fieldProps)
-    return () => unregisterField(field)
-  }, [field])
-  return enhanceField(field, fieldProps)
-}
-
-export const makeRegisteredField = Comp => props => {
-  const formProps = useRegisterField(props.field, props)
-  const formFieldProps = useFormField(formProps)
-  return <Comp {...props} {...formProps} {...formFieldProps} form />
-}
+import React, { useEffect } from 'react'
+import { useFieldValue, useFormSelector } from './context'
 
 export const useNewRegisterField = (field, fieldProps) => {
   const registerField = useFormSelector('registerField')

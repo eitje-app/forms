@@ -1,8 +1,3 @@
-import React, {Fragment, useState} from 'react'
-import useFormField from './use_form_field'
-import {Button, Tooltip, t, tooltipElement, defaultIcon, clearIcon} from './base'
-import utils from '@eitje/utils'
-import {makeRegisteredField} from './use_register_field'
 
 function fireMouseEvents(element, eventNames = ['mousedown']) {
   // we stole this from SO to emulate mousedown/other non-click mouse events
