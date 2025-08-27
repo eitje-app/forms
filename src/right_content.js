@@ -1,6 +1,5 @@
 import React, {Fragment} from 'react'
 import {t, config} from './base'
-import {Icon, PopoutCard} from './circular_dependency_fix'
 import utils from '@eitje/web_utils'
 import {FieldInput} from './field_input'
 
@@ -24,7 +23,7 @@ export const RightContent = props => {
 const FormIcon = ({Wrapper = Fragment, wrapperProps, ...rest}) => {
   return (
     <Wrapper {...wrapperProps}>
-      <Icon size={12} {...rest} />
+      <config.Icon size={12} {...rest} />
     </Wrapper>
   )
 }
@@ -45,7 +44,7 @@ const getIcon = ({
   if (readOnly)
     return {
       name: 'locked',
-      Wrapper: PopoutCard,
+      Wrapper: config.PopoutCard,
       wrapperProps: {title: t('form.general.tooltips.read_only')},
     }
   let buttons = []
